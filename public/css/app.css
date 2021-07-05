@@ -10036,3 +10036,18 @@ h3 {
 .card {
   background-color: #fff;
 }
+
+.vertical-line {
+  height: 500px;
+  border-top: 0px solid transparent;
+  border-left: 2px solid #1F618D;
+}
+
+.footer {
+  background-color: #DAE1E1;
+  height: 100px;
+}
+
+.text-muted {
+  font-size: 0.9rem;
+}

@@ -41,3 +41,19 @@
 .card {
     background-color: $white;
 }
+
+.vertical-line {
+    height: 500px;
+    border-top: 0px solid transparent;
+    border-left: 2px solid $blue;
+}
+
+.footer {
+    background-color: $light-gray;
+    height: 100px;
+}
+
+.text-muted {
+    font-size: 0.9rem;
+    $line-height-base: 0.5;
+}

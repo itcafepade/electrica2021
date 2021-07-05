@@ -39,7 +39,7 @@
 
     <h2 class="pt-3 title-section">Actividad</h2>
     <hr class="featurette-divider">
-    <div class="row">
+    <div class="row pb-5">
         <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3">
             <a href=" {{ url('/horarios') }}" class="btn btn-block btn-white btn-sm p-3 shadow btn-hover">
                 <h3 class="text-left fs-4 title-home"><i class="bi bi-calendar3"></i> Horarios</h3>
