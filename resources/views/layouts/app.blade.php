@@ -41,16 +41,16 @@
                     <ul class="navbar-nav mr-auto">
                         @auth
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Inicio</a>
+                            <a class="nav-link" href="{{ url('/home') }}">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Historial</a>
+                            <a class="nav-link" href="{{ url('/acciones') }}">Historial</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Horarios</a>
+                            <a class="nav-link" href="{{ url('/horarios') }}">Horarios</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Simulador</a>
+                            <a class="nav-link" href="{{ url('/simulador') }}">Simulador</a>
                         </li>
                         @endauth
                     </ul>

@@ -17,6 +17,18 @@ Route::group(['middleware'=>'auth'], function () {
     Route::get('/', function () {
         return view('home');
     });
+    Route::get('/acciones', function () {
+        return view('acciones');
+    });
+    Route::get('/horarios', function () {
+        return view('horarios');
+    });
+    Route::get('/usuarios', function () {
+        return view('usuarios');
+    });
+    Route::get('/simulador', function () {
+        return view('simulador');
+    });
 });
 
 Auth::routes(['register' =>false]);

@@ -7,30 +7,30 @@
             <h2 class="title-section">Administración</h2>
             <hr class="featurette-divider">
             <div class="row pb-3">
-                <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-1">
-                    <button type="button" class="btn btn-block btn-white btn-sm p-3 shadow">
+                <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3">
+                    <a href=" {{ url('/horarios') }}" class="btn btn-block btn-white btn-sm p-3 shadow">
                         <h4 class="text-left fs-4 title-home"><i class="bi bi-calendar3"></i> Horarios</h4>
                         <p class="text-left fw-lighter description-home">
                             Manejo de horarios para la realizacion de las practicas
                         </p>
-                    </button>
+                    </a>
                 </div>
-                <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-1 ">
-                    <button type="button" class="btn btn-block btn-white btn-sm p-3 shadow">
+                <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3 ">
+                    <a href=" {{ url('/acciones') }}" class="btn btn-block btn-white btn-sm p-3 shadow">
                         <h4 class="text-left fs-4 title-home"><i class="bi bi-hdd-stack-fill"></i> Control de Acciones
                         </h4>
                         <p class="text-left fw-lighter description-home">
                             Acciones Realizadas en el simulador durante las practicas
                         </p>
-                    </button>
+                    </a>
                 </div>
-                <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-1 ">
-                    <button type="button" class="btn btn-block btn-white btn-sm p-3 shadow">
+                <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3 ">
+                    <a href=" {{ url('/usuarios') }}" class="btn btn-block btn-white btn-sm p-3 shadow">
                         <h4 class="text-left fs-4 title-home"><i class="bi bi-person-fill"></i> Manejo de Usuarios</h4>
                         <p class="text-left fw-lighter description-home">
                             Administracion de Usuarios para la utilizacion del simulador
                         </p>
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -40,21 +40,21 @@
     <h2 class="pt-3 title-section">Actividad</h2>
     <hr class="featurette-divider">
     <div class="row">
-        <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-1">
-            <button type="button" class="btn btn-block btn-white btn-sm p-3 shadow btn-hover">
+        <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3">
+            <a href=" {{ url('/horarios') }}" class="btn btn-block btn-white btn-sm p-3 shadow btn-hover">
                 <h3 class="text-left fs-4 title-home"><i class="bi bi-calendar3"></i> Horarios</h3>
                 <p class="text-left fw-lighter description-home">
                     Maneja tus horarios para la realizacion de las practicas
                 </p>
-            </button>
+            </a>
         </div>
-        <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-1">
-            <button type="button" class="btn btn-block btn-white btn-sm p-3 shadow">
+        <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3">
+            <a href=" {{ url('/simulador') }}" class="btn btn-block btn-white btn-sm p-3 shadow">
                 <h3 class="text-left fs-4 title-home"><i class="bi bi-cpu-fill"></i> Simulador</h3>
                 <p class="text-left fw-lighter description-home">
                     Realiza tus praticas utilizando el simulador
                 </p>
-            </button>
+            </a>
         </div>
     </div>
 </div>
