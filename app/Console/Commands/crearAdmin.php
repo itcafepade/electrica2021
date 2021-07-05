@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\User;
+use Hash;
 
 class crearAdmin extends Command
 {
@@ -38,17 +39,13 @@ class crearAdmin extends Command
      */
     public function handle()
     {
-        try {
-            User::create([
+        User::create([
                 'email' => 'admin@gmail.com',
-                'password' => 'adminItca',
+                'password' => Hash::make('adminItca'),
                 'name' => 'admin',
                 'access' => 'admin'
             ]);
 
-            $this->info('Usuario administrador creado satisfactoriamente.');
-        } catch (\Throwable $th) {
-            $this->error('Error: El usuario administrador ya fue creado.');
-        }
+        $this->info('Usuario administrador creado satisfactoriamente.');
     }
 }
