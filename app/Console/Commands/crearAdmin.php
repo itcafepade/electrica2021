@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Models\User;
 
 class crearAdmin extends Command
 {
@@ -11,14 +12,14 @@ class crearAdmin extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'command:crearAdmin';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Comando para crear el primer usuario como administrador.';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,17 @@ class crearAdmin extends Command
      */
     public function handle()
     {
-        return 0;
+        try {
+            User::create([
+                'email' => 'admin@gmail.com',
+                'password' => 'adminItca',
+                'name' => 'admin',
+                'access' => 'admin'
+            ]);
+
+            $this->info('Usuario administrador creado satisfactoriamente.');
+        } catch (\Throwable $th) {
+            $this->error('Error: El usuario administrador ya fue creado.');
+        }
     }
 }
