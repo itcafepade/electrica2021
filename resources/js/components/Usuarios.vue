@@ -14,24 +14,28 @@
           <label class="custom-file-label">Choose file</label>
         </div>
       </div>
-      <button class="btn btn-primary">
+      <a href="#" class="btn btn-primary" @click="registrarUsuarios()">
         <i class="bi bi-calendar4-week"></i> Reservar
-      </button>
+      </a>
       <!-- Reservación con archivo  -->
 
       <!-- Modificar usuario -->
       <h4 class="pt-5">Modificar usuario</h4>
       <label for="">Carnet</label>
-      <input type="text" class="form-control" placeholder="" />
+      <input type="text" class="form-control" v-model="usuario.carnet" />
       <label for="" class="pt-2">Nombres</label>
-      <input type="text" class="form-control" placeholder="" />
+      <input type="text" class="form-control" v-model="usuario.nombres" />
       <label for="" class="pt-2">Apellidos</label>
-      <input type="text" class="form-control" placeholder="" />
+      <input type="text" class="form-control" v-model="usuario.apellidos" />
       <label for="" class="pt-2">Carrera</label>
-      <input type="text" class="form-control" placeholder="" />
-      <button class="btn btn-primary mt-3">
-        <i class="bi bi-arrow-bar-down"></i> Modificar
-      </button>
+      <input type="text" class="form-control" v-model="usuario.carrera" />
+      <a
+        href="#"
+        class="btn btn-secondary mt-3"
+        @click="limpiarInputsModificar"
+      >
+        <i class="bi bi-arrow-bar-down"></i> Limpiar
+      </a>
       <!-- Modificar usuarios -->
     </div>
     <div class="col-md-1 d-sm-none d-none d-md-block d-lg-block d-lg-block">
@@ -57,7 +61,12 @@
             <td>{{ usuario.apellidos }}</td>
             <td>{{ usuario.carrera }}</td>
             <td>
-              <a href="#"><i class="bi bi-pencil-square fs-3 action"></i></a>
+              <a href="#"
+                ><i
+                  class="bi bi-pencil-square fs-3 action"
+                  @click="modificarUsuario(usuario)"
+                ></i
+              ></a>
             </td>
           </tr>
         </tbody>
@@ -67,6 +76,13 @@
 </template>
 
 <script>
+import Archivo from "../libs/archivo";
+import axios from "axios";
+import Alerta from "../libs/alerta";
+
+const archivo = new Archivo();
+const alerta = new Alerta();
+
 export default {
   data() {
     return {
@@ -76,88 +92,31 @@ export default {
     };
   },
   methods: {
-    ingresarArchivo(e) {
-      var files = e.target.files || e.dataTransfer.files;
-      if (!files.length) return;
-      this.leerUsuariosDeArchivo(files[0]);
+    async ingresarArchivo(e) {
+      var archivos = e.target.files || e.dataTransfer.files;
+      if (!archivos.length) return;
+      this.usuarios = await archivo.leerUsuariosDeArchivo(archivos[0]);
     },
-    leerUsuariosDeArchivo(file) {
-      let texto = "";
-      let promise = new Promise((resolve, reject) => {
-        var reader = new FileReader();
-        reader.onload = (e) => {
-          resolve((texto = reader.result));
-        };
-        reader.readAsText(file);
-      });
-
-      promise.then(
-        (result) => {
-          const sinTitulo = texto.substring(32); // Se elimina la cabecera del archivo
-          let textoConSaltos = sinTitulo.replaceAll("\n", ",");
-          let textoConComas;
-          let textoSinPrimeraComa = textoConSaltos.replace(",", "");
-          if (textoSinPrimeraComa.search(";")) {
-            //Si existen punto y coma como separación, se reemplazan por comas
-            textoConComas = textoSinPrimeraComa.replaceAll(";", ",");
-          } else {
-            textoConComas = textoSinPrimeraComa; //Si el csv ya viene con comas
-          }
-
-          let campo = "";
-          let comaAnterior = 0;
-          let arrayUsuarios = [];
-          let objetoUsuario = {};
-          let contadorCampos = 1;
-          let primerCampo = true;
-
-          for (let i = 0; i < textoConComas.length; i++) {
-            //Cuando se encuentre una coma significa que el campo termina ahí,
-            // entonces se debe cortar esa porción de texto
-            if (textoConComas[i] == ",") {
-              //Si es la primer campo, no hay que borrar la coma, porque no hay
-              //Por esto se valida con una bandera para saber si es el primer campo de lo contrario
-              //Para al else
-              if (primerCampo) {
-                campo = textoConComas.substring(0, i);
-                primerCampo = false;
-              } else {
-                //Se corta el string desde el anterior+1, porque anterior representa el valor de las comas
-                campo = textoConComas.substring(comaAnterior + 1, i);
-              }
-
-              //Dependiendo del valor de contadorCampos se asignará al objeto dependiendo de lo que represente
-              //Si es un carnet, al campo carnet, etc.
-              if (contadorCampos == 1) {
-                //Primer valor del objeto, Carnet
-                objetoUsuario.carnet = campo;
-              } else if (contadorCampos == 2) {
-                //Segundo valor del objeto, Nombres
-                objetoUsuario.nombres = campo;
-                // console.log("Contador: " + contadorCampos);
-              } else if (contadorCampos == 3) {
-                //Tercer valor del objeto, Apellidos
-                objetoUsuario.apellidos = campo;
-              } else if (contadorCampos == 4) {
-                //Cuarto valor del objeto, Carrera
-                objetoUsuario.carrera = campo;
-                arrayUsuarios.push(objetoUsuario); // Se agregan a un array para luego convertirlo en un objeto
-                objetoUsuario = {};
-                contadorCampos = 0;
-              }
-
-              //Se asigna la coma actual como coma anterior
-              comaAnterior = i;
-              //Se suma al contador de Campos para validaciones del objeto
-              contadorCampos += 1;
-            }
-          }
-          this.usuarios = arrayUsuarios; //Se asigna a la variable local para dibujarlos en la tabla
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+    modificarUsuario(usuario) {
+      this.usuario = usuario;
+    },
+    limpiarInputsModificar() {
+      this.usuario = {};
+    },
+    async registrarUsuarios() {
+      const usuarios = JSON.parse(JSON.stringify(this.usuarios));
+      console.log(usuarios);
+      //   const res = await axios.post("/registrarUsuarios", {
+      //     usuarios: usuarios,
+      //   });
+      //   if ((res.data.mensaje = "exito")) {
+      //     alerta.mensaje(
+      //       "Usuarios no pudieron ser registrados correctamente.",
+      //       "error"
+      //     );
+      //   } else {
+      //     alerta.mensaje("Usuarios registrados correctamente.", "success");
+      //   }
     },
   },
 };

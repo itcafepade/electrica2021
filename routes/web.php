@@ -29,6 +29,7 @@ Route::group(['middleware'=>'auth'], function () {
     Route::get('/simulador', function () {
         return view('simulador');
     });
+    Route::get('/registrarUsuarios', [App\Http\Controllers\HomeController::class, 'store']);
 });
 
 Auth::routes(['register' =>false]);
