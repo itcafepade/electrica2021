@@ -3,6 +3,11 @@
     <div class="col-md-3 divisor-izquierda pb-3">
       <!-- Reservación con archivo -->
       <h4 class="pt-3">Registro de Usuarios</h4>
+      <!-- Descargar plantilla  -->
+      <a href="/plantilla.csv" class="btn btn-success mb-3"
+        ><i class="bi bi-file-earmark-medical"></i> Plantilla</a
+      >
+      <!-- Descargar plantilla  -->
       <div class="input-group mb-3">
         <div class="custom-file">
           <input

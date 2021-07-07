@@ -1982,6 +1982,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -41845,6 +41850,8 @@ var render = function() {
     _c("div", { staticClass: "col-md-3 divisor-izquierda pb-3" }, [
       _c("h4", { staticClass: "pt-3" }, [_vm._v("Registro de Usuarios")]),
       _vm._v(" "),
+      _vm._m(0),
+      _vm._v(" "),
       _c("div", { staticClass: "input-group mb-3" }, [
         _c("div", { staticClass: "custom-file" }, [
           _c("input", {
@@ -41994,13 +42001,13 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _vm._m(0),
+    _vm._m(1),
     _vm._v(" "),
     _c("div", { staticClass: "col-md-8" }, [
       _c("h4", { staticClass: "pt-3" }, [_vm._v("Usuarios Registrados")]),
       _vm._v(" "),
       _c("table", { staticClass: "table table-hover table-striped" }, [
-        _vm._m(1),
+        _vm._m(2),
         _vm._v(" "),
         _c(
           "tbody",
@@ -42037,6 +42044,22 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "btn btn-success mb-3",
+        attrs: { href: "/plantilla.csv" }
+      },
+      [
+        _c("i", { staticClass: "bi bi-file-earmark-medical" }),
+        _vm._v(" Plantilla")
+      ]
+    )
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
