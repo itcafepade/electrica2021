@@ -1997,7 +1997,8 @@ var alerta = new _libs_alerta__WEBPACK_IMPORTED_MODULE_3__.default();
     return {
       usuarios: [],
       usuario: {},
-      texto: ""
+      texto: "",
+      nombreArchivo: "Elige un archivo"
     };
   },
   methods: {
@@ -2021,13 +2022,14 @@ var alerta = new _libs_alerta__WEBPACK_IMPORTED_MODULE_3__.default();
                 return _context.abrupt("return");
 
               case 4:
-                _context.next = 6;
+                _this.nombreArchivo = archivos[0].name;
+                _context.next = 7;
                 return archivo.leerUsuariosDeArchivo(archivos[0]);
 
-              case 6:
+              case 7:
                 _this.usuarios = _context.sent;
 
-              case 7:
+              case 8:
               case "end":
                 return _context.stop();
             }
@@ -2079,6 +2081,9 @@ var alerta = new _libs_alerta__WEBPACK_IMPORTED_MODULE_3__.default();
                 alerta.mensaje("Aún no ha ingresado un archivo con usuarios.", "error");
 
               case 9:
+                _this2.nombreArchivo = "Elige un archivo";
+
+              case 10:
               case "end":
                 return _context2.stop();
             }
@@ -41861,7 +41866,7 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("label", { staticClass: "custom-file-label" }, [
-            _vm._v("Choose file")
+            _vm._v(_vm._s(_vm.nombreArchivo))
           ])
         ])
       ]),

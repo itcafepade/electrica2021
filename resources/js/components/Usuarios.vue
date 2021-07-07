@@ -16,7 +16,7 @@
             accept=".csv"
             @change="ingresarArchivo"
           />
-          <label class="custom-file-label">Choose file</label>
+          <label class="custom-file-label">{{ nombreArchivo }}</label>
         </div>
       </div>
       <a href="#" class="btn btn-primary" @click="registrarUsuarios()">
@@ -96,6 +96,7 @@ export default {
       usuarios: [],
       usuario: {},
       texto: "",
+      nombreArchivo: "Elige un archivo",
     };
   },
   methods: {
@@ -103,6 +104,7 @@ export default {
       this.usuarios = [];
       var archivos = e.target.files || e.dataTransfer.files;
       if (!archivos.length) return;
+      this.nombreArchivo = archivos[0].name;
       this.usuarios = await archivo.leerUsuariosDeArchivo(archivos[0]);
     },
     modificarUsuario(usuario) {
@@ -134,6 +136,8 @@ export default {
       } else {
         alerta.mensaje("Aún no ha ingresado un archivo con usuarios.", "error");
       }
+
+      this.nombreArchivo = "Elige un archivo";
     },
   },
 };
