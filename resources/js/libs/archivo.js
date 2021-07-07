@@ -27,7 +27,7 @@ export default class Archivo {
     }
 
     descomponerTextoCSV(texto) {
-        const sinTitulo = texto.substring(32); // Se elimina la cabecera del archivo
+        const sinTitulo = texto.substring(38); // Se elimina la cabecera del archivo
         let textoConSaltos = sinTitulo.replaceAll("\n", ",");
         let textoConComas;
         let textoSinPrimeraComa = textoConSaltos.replace(",", "");
@@ -69,12 +69,16 @@ export default class Archivo {
                     objetoUsuario.carnet = campo;
                 } else if (contadorCampos == 2) {
                     //Segundo valor del objeto, Nombres
-                    objetoUsuario.nombres = campo;
+                    objetoUsuario.correo = campo;
                     // console.log("Contador: " + contadorCampos);
                 } else if (contadorCampos == 3) {
+                    //Segundo valor del objeto, Nombres
+                    objetoUsuario.nombres = campo;
+                    // console.log("Contador: " + contadorCampos);
+                } else if (contadorCampos == 4) {
                     //Tercer valor del objeto, Apellidos
                     objetoUsuario.apellidos = campo;
-                } else if (contadorCampos == 4) {
+                } else if (contadorCampos == 5) {
                     //Cuarto valor del objeto, Carrera
                     objetoUsuario.carrera = campo;
                     arrayUsuarios.push(objetoUsuario); // Se agregan a un array para luego convertirlo en un objeto

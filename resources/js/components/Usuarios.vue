@@ -48,6 +48,7 @@
           <tr>
             <!-- <th scope="col">#</th> -->
             <th scope="col">Carnet</th>
+            <th scope="col">Correo</th>
             <th scope="col">Nombres</th>
             <th scope="col">Apellidos</th>
             <th scope="col">Carrera</th>
@@ -57,6 +58,7 @@
         <tbody>
           <tr v-for="usuario in usuarios" :key="usuario.carnet">
             <td>{{ usuario.carnet }}</td>
+            <td>{{ usuario.correo }}</td>
             <td>{{ usuario.nombres }}</td>
             <td>{{ usuario.apellidos }}</td>
             <td>{{ usuario.carrera }}</td>
@@ -86,13 +88,14 @@ const alerta = new Alerta();
 export default {
   data() {
     return {
-      usuarios: "",
+      usuarios: [],
       usuario: {},
       texto: "",
     };
   },
   methods: {
     async ingresarArchivo(e) {
+      this.usuarios = [];
       var archivos = e.target.files || e.dataTransfer.files;
       if (!archivos.length) return;
       this.usuarios = await archivo.leerUsuariosDeArchivo(archivos[0]);
@@ -104,19 +107,28 @@ export default {
       this.usuario = {};
     },
     async registrarUsuarios() {
-      const usuarios = JSON.parse(JSON.stringify(this.usuarios));
-      console.log(usuarios);
-      //   const res = await axios.post("/registrarUsuarios", {
-      //     usuarios: usuarios,
-      //   });
-      //   if ((res.data.mensaje = "exito")) {
-      //     alerta.mensaje(
-      //       "Usuarios no pudieron ser registrados correctamente.",
-      //       "error"
-      //     );
-      //   } else {
-      //     alerta.mensaje("Usuarios registrados correctamente.", "success");
-      //   }
+      if (this.usuarios.length > 0) {
+        const usuarios = JSON.parse(JSON.stringify(this.usuarios));
+
+        const res = await axios
+          .post("/registrarUsuarios", {
+            usuarios: usuarios,
+          })
+          .catch((error) => {
+            alerta.mensaje(error, "error");
+          });
+
+        if (res.data.mensaje == "exito") {
+          alerta.mensaje("Usuarios registrados correctamente.", "success");
+        } else {
+          alerta.mensaje(
+            "Usuarios no pudieron ser registrados correctamente.",
+            "error"
+          );
+        }
+      } else {
+        alerta.mensaje("Aún no ha ingresado un archivo con usuarios.", "error");
+      }
     },
   },
 };

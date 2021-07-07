@@ -43,7 +43,9 @@ class crearAdmin extends Command
             'email' => 'admin@gmail.com',
             'password' => Hash::make('adminItca'),
             'name' => 'admin',
-            'access' => 'admin'
+            'access' => 'admin',
+            'carrera' => 'Ing. Eléctrica',
+            'carnet' => '010101',
         ]);
 
         $this->info('Usuario administrador creado satisfactoriamente.');

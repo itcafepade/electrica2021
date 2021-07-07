@@ -1980,6 +1980,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
 
 
 
@@ -1988,7 +1990,7 @@ var alerta = new _libs_alerta__WEBPACK_IMPORTED_MODULE_3__.default();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      usuarios: "",
+      usuarios: [],
       usuario: {},
       texto: ""
     };
@@ -2003,23 +2005,24 @@ var alerta = new _libs_alerta__WEBPACK_IMPORTED_MODULE_3__.default();
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                _this.usuarios = [];
                 archivos = e.target.files || e.dataTransfer.files;
 
                 if (archivos.length) {
-                  _context.next = 3;
+                  _context.next = 4;
                   break;
                 }
 
                 return _context.abrupt("return");
 
-              case 3:
-                _context.next = 5;
+              case 4:
+                _context.next = 6;
                 return archivo.leerUsuariosDeArchivo(archivos[0]);
 
-              case 5:
+              case 6:
                 _this.usuarios = _context.sent;
 
-              case 6:
+              case 7:
               case "end":
                 return _context.stop();
             }
@@ -2037,25 +2040,40 @@ var alerta = new _libs_alerta__WEBPACK_IMPORTED_MODULE_3__.default();
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
-        var usuarios;
+        var usuarios, res;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                usuarios = JSON.parse(JSON.stringify(_this2.usuarios));
-                console.log(usuarios); //   const res = await axios.post("/registrarUsuarios", {
-                //     usuarios: usuarios,
-                //   });
-                //   if ((res.data.mensaje = "exito")) {
-                //     alerta.mensaje(
-                //       "Usuarios no pudieron ser registrados correctamente.",
-                //       "error"
-                //     );
-                //   } else {
-                //     alerta.mensaje("Usuarios registrados correctamente.", "success");
-                //   }
+                if (!(_this2.usuarios.length > 0)) {
+                  _context2.next = 8;
+                  break;
+                }
 
-              case 2:
+                usuarios = JSON.parse(JSON.stringify(_this2.usuarios));
+                _context2.next = 4;
+                return axios__WEBPACK_IMPORTED_MODULE_2___default().post("/registrarUsuarios", {
+                  usuarios: usuarios
+                })["catch"](function (error) {
+                  alerta.mensaje(error, "error");
+                });
+
+              case 4:
+                res = _context2.sent;
+
+                if (res.data.mensaje == "exito") {
+                  alerta.mensaje("Usuarios registrados correctamente.", "success");
+                } else {
+                  alerta.mensaje("Usuarios no pudieron ser registrados correctamente.", "error");
+                }
+
+                _context2.next = 9;
+                break;
+
+              case 8:
+                alerta.mensaje("Aún no ha ingresado un archivo con usuarios.", "error");
+
+              case 9:
               case "end":
                 return _context2.stop();
             }
@@ -2284,7 +2302,7 @@ var Archivo = /*#__PURE__*/function () {
   }, {
     key: "descomponerTextoCSV",
     value: function descomponerTextoCSV(texto) {
-      var sinTitulo = texto.substring(32); // Se elimina la cabecera del archivo
+      var sinTitulo = texto.substring(38); // Se elimina la cabecera del archivo
 
       var textoConSaltos = sinTitulo.replaceAll("\n", ",");
       var textoConComas;
@@ -2327,11 +2345,14 @@ var Archivo = /*#__PURE__*/function () {
             objetoUsuario.carnet = campo;
           } else if (contadorCampos == 2) {
             //Segundo valor del objeto, Nombres
-            objetoUsuario.nombres = campo; // console.log("Contador: " + contadorCampos);
+            objetoUsuario.correo = campo; // console.log("Contador: " + contadorCampos);
           } else if (contadorCampos == 3) {
+            //Segundo valor del objeto, Nombres
+            objetoUsuario.nombres = campo; // console.log("Contador: " + contadorCampos);
+          } else if (contadorCampos == 4) {
             //Tercer valor del objeto, Apellidos
             objetoUsuario.apellidos = campo;
-          } else if (contadorCampos == 4) {
+          } else if (contadorCampos == 5) {
             //Cuarto valor del objeto, Carrera
             objetoUsuario.carrera = campo;
             arrayUsuarios.push(objetoUsuario); // Se agregan a un array para luego convertirlo en un objeto
@@ -41987,6 +42008,8 @@ var render = function() {
             return _c("tr", { key: usuario.carnet }, [
               _c("td", [_vm._v(_vm._s(usuario.carnet))]),
               _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(usuario.correo))]),
+              _vm._v(" "),
               _c("td", [_vm._v(_vm._s(usuario.nombres))]),
               _vm._v(" "),
               _c("td", [_vm._v(_vm._s(usuario.apellidos))]),
@@ -42034,6 +42057,8 @@ var staticRenderFns = [
     return _c("thead", [
       _c("tr", [
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Carnet")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Correo")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Nombres")]),
         _vm._v(" "),

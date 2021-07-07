@@ -20,6 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'carrera',
+        'carnet',
         'access' //Administrador o no
     ];
 
