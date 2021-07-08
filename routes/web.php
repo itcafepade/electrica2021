@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware'=>'auth'], function () {
+    //Vistas
     Route::get('/', function () {
         return view('home');
     });
@@ -29,9 +30,11 @@ Route::group(['middleware'=>'auth'], function () {
     Route::get('/simulador', function () {
         return view('simulador');
     });
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    //Usuario
     Route::post('/registrarUsuarios', [App\Http\Controllers\UserController::class, 'store']);
+    Route::get('/usuarioActual', [App\Http\Controllers\UserController::class, 'usuarioActual']);
 });
 
 Auth::routes(['register' =>false]);
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

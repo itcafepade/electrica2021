@@ -28,4 +28,12 @@ class UserController extends Controller
 
         return response()->json(['mensaje'=>'exito']);
     }
+
+    /**
+     * Retorna el usuario que actualmente ha iniciado sesión
+     */
+    public function usuarioActual()
+    {
+        return auth()->user();
+    }
 }
