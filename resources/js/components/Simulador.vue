@@ -23,9 +23,7 @@
                         </div>
                         <div class="my-2">
                           PERTURBACION
-                          <v-switch
-                            v-model="switch1"
-                          ></v-switch>
+                          <v-switch v-model="switch1"></v-switch>
                         </div>
                         <div class="my-2">
                           <label for="inputSetPoint" class="form-label"
@@ -158,22 +156,35 @@
         <div class="col">
           <div class="card">
             <div class="card-header">Graficos</div>
-            <div class="card-body mx-auto">
+            <div class="card-body m-0">
               <canvas id="grafico1"></canvas>
               <canvas id="grafico2"></canvas>
               <br />
               <h5>Temperatura Agua</h5>
-              <vue-speedometer
-                :maxSegmentLabels="1"
-                :customSegmentStops="[0, 50, 100]"
-                :segmentColors="['green', 'gold']"
-                needleColor="#5959ac"
-                :currentValueText="'\${value}C°'"
-                :value="50"
-                :minValue="0"
-                :maxValue="100"
-                textColor="${textColor}"
-              />
+              <!-- <input
+                type="text"
+                name=""
+                id=""
+                v-model="temperaturaValor"
+                class="form-control"
+              /> -->
+              <div class="container">
+                <div class="row text-center">
+                  <div class="col-md-12">
+                    <vue-speedometer
+                      :maxSegmentLabels="1"
+                      :customSegmentStops="[0, 50, 100]"
+                      :segmentColors="['green', 'gold']"
+                      needleColor="#5959ac"
+                      :currentValueText="'\${value}C°'"
+                      :value="temperaturaValor"
+                      :minValue="0"
+                      :maxValue="100"
+                      textColor="${textColor}"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -246,14 +257,14 @@ const data2 = {
 Chart.register(...registerables);
 
 export default {
-  //components: { informacion },
   components: { VueSpeedometer },
   template: `<vue-speedometer />`,
-  data () {
-      return {
-        switch1: true,
-      }
-    },
+  data() {
+    return {
+      switch1: true,
+      temperaturaValor: 0,
+    };
+  },
   mounted() {
     const grafico1 = document.getElementById("grafico1");
     const grafico2 = document.getElementById("grafico2");
