@@ -36,4 +36,9 @@ Vue.use(Vuetify);
 const app = new Vue({
     el: '#app',
     vuetify: new Vuetify(),
+    data() {
+        return {
+            switch1: true,
+        }
+    },
 });

@@ -1,13 +1,13 @@
 <template>
   <div class="row">
-    <div class="col-md-4 pd-4">
-      <div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col-md-5 pd-5">
+      <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-header">Variables</div>
             <div class="card-body">
               <v-app>
-                <v-container fill-height fluid>
+                <v-container>
                   <v-row align="center" justify="center">
                     <v-col>
                       <div class="text-center">
@@ -21,7 +21,12 @@
                         <div class="my-2">
                           <v-btn color="error" fab x-large dark> PARAR </v-btn>
                         </div>
-                        <div class="my-2">PERTURBACION</div>
+                        <div class="my-2">
+                          PERTURBACION
+                          <v-switch
+                            v-model="switch1"
+                          ></v-switch>
+                        </div>
                         <div class="my-2">
                           <label for="inputSetPoint" class="form-label"
                             >Set Point(C)</label
@@ -57,7 +62,7 @@
             <div class="card-header">Variables</div>
             <div class="card-body">
               <v-app>
-                <v-container fill-height fluid>
+                <v-container>
                   <v-row align="center" justify="center">
                     <v-col>
                       <div class="text-center">
@@ -145,41 +150,38 @@
         </div>
       </div>
     </div>
-    <div class="col-md-1 d-sm-none d-none d-md-block d-lg-block d-lg-block">
+    <!-- <div class="col-md-1 d-sm-none d-none d-md-block d-lg-block d-lg-block">
       <hr class="vertical-line" />
-    </div>
+    </div> -->
     <div class="col-md-7 pd-7">
-      <div class="row row-cols-1 row-cols-md-2 g-4">
+      <div class="row">
         <div class="col">
           <div class="card">
             <div class="card-header">Graficos</div>
-            <div class="card-body">
+            <div class="card-body mx-auto">
               <canvas id="grafico1"></canvas>
               <canvas id="grafico2"></canvas>
               <br />
               <h5>Temperatura Agua</h5>
-              <!-- <div class="container">
-                <div class="gauge">
-                  <ul class="meter">
-                    <li class="low"></li>
-                    <li class="normal"></li>
-                    <li class="high"></li>
-                  </ul>
-                  <div class="dial">
-                    <div class="inner">
-                      <div class="arrow"></div>
-                    </div>
-                  </div>
-                  <div class="value">0%</div>
-                </div>
-              </div> -->
+              <vue-speedometer
+                :maxSegmentLabels="1"
+                :customSegmentStops="[0, 50, 100]"
+                :segmentColors="['green', 'gold']"
+                needleColor="#5959ac"
+                :currentValueText="'\${value}C°'"
+                :value="50"
+                :minValue="0"
+                :maxValue="100"
+                textColor="${textColor}"
+              />
             </div>
           </div>
         </div>
         <div class="col">
           <div class="card">
             <div class="card-header">Graficos</div>
-            <div class="card-body">
+            <div class="card-body mx-auto">
+              <h5 class="text-info">En Vivo</h5>
               <iframe
                 src="https://www.youtube.com/embed/mGvYzzQb1_s"
                 title="YouTube video player"
@@ -187,6 +189,7 @@
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
               ></iframe>
+              <h5>Simulación</h5>
             </div>
           </div>
         </div>
@@ -197,6 +200,7 @@
 
 <script>
 import { Chart, registerables } from "chart.js";
+import VueSpeedometer from "vue-speedometer";
 //import informacion from "./Informacion.vue";
 
 const DATA_COUNT = 6;
@@ -243,6 +247,13 @@ Chart.register(...registerables);
 
 export default {
   //components: { informacion },
+  components: { VueSpeedometer },
+  template: `<vue-speedometer />`,
+  data () {
+      return {
+        switch1: true,
+      }
+    },
   mounted() {
     const grafico1 = document.getElementById("grafico1");
     const grafico2 = document.getElementById("grafico2");
@@ -314,23 +325,4 @@ export default {
     });
   },
 };
-
-var dial = $(".dial .inner");
-var gauge_value = $(".gauge .value");
-
-function rotateDial() {
-  var deg = 0;
-  var value = Math.round(Math.random() * 100);
-  deg = (value * 177.5) / 100;
-
-  gauge_value.html(value + "%");
-
-  dial.css({ transform: "rotate(" + deg + "deg)" });
-  dial.css({ "-ms-transform": "rotate(" + deg + "deg)" });
-  dial.css({ "-moz-transform": "rotate(" + deg + "deg)" });
-  dial.css({ "-o-transform": "rotate(" + deg + "deg)" });
-  dial.css({ "-webkit-transform": "rotate(" + deg + "deg)" });
-}
-
-setInterval(rotateDial, 2000);
 </script>
