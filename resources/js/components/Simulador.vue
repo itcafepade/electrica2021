@@ -17,7 +17,7 @@
                             INICIO
                           </v-btn>
                         </div>
-                        STOP
+                        PARAR
                         <div class="my-2">
                           <v-btn color="error" fab x-large dark> PARAR </v-btn>
                         </div>
@@ -157,8 +157,10 @@
           <div class="card">
             <div class="card-header">Graficos</div>
             <div class="card-body m-0">
-              <canvas id="grafico1"></canvas>
-              <canvas id="grafico2"></canvas>
+              <div v-if="datapoints.length > 0">
+                <grafico :data="data" :options="options" />
+                <grafico :data="data" :options="options" />
+              </div>
               <br />
               <h5>Temperatura Agua</h5>
               <!-- <input
@@ -210,68 +212,34 @@
 </template>
 
 <script>
-import { Chart, registerables } from "chart.js";
 import VueSpeedometer from "vue-speedometer";
-//import informacion from "./Informacion.vue";
-
-const DATA_COUNT = 6;
-const labels = [];
-for (let i = 0; i < DATA_COUNT; ++i) {
-  labels.push(i.toString());
-}
-const datapoints = [31.5, 31.6, 31.7, 32.0, 31.1, 31.5];
-const data = {
-  labels: labels,
-  datasets: [
-    {
-      label: "Process Variable",
-      data: [31.1, 31.2, 31.3, 31.4, 31.5, 31.6],
-      borderColor: "#FF6384",
-      fill: false,
-      cubicInterpolationMode: "monotone",
-      tension: 0.4,
-    },
-    {
-      label: "Setpoint",
-      data: datapoints,
-      borderColor: "#36A2EB",
-      fill: false,
-      tension: 0.4,
-    },
-  ],
-};
-const data2 = {
-  labels: labels,
-  datasets: [
-    {
-      label: "Process Variable",
-      data: [31.1, 31.2, 31.3, 31.4, 31.5, 31.6],
-      borderColor: "#FF6384",
-      fill: false,
-      cubicInterpolationMode: "monotone",
-      tension: 0.4,
-    },
-  ],
-};
-
-Chart.register(...registerables);
+import grafico from "./Grafico.vue";
 
 export default {
-  components: { VueSpeedometer },
-  template: `<vue-speedometer />`,
+  components: { VueSpeedometer, grafico },
   data() {
     return {
       switch1: true,
       temperaturaValor: 0,
+      labels: [],
+      datapoints: [],
+      data: {},
+      options: {},
     };
   },
   mounted() {
-    const grafico1 = document.getElementById("grafico1");
-    const grafico2 = document.getElementById("grafico2");
-    new Chart(grafico1, {
-      type: "line",
-      data: data,
-      options: {
+    this.init();
+  },
+  methods: {
+    init() {
+      let DATA_COUNT = 6;
+      for (let i = 0; i < DATA_COUNT; ++i) {
+        this.labels.push(i.toString());
+      }
+
+      this.datapoints = [31.5, 31.6, 31.7, 32.0, 31.1, 31.5];
+
+      this.options = {
         responsive: true,
         plugins: {
           title: {
@@ -299,41 +267,24 @@ export default {
             suggestedMax: 32.1,
           },
         },
-      },
-    });
-    new Chart(grafico2, {
-      type: "line",
-      data: data2,
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: "Step True Interpolation",
+      };
+
+      this.data = {
+        labels: this.labels,
+        datasets: [
+          {
+            label: "Process Variable",
+            data: this.datapoints,
+            borderColor: "#FF6384",
+            fill: false,
+            cubicInterpolationMode: "monotone",
+            tension: 0.4,
           },
-        },
-        interaction: {
-          intersect: false,
-        },
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-            },
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: "Value",
-            },
-            suggestedMin: 31.85,
-            suggestedMax: 32.1,
-          },
-        },
-      },
-    });
+        ],
+      };
+
+      console.log(JSON.parse(JSON.stringify(this.data)));
+    },
   },
 };
 </script>
