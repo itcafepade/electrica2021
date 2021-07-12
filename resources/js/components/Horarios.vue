@@ -103,6 +103,7 @@ import axios from "axios";
 import Alerta from "../libs/alerta";
 import Evento from "../libs/evento";
 import moment from "moment";
+import Swal from "sweetalert2";
 
 const alerta = new Alerta();
 const evento = new Evento();
@@ -135,19 +136,22 @@ export default {
       this.usuarioActual = res.data;
 
       const eventos = JSON.parse(
-        `[{"name":"Práctica evaluada - 010101","start":"2021-07-13T13:00","end":"2021-07-13T14:00","color":"green","timed":true},{"name":"Práctica evaluada - 010101","start":"2021-07-12T03:00","end":"2021-07-12T04:00","color":"green","timed":true}]`
+        `[{"name":"Práctica evaluada - 010101","start":"2021-07-13T13:00","end":"2021-07-13T14:00","color":"green","timed":true},{"name":"Práctica evaluada - 010101","start":"2021-07-12T03:00","end":"2021-07-12T04:00","color":"green","timed":true},{"name":"Práctica evaluada - 010101","start":"2021-07-14T13:00","end":"2021-07-14T14:00","color":"green","timed":true}]`
       );
       console.log(eventos);
-
+      let i = 0;
       eventos.forEach((el) => {
         // console.log(parseInt(moment(new Date(el.start)).format("HH")));
         this.events.push({
+          id: i,
           name: el.name,
+          carnet: "010101",
           start: new Date(el.start),
           end: new Date(el.end),
           color: "green",
           timed: true,
         });
+        i++;
       });
       //   console.log(this.eventos);
     },
@@ -164,63 +168,46 @@ export default {
     next() {
       this.$refs.calendar.next();
     },
-    agregarNuevoEvento() {
-      const inicio = new Date(`${this.fecha}T${this.horaInicio}`);
-      const final = new Date(`${this.fecha}T${this.horaFinal}`);
+    async agregarNuevoEvento() {
+      let inicio = new Date(`${this.fecha}T${this.horaInicio}`);
+      let final = new Date(`${this.fecha}T${this.horaFinal}`);
+
+      const inicioEnPunto = moment(inicio.toISOString()).format(
+        "YYYY-MM-DDTHH:00"
+      );
+      const finalEnPunto = moment(final.toISOString()).format(
+        "YYYY-MM-DDTHH:00"
+      );
+
       if (this.editando) {
         // Modificando evento existente
+
+        // const indice = evento.obtenerIndiceEvento(
+        //   this.events,
+        //   inicioEnPunto,
+        //   finalEnPunto
+        // );
+
+        const indice = this.events.findIndex((el) => el == this.selectedEvent);
+
+        this.events.splice(indice, 1); //Eliminando el evento del array
       } else {
         //Nuevo Evento
         this.agregando = true;
-
-        if (inicio.getHours() < final.getHours()) {
-          const inicioEnPunto = moment(inicio.toISOString()).format(
-            "YYYY-MM-DDThh:00"
-          );
-          const finalEnPunto = moment(final.toISOString()).format(
-            "YYYY-MM-DDThh:00"
-          );
-
-          const eventoValidado = evento.validarEvento(
-            this.events,
-            inicioEnPunto,
-            finalEnPunto
-          );
-
-          console.log("Validado: " + eventoValidado);
-
-          if (eventoValidado) {
-            this.events.push({
-              name: `Práctica evaluada - ${this.usuarioActual.carnet}`,
-              start: inicioEnPunto,
-              end: finalEnPunto,
-              color: "green",
-              timed: true,
-            });
-
-            console.log(JSON.stringify(this.events));
-
-            alerta.mensaje("Práctica agendada correctamente.", "success");
-          } else {
-            alerta.mensaje(
-              "Ya se encuentra una práctica en este horario.",
-              "info"
-            );
-          }
-
-          console.log(this.events);
-        } else {
-          alerta.mensaje(
-            "La hora de inicio no puede ser mayor que la final.",
-            "error"
-          );
-        }
-        this.horaInicio = "";
-        this.horaFinal = "";
-        this.fecha = "";
-        this.editando = false;
-        this.selectedEvent = {};
       }
+
+      evento.agregarNuevoEvento(
+        this.events,
+        this.usuarioActual,
+        inicioEnPunto,
+        finalEnPunto
+      );
+
+      this.horaInicio = "";
+      this.horaFinal = "";
+      this.fecha = "";
+      this.editando = false;
+      this.selectedEvent = {};
     },
     editarEvento({ nativeEvent, event }) {
       this.editando = true;
@@ -231,14 +218,37 @@ export default {
 
       this.fecha = moment(inicio.toISOString()).format("YYYY-MM-DD");
 
-      this.horaInicio = moment(inicio.toISOString()).format("HH:mm");
-      this.horaFinal = moment(final.toISOString()).format("HH:mm");
+      this.horaInicio = moment(inicio.toISOString()).format("HH:00");
+      this.horaFinal = moment(final.toISOString()).format("HH:00");
     },
-    eliminarReservacion() {
+    async eliminarReservacion() {
       if (this.editando && this.selectedEvent != {}) {
-        const index = this.events.findIndex((el) => el == this.selectedEvent);
-        this.events.splice(index, 1);
-        alerta.mensaje("Eliminado.", "success");
+        if (this.usuarioActual.carnet == this.selectedEvent.carnet) {
+          const res = await Swal.fire({
+            title: "Eliminar práctica",
+            text: "Esta acción es irreversible.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Cancelar",
+            confirmButtonText: "Confimar",
+          });
+
+          if (res.isConfirmed) {
+            const index = this.events.findIndex(
+              (el) => el == this.selectedEvent
+            );
+
+            this.events.splice(index, 1);
+            alerta.mensaje("Eliminado.", "success");
+          }
+        } else {
+          alerta.mensaje(
+            "No es posible eliminar prácticas que no has registrado.",
+            "error"
+          );
+        }
       } else {
         alerta.mensaje("No hay un evento para eliminar.", "info");
       }

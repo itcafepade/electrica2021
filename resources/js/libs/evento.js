@@ -1,4 +1,7 @@
 import moment from "moment";
+import Alerta from "../libs/alerta"
+
+const alerta = new Alerta();
 
 export default class Evento {
 
@@ -6,9 +9,9 @@ export default class Evento {
      * Valida el nuevo evento que se está registrando, verificando la disponibilidad
      * en fechas y horas.
      *
-     * @param {*} eventos
-     * @param {*} inicio
-     * @param {*} final
+     * @param {Array} eventos
+     * @param {String} inicio
+     * @param {String} final
      */
     validarEvento(eventos, inicio, final) {
 
@@ -24,8 +27,8 @@ export default class Evento {
     /**
      * Filtra los eventos disponibles por la fecha del nuevo evento.
      *
-     * @param {*} eventos
-     * @param {*} fechaInicio
+     * @param {Array} eventos
+     * @param Date fechaInicio
      */
 
     filtrarEventosPorFecha(eventos, fechaInicio) {
@@ -54,9 +57,9 @@ export default class Evento {
      * Filtra cada uno de los eventos por las horas que han sido asignadas
      * para verificar la disponibilidad del nuevo evento.
      *
-     * @param {*} eventos
-     * @param {*} fechaInicio
-     * @param {*} fechaFinal
+     * @param {Array} eventos
+     * @param Date fechaInicio
+     * @param Date fechaFinal
      *
      */
 
@@ -79,5 +82,71 @@ export default class Evento {
         });
 
         return disponible;
+    }
+
+    /**
+     * Obtiene el índice de un evento dependiendo de la fecha de inicio y fecha final,
+     * caso contrario devuelve -1.
+     *
+     * @param {Array} eventos
+     * @param Date fechaInicio
+     * @param Date fechaFinal
+     */
+    obtenerIndiceEvento(eventos, fechaInicio, fechaFinal) {
+
+        for (let index = 0; index < eventos.length; index++) {
+            const inicioEvento = moment(new Date(eventos[index].start).toISOString()).format("YYYY-MM-DDTHH:00");
+            const finalEvento = moment(new Date(eventos[index].end).toISOString()).format("YYYY-MM-DDTHH:00");
+
+            if (inicioEvento == fechaInicio && finalEvento == fechaFinal) {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
+
+    agregarNuevoEvento(eventos, usuarioActual, inicio, final) {
+        const horaInicio = parseInt(moment(inicio).format(
+            "HH"
+        ));
+        const horaFinal = parseInt(moment(final).format(
+            "HH"
+        ));
+
+        if (horaInicio < horaFinal) {
+            const eventoValidado = this.validarEvento(
+                eventos,
+                inicio,
+                final
+            );
+
+            if (eventoValidado) {
+                eventos.push({
+                    name: `Práctica evaluada - ${usuarioActual.carnet}`,
+                    carnet: usuarioActual.carnet,
+                    start: inicio,
+                    end: final,
+                    color: "green",
+                    timed: true,
+                });
+
+                // console.log(JSON.{stringify}(eventos));
+
+                alerta.mensaje("Práctica agendada correctamente.", "success");
+            } else {
+                alerta.mensaje(
+                    "Ya se encuentra una práctica en este horario.",
+                    "info"
+                );
+            }
+
+        } else {
+            alerta.mensaje(
+                "La hora de inicio no puede ser mayor que la final.",
+                "error"
+            );
+        }
     }
 }
