@@ -35,6 +35,11 @@ Route::group(['middleware'=>'auth'], function () {
     //Usuario
     Route::post('/registrarUsuarios', [App\Http\Controllers\UserController::class, 'store']);
     Route::get('/usuarioActual', [App\Http\Controllers\UserController::class, 'usuarioActual']);
+
+    //Horarios
+    Route::resource('/horarios', App\Http\Controllers\HorarioController::class);
 });
+
+
 
 Auth::routes(['register' =>false]);

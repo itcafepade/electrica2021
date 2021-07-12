@@ -182,12 +182,6 @@ export default {
       if (this.editando) {
         // Modificando evento existente
 
-        // const indice = evento.obtenerIndiceEvento(
-        //   this.events,
-        //   inicioEnPunto,
-        //   finalEnPunto
-        // );
-
         const indice = this.events.findIndex((el) => el == this.selectedEvent);
 
         this.events.splice(indice, 1); //Eliminando el evento del array
