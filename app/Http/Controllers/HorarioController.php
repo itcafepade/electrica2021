@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Horario;
 use Illuminate\Http\Request;
+use DB;
 
 class HorarioController extends Controller
 {
@@ -14,7 +15,8 @@ class HorarioController extends Controller
      */
     public function index()
     {
-        //
+        $eventos = DB::table('horarios')->select('horarios.*', 'users.carnet as carnet')->join('users', 'users.id', '=', 'horarios.id_usuario')->get();
+        return response()->json(['mensaje'=>'exito', 'eventos'=>$eventos]);
     }
 
     /**

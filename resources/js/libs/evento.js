@@ -149,4 +149,26 @@ export default class Evento {
             );
         }
     }
+
+    /**
+     * Mapea el conjunto de eventos para que puedan ser mostrados en el componente.
+     *
+     * @param {Array} eventos
+     * @returns
+     */
+    cargarEventos(eventos) {
+        const arrayEventos = [];
+        eventos.forEach((el) => {
+            arrayEventos.push({
+                id: el.id,
+                name: el.nombre,
+                carnet: el.carnet,
+                start: moment(new Date(el.fecha_inicio)).format("YYYY-MM-DD HH:mm"),
+                end: moment(new Date(el.fecha_final)).format("YYYY-MM-DD HH:mm"),
+                color: "green",
+                timed: true,
+            });
+        });
+        return arrayEventos;
+    }
 }

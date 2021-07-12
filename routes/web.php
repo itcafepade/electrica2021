@@ -37,7 +37,7 @@ Route::group(['middleware'=>'auth'], function () {
     Route::get('/usuarioActual', [App\Http\Controllers\UserController::class, 'usuarioActual']);
 
     //Horarios
-    Route::resource('/horarios', App\Http\Controllers\HorarioController::class);
+    Route::resource('horarios/api', App\Http\Controllers\HorarioController::class);
 });
 
 

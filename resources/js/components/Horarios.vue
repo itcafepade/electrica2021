@@ -132,28 +132,13 @@ export default {
   },
   methods: {
     async init() {
-      const res = await axios.get("/usuarioActual");
+      let res = await axios.get("/usuarioActual");
       this.usuarioActual = res.data;
 
-      const eventos = JSON.parse(
-        `[{"name":"Práctica evaluada - 010101","start":"2021-07-13T13:00","end":"2021-07-13T14:00","color":"green","timed":true},{"name":"Práctica evaluada - 010101","start":"2021-07-12T03:00","end":"2021-07-12T04:00","color":"green","timed":true},{"name":"Práctica evaluada - 010101","start":"2021-07-14T13:00","end":"2021-07-14T14:00","color":"green","timed":true}]`
-      );
-      console.log(eventos);
-      let i = 0;
-      eventos.forEach((el) => {
-        // console.log(parseInt(moment(new Date(el.start)).format("HH")));
-        this.events.push({
-          id: i,
-          name: el.name,
-          carnet: "010101",
-          start: new Date(el.start),
-          end: new Date(el.end),
-          color: "green",
-          timed: true,
-        });
-        i++;
-      });
-      //   console.log(this.eventos);
+      res = await axios.get("/horarios/api/");
+      const eventos = res.data.eventos;
+
+      this.events = evento.cargarEventos(eventos);
     },
     viewDay({ date }) {
       this.focus = date;
