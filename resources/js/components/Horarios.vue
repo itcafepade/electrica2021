@@ -101,9 +101,11 @@
 <script>
 import axios from "axios";
 import Alerta from "../libs/alerta";
+import Evento from "../libs/evento";
 import moment from "moment";
 
 const alerta = new Alerta();
+const evento = new Evento();
 
 export default {
   data: () => ({
@@ -131,13 +133,23 @@ export default {
     async init() {
       const res = await axios.get("/usuarioActual");
       this.usuarioActual = res.data;
-      //   this.events.push({
-      //     name: `Práctica evaluada - ${this.usuarioActual.carnet}`,
-      //     start: "15:00",
-      //     end: "16:00",
-      //     color: "green",
-      //     timed: `15:00`,
-      //   });
+
+      const eventos = JSON.parse(
+        `[{"name":"Práctica evaluada - 010101","start":"2021-07-13T13:00","end":"2021-07-13T14:00","color":"green","timed":true},{"name":"Práctica evaluada - 010101","start":"2021-07-12T03:00","end":"2021-07-12T04:00","color":"green","timed":true}]`
+      );
+      console.log(eventos);
+
+      eventos.forEach((el) => {
+        // console.log(parseInt(moment(new Date(el.start)).format("HH")));
+        this.events.push({
+          name: el.name,
+          start: new Date(el.start),
+          end: new Date(el.end),
+          color: "green",
+          timed: true,
+        });
+      });
+      //   console.log(this.eventos);
     },
     viewDay({ date }) {
       this.focus = date;
@@ -162,22 +174,47 @@ export default {
         this.agregando = true;
 
         if (inicio.getHours() < final.getHours()) {
-          this.events.push({
-            name: `Práctica evaluada - ${this.usuarioActual.carnet}`,
-            start: inicio,
-            end: final,
-            color: "green",
-            timed: `${inicio.getHours()}:00`,
-          });
+          const inicioEnPunto = moment(inicio.toISOString()).format(
+            "YYYY-MM-DDThh:00"
+          );
+          const finalEnPunto = moment(final.toISOString()).format(
+            "YYYY-MM-DDThh:00"
+          );
+
+          const eventoValidado = evento.validarEvento(
+            this.events,
+            inicioEnPunto,
+            finalEnPunto
+          );
+
+          console.log("Validado: " + eventoValidado);
+
+          if (eventoValidado) {
+            this.events.push({
+              name: `Práctica evaluada - ${this.usuarioActual.carnet}`,
+              start: inicioEnPunto,
+              end: finalEnPunto,
+              color: "green",
+              timed: true,
+            });
+
+            console.log(JSON.stringify(this.events));
+
+            alerta.mensaje("Práctica agendada correctamente.", "success");
+          } else {
+            alerta.mensaje(
+              "Ya se encuentra una práctica en este horario.",
+              "info"
+            );
+          }
+
           console.log(this.events);
-          alerta.mensaje("Práctica agendada correctamente.", "success");
         } else {
           alerta.mensaje(
             "La hora de inicio no puede ser mayor que la final.",
             "error"
           );
         }
-
         this.horaInicio = "";
         this.horaFinal = "";
         this.fecha = "";

@@ -158,8 +158,13 @@
             <div class="card-header">Graficos</div>
             <div class="card-body m-0">
               <div v-if="datapoints.length > 0">
+                <grafico
+                  :data="data"
+                  :options="options"
+                  :key="renderizarComponente"
+                />
                 <grafico :data="data" :options="options" />
-                <grafico :data="data" :options="options" />
+                <a href="#" @click="actualizarGrafica()">Actualizar gráfica</a>
               </div>
               <br />
               <h5>Temperatura Agua</h5>
@@ -221,6 +226,7 @@ export default {
     return {
       switch1: true,
       temperaturaValor: 0,
+      renderizarComponente: 0,
       labels: [],
       datapoints: [],
       data: {},
@@ -238,6 +244,8 @@ export default {
       }
 
       this.datapoints = [31.5, 31.6, 31.7, 32.0, 31.1, 31.5];
+
+      console.log(this.datapoints);
 
       this.options = {
         responsive: true,
@@ -284,6 +292,12 @@ export default {
       };
 
       console.log(JSON.parse(JSON.stringify(this.data)));
+    },
+    actualizarGrafica() {
+      this.data.datasets[0].data = [36, 37, 31, 35];
+      console.log(this.data.datasets[0].data);
+
+      this.renderizarComponente += 1;
     },
   },
 };
