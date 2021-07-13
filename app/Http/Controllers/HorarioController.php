@@ -37,6 +37,8 @@ class HorarioController extends Controller
         $evento->fecha_final = $request->fecha_final;
         $evento->created_at = date("Y-m-dTH:m");
         $evento->save();
+
+        return response()->json(['mensaje'=>'exito']);
     }
 
     /**

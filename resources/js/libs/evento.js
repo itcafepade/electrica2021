@@ -216,12 +216,17 @@ export default class Evento {
      * @param {Integer} id
      */
     async eliminarEvento(id) {
-        let res = await axios.delete('api/horario/' + id);
+        try {
+            let res = await axios.delete('api/horario/' + id);
 
-        if (res.data.mensaje == 'exito') {
-            alerta.mensaje('Eliminación de práctica exitosa.', 'success');
-        } else {
-            alerta.mensaje('Error: No se pudo eliminar la práctica.', 'error');
+            if (res.data.mensaje == 'exito') {
+                alerta.mensaje('Eliminación de práctica exitosa.', 'success');
+            } else {
+                alerta.mensaje('Error: No se pudo eliminar la práctica.', 'error');
+            }
+        } catch (error) {
+
+            alerta.mensaje('No es posible eliminar la práctica.', 'error');
         }
     }
 }
