@@ -143,7 +143,7 @@ export default class Evento {
 
                 if (agregando) { //Creando nueva práctica
 
-                    const res = await axios.post("/horarios/api", evento);
+                    const res = await axios.post("api/horario", evento);
 
                     if (res.data.mensaje == 'exito') {
                         alerta.mensaje('Registro de práctica exitosa.', 'success');
@@ -152,7 +152,7 @@ export default class Evento {
                     }
                 } else { //Modificando una práctica
 
-                    const res = await axios.put("/horarios/api/" +
+                    const res = await axios.put("api/horario/" +
                         idSeleccionado, evento);
 
                     if (res.data.mensaje == 'exito') {
@@ -201,16 +201,16 @@ export default class Evento {
     }
 
     async obtenerEventos() {
-        let res = await axios.get('/horarios/api');
+        let res = await axios.get('api/horario');
 
         const eventos = res.data.eventos;
 
         return eventos;
     }
 
-    async eliminarEvento(eventoSeleccionado) {
-        console.log(eventoSeleccionado.id)
-        let res = await axios.delete('/horarios/api/' + 1);
+    async eliminarEvento(id) {
+        // console.log()
+        let res = await axios.delete('api/horario/' + id);
 
         if (res.data.mensaje == 'exito') {
             alerta.mensaje('Eliminación de práctica exitosa.', 'success');

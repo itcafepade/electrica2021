@@ -223,7 +223,7 @@ export default {
             );
 
             // this.events.splice(index, 1);
-            evento.eliminarEvento(this.selectedEvent);
+            evento.eliminarEvento(this.selectedEvent.id);
             // alerta.mensaje("Eliminado.", "success");
             const eventos = await evento.obtenerEventos();
             this.events = evento.cargarEventos(eventos);

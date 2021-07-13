@@ -87,6 +87,8 @@ class HorarioController extends Controller
      */
     public function destroy(Horario $horario)
     {
-        dd($horario->id);
+        Horario::where(['id'=>$horario->id])->delete();
+
+        return response()->json(['mensaje'=>'exito']);
     }
 }
