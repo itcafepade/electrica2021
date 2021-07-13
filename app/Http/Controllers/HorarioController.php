@@ -91,4 +91,15 @@ class HorarioController extends Controller
 
         return response()->json(['mensaje'=>'exito']);
     }
+
+    public function obtenerPracticasPorIdUsuario(Request $request)
+    {
+        $practicas = DB::table('horarios')
+        ->select('horarios.*', 'users.carnet as carnet')
+        ->join('users', 'users.id', '=', 'horarios.id_usuario')
+        ->join('historial', 'historial.id', '=', 'horarios.id')
+        ->where('users.id', $request->id)
+        ->get();
+        return response()->json(['mensaje'=>'exito', 'practicas'=>$practicas]);
+    }
 }

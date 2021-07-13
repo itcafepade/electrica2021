@@ -36,4 +36,12 @@ class UserController extends Controller
     {
         return auth()->user();
     }
+
+    public function obtenerUsuarioPorCarnet(Request $request)
+    {
+        // dd($request->carnet);
+        $usuario = User::where(['carnet'=>$request->carnet])->get();
+
+        return response()->json(['mensaje'=>'exito', 'usuario'=>$usuario]);
+    }
 }

@@ -35,9 +35,15 @@ Route::group(['middleware'=>'auth'], function () {
     //Usuario
     Route::post('/registrarUsuarios', [App\Http\Controllers\UserController::class, 'store']);
     Route::get('/usuarioActual', [App\Http\Controllers\UserController::class, 'usuarioActual']);
+    Route::post('api/obtenerPorCarnet', [App\Http\Controllers\UserController::class, 'obtenerUsuarioPorCarnet']);
 
     //Horarios
     Route::resource('api/horario', App\Http\Controllers\HorarioController::class);
+    Route::post('api/practicaPorIdUsuario', [App\Http\Controllers\HorarioController::class, 'obtenerPracticasPorIdUsuario']);
+
+    //Historial
+    Route::resource('api/historial', App\Http\Controllers\HistorialController::class);
+    Route::post('api/historialPorIdUsuario', [App\Http\Controllers\HistorialController::class, 'obtenerAccionesPorIdUsuario']);
 });
 
 
