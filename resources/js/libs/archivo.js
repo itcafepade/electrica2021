@@ -1,5 +1,11 @@
 export default class Archivo {
 
+    /**
+     *  Lee los campos de un campo csv y retorna los datos en forma de array.
+     *
+     * @param {File} file
+     * @returns
+     */
     async leerUsuariosDeArchivo(file) {
         let usuarios = [];
 
@@ -12,6 +18,12 @@ export default class Archivo {
         }
     }
 
+    /**
+     *  Lee los datos del archivo en formato de texto y lo retorna.
+     *
+     * @param {File} file
+     * @returns
+     */
     readFileAsync(file) {
         return new Promise((resolve, reject) => {
             let reader = new FileReader();
@@ -26,6 +38,12 @@ export default class Archivo {
         })
     }
 
+    /**
+     *  Recibe el texto de los usuarios y lo convierte en un array con el formato correcto para mostrar
+     *  en la tabla
+     * @param {String} texto
+     * @returns {Array} arrayUsuarios
+     */
     descomponerTextoCSV(texto) {
         const sinTitulo = texto.substring(38); // Se elimina la cabecera del archivo
         let textoConSaltos = sinTitulo.replaceAll("\n", ",");

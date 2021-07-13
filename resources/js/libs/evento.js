@@ -196,10 +196,13 @@ export default class Evento {
                 timed: true,
             });
         });
-        // console.log(arrayEventos);
         return arrayEventos;
     }
 
+    /**
+     *  Consulta la api de Horarios y retorna los datos
+     * @returns {Array} eventos
+     */
     async obtenerEventos() {
         let res = await axios.get('api/horario');
 
@@ -208,8 +211,11 @@ export default class Evento {
         return eventos;
     }
 
+    /**
+     *  Realiza la petición para eliminar un horario de la BD
+     * @param {Integer} id
+     */
     async eliminarEvento(id) {
-        // console.log()
         let res = await axios.delete('api/horario/' + id);
 
         if (res.data.mensaje == 'exito') {
