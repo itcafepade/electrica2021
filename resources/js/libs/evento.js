@@ -106,8 +106,17 @@ export default class Evento {
         return -1;
     }
 
-
-    agregarNuevoEvento(eventos, usuarioActual, inicio, final) {
+    /**
+     * Crea o modifica un evento dependiendo el valor que tenga agregando,
+     * además de agregarse al array que luego será mostrado al cliente.
+     *
+     * @param {Array} eventos
+     * @param {Object} usuarioActual
+     * @param {Date} inicio
+     * @param {Date} final
+     * @param {Boolean} agregando
+     */
+    async agregarNuevoEvento(eventos, usuarioActual, inicio, final, agregando, idSeleccionado = 0) {
         const horaInicio = parseInt(moment(inicio).format(
             "HH"
         ));
@@ -123,18 +132,36 @@ export default class Evento {
             );
 
             if (eventoValidado) {
-                eventos.push({
-                    name: `Práctica evaluada - ${usuarioActual.carnet}`,
-                    carnet: usuarioActual.carnet,
-                    start: inicio,
-                    end: final,
-                    color: "green",
-                    timed: true,
-                });
 
-                // console.log(JSON.{stringify}(eventos));
+                const evento = {
+                    id: idSeleccionado,
+                    nombre: `Practica evaluada - ${usuarioActual.carnet}`,
+                    id_usuario: usuarioActual.id,
+                    fecha_inicio: inicio,
+                    fecha_final: final,
+                };
 
-                alerta.mensaje("Práctica agendada correctamente.", "success");
+                if (agregando) { //Creando nueva práctica
+
+                    const res = await axios.post("/horarios/api", evento);
+
+                    if (res.data.mensaje == 'exito') {
+                        alerta.mensaje('Registro de práctica exitosa.', 'success');
+                    } else {
+                        alerta.mensaje('Error: No se pudo registrar la práctica.', 'error');
+                    }
+                } else { //Modificando una práctica
+
+                    const res = await axios.put("/horarios/api/" +
+                        idSeleccionado, evento);
+
+                    if (res.data.mensaje == 'exito') {
+                        alerta.mensaje('Modificación de práctica exitosa.', 'success');
+                    } else {
+                        alerta.mensaje('Error: No se pudo modificar la práctica.', 'error');
+                    }
+                }
+
             } else {
                 alerta.mensaje(
                     "Ya se encuentra una práctica en este horario.",
@@ -169,6 +196,26 @@ export default class Evento {
                 timed: true,
             });
         });
+        // console.log(arrayEventos);
         return arrayEventos;
+    }
+
+    async obtenerEventos() {
+        let res = await axios.get('/horarios/api');
+
+        const eventos = res.data.eventos;
+
+        return eventos;
+    }
+
+    async eliminarEvento(eventoSeleccionado) {
+        console.log(eventoSeleccionado.id)
+        let res = await axios.delete('/horarios/api/' + 1);
+
+        if (res.data.mensaje == 'exito') {
+            alerta.mensaje('Eliminación de práctica exitosa.', 'success');
+        } else {
+            alerta.mensaje('Error: No se pudo eliminar la práctica.', 'error');
+        }
     }
 }

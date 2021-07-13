@@ -135,9 +135,7 @@ export default {
       let res = await axios.get("/usuarioActual");
       this.usuarioActual = res.data;
 
-      res = await axios.get("/horarios/api/");
-      const eventos = res.data.eventos;
-
+      const eventos = await evento.obtenerEventos();
       this.events = evento.cargarEventos(eventos);
     },
     viewDay({ date }) {
@@ -179,14 +177,19 @@ export default {
         this.events,
         this.usuarioActual,
         inicioEnPunto,
-        finalEnPunto
+        finalEnPunto,
+        this.agregando,
+        this.selectedEvent.id
       );
 
       this.horaInicio = "";
       this.horaFinal = "";
       this.fecha = "";
       this.editando = false;
+      this.agregando = false;
       this.selectedEvent = {};
+      const eventos = await evento.obtenerEventos();
+      this.events = evento.cargarEventos(eventos);
     },
     editarEvento({ nativeEvent, event }) {
       this.editando = true;
@@ -219,8 +222,11 @@ export default {
               (el) => el == this.selectedEvent
             );
 
-            this.events.splice(index, 1);
-            alerta.mensaje("Eliminado.", "success");
+            // this.events.splice(index, 1);
+            evento.eliminarEvento(this.selectedEvent);
+            // alerta.mensaje("Eliminado.", "success");
+            const eventos = await evento.obtenerEventos();
+            this.events = evento.cargarEventos(eventos);
           }
         } else {
           alerta.mensaje(
