@@ -35,7 +35,7 @@ export default {
   components: { practica },
   data() {
     return {
-      carnet: "010101",
+      carnet: "",
       usuario: [],
       actualizarPractica: 0,
       practicas: [],
