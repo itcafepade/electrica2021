@@ -68,6 +68,13 @@ class HistorialController extends Controller
         //
     }
 
+    /**
+     * Obtiene los eventos registrados durante una práctica filtrando
+     * por el ID del usuario.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function obtenerAccionesPorIdUsuario(Request $request)
     {
         $historial = DB::table('historial')

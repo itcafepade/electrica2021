@@ -92,6 +92,13 @@ class HorarioController extends Controller
         return response()->json(['mensaje'=>'exito']);
     }
 
+    /**
+     * Obtiene las prácticas registradas filtradas por el ID del usuario.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+
     public function obtenerPracticasPorIdUsuario(Request $request)
     {
         $practicas = DB::table('horarios')
