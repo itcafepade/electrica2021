@@ -19,6 +19,13 @@
 @import url('https://fonts.googleapis.com/css?family=Material+Icons');
 @import url('https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css');
 
+* {
+    padding-top: 0xp;
+    padding-bottom: 0xp;
+    margin-top: 0xp;
+    margin-bottom: 0xp;
+}
+
 .btn-white {
     border: 3px solid $blue;
     border-radius: 1rem;
