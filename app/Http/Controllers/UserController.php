@@ -9,7 +9,10 @@ use Hash;
 class UserController extends Controller
 {
     /**
-     * Almacena los datos de los usuarios
+     * Almacena los datos de los usuarios.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -30,10 +33,25 @@ class UserController extends Controller
     }
 
     /**
-     * Retorna el usuario que actualmente ha iniciado sesión
+     * Retorna el usuario que actualmente ha iniciado sesión.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function usuarioActual()
     {
         return auth()->user();
+    }
+
+    /**
+     * Obtiene la información del usuario filtrando por el carnet.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function obtenerUsuarioPorCarnet(Request $request)
+    {
+        $usuario = User::where(['carnet'=>$request->carnet])->get();
+
+        return response()->json(['mensaje'=>'exito', 'usuario'=>$usuario]);
     }
 }
