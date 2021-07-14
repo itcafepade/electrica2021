@@ -168,13 +168,13 @@
               </div>
               <br />
               <h5>Temperatura Agua</h5>
-              <!-- <input
+              <input
                 type="text"
                 name=""
                 id=""
                 v-model="temperaturaValor"
                 class="form-control"
-              /> -->
+              />
               <div class="container">
                 <div class="row text-center">
                   <div class="col-md-12">
@@ -198,7 +198,7 @@
         <div class="col">
           <div class="card">
             <div class="card-header">Graficos</div>
-            <div class="card-body mx-auto">
+            <div class="card-body mx-auto test">
               <h5 class="text-info">En Vivo</h5>
               <iframe
                 src="https://www.youtube.com/embed/mGvYzzQb1_s"
@@ -208,6 +208,19 @@
                 allowfullscreen
               ></iframe>
               <h5>Simulación</h5>
+              <input type="number" name="" id="txtNumero" />
+              <button id="iniciar" class="btn btn-primary">Iniciar</button>
+              <button id="parar" class="btn btn-primary">parar</button>
+              <div class="row">
+                <div class="col">
+                  <p>Tanque 1</p>
+                  <div id="tanque1" :class="[$style.tanque]"></div>
+                </div>
+                <div class="col">
+                  <p>Tanque 2</p>
+                  <div id="tanque2" :class="[$style.tanque]"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -219,6 +232,18 @@
 <script>
 import VueSpeedometer from "vue-speedometer";
 import grafico from "./Grafico.vue";
+// let btnIniciar = document.getElementById("iniciar");
+// let btnParar = document.getElementById("parar");
+// let tanque1 = document.getElementById("tanque1");
+// let tanque2 = document.getElementById("tanque2");
+
+// btnIniciar.addEventListener("click", function () {
+//   tanque1.style.animation = "fill 7s ease-in-out infinite";
+// });
+
+// btnParar.addEventListener("click", function () {
+//   tanque1.style.animation = "";
+// });
 
 export default {
   components: { VueSpeedometer, grafico },
@@ -235,6 +260,10 @@ export default {
   },
   mounted() {
     this.init();
+    ///Codigo Tanque
+    // console.log("holasdgfdgfg");
+    // console.log(this.$refs.['iniciar']);
+    ///Codigo Tanque
   },
   methods: {
     init() {
@@ -302,3 +331,44 @@ export default {
   },
 };
 </script>
+
+<style module>
+.tanque {
+  width: 150px;
+  height: 150px;
+  border: 10px solid #ccc;
+  border-radius: 10px;
+  line-height: 150px;
+  text-align: center;
+  color: #ddd;
+  font-size: 25px;
+  font-weight: 600;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  background-color: black;
+  margin: auto;
+}
+@keyframes fill {
+  from {
+    top: 250px;
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    top: -50px;
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+.tanque:before {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: #00acee;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 40%;
+  /* animation: fill 7s ease-in-out infinite; */
+  z-index: 1;
+}
+</style>
