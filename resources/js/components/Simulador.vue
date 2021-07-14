@@ -214,11 +214,77 @@
               <div class="row">
                 <div class="col">
                   <p>Tanque 1</p>
-                  <div id="tanque1" :class="[$style.tanque]"></div>
+                  <div class="water-tank1">
+                    <div class="liquid1">
+                      <svg class="water" viewBox="0 0 200 100">
+                        <defs>
+                          <linearGradient
+                            id="waterGradient"
+                            x1="0%"
+                            y1="0%"
+                            x2="0%"
+                            y2="100%"
+                          >
+                            <stop offset="0" style="stop-color: #29abe2" />
+                            <stop offset="0.1643" style="stop-color: #28a6e3" />
+                            <stop offset="0.3574" style="stop-color: #2496e6" />
+                            <stop offset="0.5431" style="stop-color: #1e7dea" />
+                            <stop offset="0.7168" style="stop-color: #1559f0" />
+                            <stop offset="0.874" style="stop-color: #0b2cf7" />
+                            <stop offset="1" style="stop-color: #0000ff" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          fill="url(#waterGradient)"
+                          d="
+        M 0,0 v 100 h 200 v -100 
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+      "
+                        />
+                      </svg>
+                    </div>
+                    <div id="val1" class="val text-center"></div>
+                  </div>
                 </div>
                 <div class="col">
                   <p>Tanque 2</p>
-                  <div id="tanque2" :class="[$style.tanque]"></div>
+                  <div class="water-tank2">
+                    <div class="liquid2">
+                      <svg class="water" viewBox="0 0 200 100">
+                        <defs>
+                          <linearGradient
+                            id="waterGradient2"
+                            x1="0%"
+                            y1="0%"
+                            x2="0%"
+                            y2="100%"
+                          >
+                            <stop offset="0" style="stop-color: #29abe2" />
+                            <stop offset="0.1643" style="stop-color: #28a6e3" />
+                            <stop offset="0.3574" style="stop-color: #2496e6" />
+                            <stop offset="0.5431" style="stop-color: #1e7dea" />
+                            <stop offset="0.7168" style="stop-color: #1559f0" />
+                            <stop offset="0.874" style="stop-color: #0b2cf7" />
+                            <stop offset="1" style="stop-color: #0000ff" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          fill="url(#waterGradient2)"
+                          d="
+        M 0,0 v 100 h 200 v -100 
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+      "
+                        />
+                      </svg>
+                    </div>
+                    <div id="val2" class="val text-center"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -232,19 +298,6 @@
 <script>
 import VueSpeedometer from "vue-speedometer";
 import grafico from "./Grafico.vue";
-// let btnIniciar = document.getElementById("iniciar");
-// let btnParar = document.getElementById("parar");
-// let tanque1 = document.getElementById("tanque1");
-// let tanque2 = document.getElementById("tanque2");
-
-// btnIniciar.addEventListener("click", function () {
-//   tanque1.style.animation = "fill 7s ease-in-out infinite";
-// });
-
-// btnParar.addEventListener("click", function () {
-//   tanque1.style.animation = "";
-// });
-
 export default {
   components: { VueSpeedometer, grafico },
   data() {
@@ -330,45 +383,15 @@ export default {
     },
   },
 };
+let val1 = 20;
+let val2 = 100;
+window.onload = function() {
+document.getElementById("val1").innerHTML = "<strong>" + val1 + "</strong>";
+document.getElementById("val2").innerHTML = "<strong>" + val2 + "</strong>";
+};
+let rootElement1 = document.documentElement;
+rootElement1.style.setProperty("--top1", "calc(100% - " + val1 + "%)");
+let rootElement2 = document.documentElement;
+rootElement2.style.setProperty("--top2", "calc(100% - " + val2 + "%)");
 </script>
 
-<style module>
-.tanque {
-  width: 150px;
-  height: 150px;
-  border: 10px solid #ccc;
-  border-radius: 10px;
-  line-height: 150px;
-  text-align: center;
-  color: #ddd;
-  font-size: 25px;
-  font-weight: 600;
-  text-transform: uppercase;
-  position: relative;
-  overflow: hidden;
-  background-color: black;
-  margin: auto;
-}
-@keyframes fill {
-  from {
-    top: 250px;
-    transform: translateX(-50%) rotate(0deg);
-  }
-  to {
-    top: -50px;
-    transform: translateX(-50%) rotate(360deg);
-  }
-}
-.tanque:before {
-  content: "";
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  background: #00acee;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 40%;
-  /* animation: fill 7s ease-in-out infinite; */
-  z-index: 1;
-}
-</style>
