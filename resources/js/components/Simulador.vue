@@ -208,9 +208,18 @@
                 allowfullscreen
               ></iframe>
               <h5>Simulación</h5>
-              <input type="number" name="" id="txtNumero" />
-              <button id="iniciar" class="btn btn-primary">Iniciar</button>
-              <button id="parar" class="btn btn-primary">parar</button>
+              <input
+                type="number"
+                v-model="nivelTanque1"
+                class="form-control"
+                @change="modificarTanque()"
+              />
+              <input
+                type="number"
+                v-model="nivelTanque2"
+                @change="modificarTanque()"
+                class="form-control"
+              />
               <div class="row">
                 <div class="col">
                   <p>Tanque 1</p>
@@ -236,17 +245,17 @@
                         </defs>
                         <path
                           fill="url(#waterGradient)"
-                          d="
-        M 0,0 v 100 h 200 v -100 
-        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-      "
+                          d="M 0,0 v 100 h 200 v -100
+                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5"
                         />
                       </svg>
                     </div>
-                    <div id="val1" class="val text-center"></div>
+                    <div ref="val1" class="val text-center">
+                      <strong>{{ nivelTanque1 }}</strong>
+                    </div>
                   </div>
                 </div>
                 <div class="col">
@@ -274,7 +283,7 @@
                         <path
                           fill="url(#waterGradient2)"
                           d="
-        M 0,0 v 100 h 200 v -100 
+        M 0,0 v 100 h 200 v -100
         c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
         c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
         c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
@@ -283,7 +292,9 @@
                         />
                       </svg>
                     </div>
-                    <div id="val2" class="val text-center"></div>
+                    <div ref="val2" class="val text-center">
+                      <strong>{{ nivelTanque2 }}</strong>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -309,6 +320,9 @@ export default {
       datapoints: [],
       data: {},
       options: {},
+      nivelTanque1: 0,
+      nivelTanque2: 0,
+      actualizarComponente: 0,
     };
   },
   mounted() {
@@ -374,6 +388,8 @@ export default {
       };
 
       console.log(JSON.parse(JSON.stringify(this.data)));
+
+      this.modificarTanque();
     },
     actualizarGrafica() {
       this.data.datasets[0].data = [36, 37, 31, 35];
@@ -381,17 +397,28 @@ export default {
 
       this.renderizarComponente += 1;
     },
+    modificarTanque() {
+      console.log("Valor modificado");
+      //   this.nivelTanque1 = 20;
+      //   this.nivelTanque2 = 100;
+
+      //   this.$refs.val1.innerHTML = "<strong>" + this.nivelTanque1 + "</strong>";
+      //   this.$refs.val2.innerHTML = "<strong>" + this.nivelTanque2 + "</strong>";
+
+      let rootElement1 = document.documentElement;
+      rootElement1.style.setProperty(
+        "--top1",
+        "calc(100% - " + this.nivelTanque1 + "%)"
+      );
+      let rootElement2 = document.documentElement;
+      rootElement2.style.setProperty(
+        "--top2",
+        "calc(100% - " + this.nivelTanque2 + "%)"
+      );
+
+      this.actualizarComponente++;
+    },
   },
 };
-let val1 = 20;
-let val2 = 100;
-window.onload = function() {
-document.getElementById("val1").innerHTML = "<strong>" + val1 + "</strong>";
-document.getElementById("val2").innerHTML = "<strong>" + val2 + "</strong>";
-};
-let rootElement1 = document.documentElement;
-rootElement1.style.setProperty("--top1", "calc(100% - " + val1 + "%)");
-let rootElement2 = document.documentElement;
-rootElement2.style.setProperty("--top2", "calc(100% - " + val2 + "%)");
 </script>
 
