@@ -22,6 +22,12 @@
 //Animate.css
 @import "~animate.css/source/animate.css";
 
+
+// Scroll suave
+html {
+    scroll-behavior: smooth;
+}
+
 /* TANQUE 1 */
 :root {
     --top1: calc(100% - 0%);

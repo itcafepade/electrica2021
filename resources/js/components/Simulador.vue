@@ -1,31 +1,26 @@
 <template>
-  <div class="row">
-    <div class="col pd-5">
+  <v-app>
+    <div class="fluid">
       <div class="row">
-        <div class="col-sm-12 col-12 col-md-6 col-lg-3 col-xl-2">
-          <div class="card">
-            <div class="card-header">
-              <a
-                href="#"
-                class="text-dark"
-                @click="mostrarCard"
-                id="cardVariables"
-                ><i class="bi bi-chevron-down"></i
-              ></a>
-              Variables
-            </div>
+        <div class="col pd-5">
+          <div class="row">
+            <!-- Generales -->
             <div
-              class="card-body wow"
-              data-wow-delay="0ms"
-              data-wow-duration="500ms"
-              data-wow-offset="0"
-              id="variables"
+              class="col-sm-12 col-12 col-md-6 col-lg-3 col-xl-2"
+              id="cardGenerales"
             >
-              <v-app>
-                <v-container>
-                  <v-row align="center" justify="center">
-                    <v-col>
-                      <div class="text-center">
+              <div class="card shadow-sm bg-body rounded">
+                <a
+                  href="#cardGenerales"
+                  class="text-dark card-header text-decoration-none"
+                  @click="mostrarCard"
+                  ><i class="bi bi-chevron-down"></i> Generales</a
+                >
+
+                <div class="card-body" id="generales">
+                  <div class="col" align="center" justify="center">
+                    <div class="col">
+                      <div class="text-center pt-0">
                         INICIO
                         <div class="my-2">
                           <v-btn color="success" fab x-large dark>
@@ -63,21 +58,28 @@
                           />
                         </div>
                       </div>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-app>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="col-sm-12 col-12 col-md-6 col-lg-4 col-xl-2">
-          <div class="card">
-            <div class="card-header">Variables</div>
-            <div class="card-body">
-              <v-app>
-                <v-container>
-                  <v-row align="center" justify="center">
-                    <v-col>
+            <!-- Generales -->
+
+            <!-- Variables -->
+            <div
+              class="col-sm-12 col-12 col-md-6 col-lg-4 col-xl-2"
+              id="cardVariables"
+            >
+              <div class="card shadow-sm bg-body rounded">
+                <a
+                  href="#cardVariables"
+                  class="text-dark card-header text-decoration-none"
+                  @click="mostrarCard"
+                  ><i class="bi bi-chevron-down"></i> Variables</a
+                >
+                <div class="card-body" id="variables">
+                  <div class="row" align="center" justify="center">
+                    <div class="col">
                       <div class="text-center">
                         <div class="my-2">
                           <h4>Output High</h4>
@@ -114,7 +116,8 @@
                           <h4>PID Gains</h4>
                           <hr />
                           <label for="outputHigh" class="form-label"
-                            >Proportional Gain(Kc)</label
+                            >Proportional Gain <br />
+                            (Kc)</label
                           >
                           <input
                             type="number"
@@ -124,7 +127,8 @@
                           />
                           <br />
                           <label for="integralTimeTi" class="form-label"
-                            >Integral Time (Ti, min)</label
+                            >Integral Time <br />
+                            (Ti, min)</label
                           >
                           <input
                             type="number"
@@ -154,167 +158,216 @@
                           />
                         </div>
                       </div>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-app>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+            <!-- Variables -->
 
-        <div class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4">
-          <div class="card">
-            <div class="card-header">Graficos</div>
-            <div class="card-body m-0">
-              <div v-if="datapoints.length > 0">
-                <grafico
-                  :data="data"
-                  :options="options"
-                  :key="renderizarComponente"
-                />
-                <grafico :data="data" :options="options" />
-                <a href="#" @click="actualizarGrafica()">Actualizar gráfica</a>
-              </div>
-              <br />
-              <h5>Temperatura Agua</h5>
-              <input
-                type="text"
-                name=""
-                id=""
-                v-model="temperaturaValor"
-                class="form-control"
-              />
-              <div class="container">
-                <div class="row text-center">
-                  <div class="col-md-12">
-                    <vue-speedometer
-                      :maxSegmentLabels="1"
-                      :customSegmentStops="[0, 50, 100]"
-                      :segmentColors="['green', 'gold']"
-                      needleColor="#5959ac"
-                      :currentValueText="'\${value}C°'"
-                      :value="temperaturaValor"
-                      :minValue="0"
-                      :maxValue="100"
-                      textColor="${textColor}"
+            <!-- Gráficos -->
+            <div
+              class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4"
+              id="cardGraficos"
+            >
+              <div class="card shadow-sm bg-body rounded">
+                <a
+                  href="#cardGraficos"
+                  class="text-dark card-header text-decoration-none"
+                  @click="mostrarCard"
+                  ><i class="bi bi-chevron-down"></i> Gráficos</a
+                >
+                <div class="card-body m-0" id="graficos">
+                  <div v-if="datapoints.length > 0">
+                    <grafico
+                      :data="data"
+                      :options="options"
+                      :key="renderizarComponente"
                     />
+                    <grafico :data="data" :options="options" />
+                    <a href="#" @click="actualizarGrafica()"
+                      >Actualizar gráfica</a
+                    >
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4">
-          <div class="card">
-            <div class="card-header">Directo</div>
-            <div class="card-body mx-auto">
-              <iframe
-                src="https://www.youtube.com/embed/mGvYzzQb1_s"
-                title="YouTube video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
-              <h5>Simulación</h5>
-              <input
-                type="number"
-                v-model="nivelTanque1"
-                class="form-control"
-                @change="modificarTanque()"
-              />
-              <input
-                type="number"
-                v-model="nivelTanque2"
-                @change="modificarTanque()"
-                class="form-control"
-              />
-              <div class="row">
-                <div class="col">
-                  <p>Tanque 1</p>
-                  <div class="water-tank1">
-                    <div class="liquid1">
-                      <svg class="water" viewBox="0 0 200 100">
-                        <defs>
-                          <linearGradient
-                            id="waterGradient"
-                            x1="0%"
-                            y1="0%"
-                            x2="0%"
-                            y2="100%"
-                          >
-                            <stop offset="0" style="stop-color: #29abe2" />
-                            <stop offset="0.1643" style="stop-color: #28a6e3" />
-                            <stop offset="0.3574" style="stop-color: #2496e6" />
-                            <stop offset="0.5431" style="stop-color: #1e7dea" />
-                            <stop offset="0.7168" style="stop-color: #1559f0" />
-                            <stop offset="0.874" style="stop-color: #0b2cf7" />
-                            <stop offset="1" style="stop-color: #0000ff" />
-                          </linearGradient>
-                        </defs>
-                        <path
-                          fill="url(#waterGradient)"
-                          d="M 0,0 v 100 h 200 v -100
-                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5"
+                  <br />
+                  <h5>Temperatura Agua</h5>
+                  <input
+                    type="text"
+                    name=""
+                    id=""
+                    v-model="temperaturaValor"
+                    class="form-control"
+                  />
+                  <div class="container">
+                    <div class="row text-center">
+                      <div class="col-md-12">
+                        <vue-speedometer
+                          :maxSegmentLabels="1"
+                          :customSegmentStops="[0, 50, 100]"
+                          :segmentColors="['green', 'gold']"
+                          needleColor="#5959ac"
+                          :currentValueText="'\${value}C°'"
+                          :value="temperaturaValor"
+                          :minValue="0"
+                          :maxValue="100"
+                          textColor="${textColor}"
                         />
-                      </svg>
-                    </div>
-                    <div ref="val1" class="val text-center">
-                      <strong>{{ nivelTanque1 }}</strong>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <p>Tanque 2</p>
-                  <div class="water-tank2">
-                    <div class="liquid2">
-                      <svg class="water" viewBox="0 0 200 100">
-                        <defs>
-                          <linearGradient
-                            id="waterGradient2"
-                            x1="0%"
-                            y1="0%"
-                            x2="0%"
-                            y2="100%"
-                          >
-                            <stop offset="0" style="stop-color: #29abe2" />
-                            <stop offset="0.1643" style="stop-color: #28a6e3" />
-                            <stop offset="0.3574" style="stop-color: #2496e6" />
-                            <stop offset="0.5431" style="stop-color: #1e7dea" />
-                            <stop offset="0.7168" style="stop-color: #1559f0" />
-                            <stop offset="0.874" style="stop-color: #0b2cf7" />
-                            <stop offset="1" style="stop-color: #0000ff" />
-                          </linearGradient>
-                        </defs>
-                        <path
-                          fill="url(#waterGradient2)"
-                          d="
-        M 0,0 v 100 h 200 v -100
-        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-      "
-                        />
-                      </svg>
-                    </div>
-                    <div ref="val2" class="val text-center">
-                      <strong>{{ nivelTanque2 }}</strong>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            <!-- Gráficos -->
+
+            <!-- Transmisión -->
+            <div
+              class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4"
+              id="cardTransmision"
+            >
+              <div class="card shadow-sm bg-body rounded">
+                <a
+                  href="#cardTransmision"
+                  class="text-dark card-header text-decoration-none"
+                  @click="mostrarCard"
+                  ><i class="bi bi-chevron-down"></i> Transmisión</a
+                >
+                <div class="card-body mx-auto" id="transmision">
+                  <iframe
+                    src="https://www.youtube.com/embed/mGvYzzQb1_s"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                  <h5>Simulación</h5>
+                  <input
+                    type="number"
+                    v-model="nivelTanque1"
+                    class="form-control"
+                    @change="modificarTanque()"
+                  />
+                  <input
+                    type="number"
+                    v-model="nivelTanque2"
+                    @change="modificarTanque()"
+                    class="form-control"
+                  />
+                  <div class="row">
+                    <div class="col">
+                      <p>Tanque 1</p>
+                      <div class="water-tank1">
+                        <div class="liquid1">
+                          <svg class="water" viewBox="0 0 200 100">
+                            <defs>
+                              <linearGradient
+                                id="waterGradient"
+                                x1="0%"
+                                y1="0%"
+                                x2="0%"
+                                y2="100%"
+                              >
+                                <stop offset="0" style="stop-color: #29abe2" />
+                                <stop
+                                  offset="0.1643"
+                                  style="stop-color: #28a6e3"
+                                />
+                                <stop
+                                  offset="0.3574"
+                                  style="stop-color: #2496e6"
+                                />
+                                <stop
+                                  offset="0.5431"
+                                  style="stop-color: #1e7dea"
+                                />
+                                <stop
+                                  offset="0.7168"
+                                  style="stop-color: #1559f0"
+                                />
+                                <stop
+                                  offset="0.874"
+                                  style="stop-color: #0b2cf7"
+                                />
+                                <stop offset="1" style="stop-color: #0000ff" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              fill="url(#waterGradient)"
+                              d="M 0,0 v 100 h 200 v -100
+                                c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                                c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                                c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                                c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5"
+                            />
+                          </svg>
+                        </div>
+                        <div ref="val1" class="val text-center">
+                          <strong>{{ nivelTanque1 }}</strong>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <p>Tanque 2</p>
+                      <div class="water-tank2">
+                        <div class="liquid2">
+                          <svg class="water" viewBox="0 0 200 100">
+                            <defs>
+                              <linearGradient
+                                id="waterGradient2"
+                                x1="0%"
+                                y1="0%"
+                                x2="0%"
+                                y2="100%"
+                              >
+                                <stop offset="0" style="stop-color: #29abe2" />
+                                <stop
+                                  offset="0.1643"
+                                  style="stop-color: #28a6e3"
+                                />
+                                <stop
+                                  offset="0.3574"
+                                  style="stop-color: #2496e6"
+                                />
+                                <stop
+                                  offset="0.5431"
+                                  style="stop-color: #1e7dea"
+                                />
+                                <stop
+                                  offset="0.7168"
+                                  style="stop-color: #1559f0"
+                                />
+                                <stop
+                                  offset="0.874"
+                                  style="stop-color: #0b2cf7"
+                                />
+                                <stop offset="1" style="stop-color: #0000ff" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              fill="url(#waterGradient2)"
+                              d="M 0,0 v 100 h 200 v -100
+                                 c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                                 c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                                 c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                                 c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5"
+                            />
+                          </svg>
+                        </div>
+                        <div ref="val2" class="val text-center">
+                          <strong>{{ nivelTanque2 }}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Transmisión -->
           </div>
         </div>
       </div>
     </div>
-    <!-- <div class="col-md-1 d-sm-none d-none d-md-block d-lg-block d-lg-block">
-      <hr class="vertical-line" />
-    </div> -->
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -336,8 +389,20 @@ export default {
       data: {},
       options: {},
       animacionesOcultas: {
+        generales: {
+          nombre: "generales",
+          estado: false,
+        },
         variables: {
           nombre: "variables",
+          estado: false,
+        },
+        graficos: {
+          nombre: "graficos",
+          estado: false,
+        },
+        transmision: {
+          nombre: "transmision",
           estado: false,
         },
       },
@@ -348,10 +413,6 @@ export default {
   },
   mounted() {
     this.init();
-    ///Codigo Tanque
-    // console.log("holasdgfdgfg");
-    // console.log(this.$refs.['iniciar']);
-    ///Codigo Tanque
   },
   methods: {
     init() {
@@ -361,8 +422,6 @@ export default {
       }
 
       this.datapoints = [31.5, 31.6, 31.7, 32.0, 31.1, 31.5];
-
-      console.log(this.datapoints);
 
       this.options = {
         responsive: true,
@@ -408,35 +467,57 @@ export default {
         ],
       };
 
-      console.log(JSON.parse(JSON.stringify(this.data)));
-
       this.modificarTanque();
     },
     actualizarGrafica() {
       this.data.datasets[0].data = [36, 37, 31, 35];
-      console.log(this.data.datasets[0].data);
 
       this.renderizarComponente += 1;
     },
     mostrarCard(e) {
-      const card =
-        e.target.parentNode.parentNode.parentNode.querySelector(".card-body");
+      const icono = e.target.parentNode.parentNode.querySelector(".bi");
+      const card = e.target.parentNode.parentNode.querySelector(".card-body");
 
       const ref = card.getAttribute("id");
 
       if (ref == this.animacionesOcultas.variables.nombre) {
-        if (!this.animacionesOcultas.variables.estado) {
-          $(card).slideUp("slow");
-          $(card).hide(1000);
+        let estado = ui.mostrarObjeto(
+          card,
+          this.animacionesOcultas.variables,
+          icono
+        );
 
-          this.animacionesOcultas.variables.estado = true;
-          return;
-        }
+        this.animacionesOcultas.variables.estado = estado;
+      }
 
-        $(card).slideDown("slow");
-        $(card).show();
+      if (ref == this.animacionesOcultas.generales.nombre) {
+        const estado = ui.mostrarObjeto(
+          card,
+          this.animacionesOcultas.generales,
+          icono
+        );
 
-        this.animacionesOcultas.variables.estado = false;
+        this.animacionesOcultas.generales.estado = estado;
+      }
+
+      if (ref == this.animacionesOcultas.graficos.nombre) {
+        const estado = ui.mostrarObjeto(
+          card,
+          this.animacionesOcultas.graficos,
+          icono
+        );
+
+        this.animacionesOcultas.graficos.estado = estado;
+      }
+
+      if (ref == this.animacionesOcultas.transmision.nombre) {
+        const estado = ui.mostrarObjeto(
+          card,
+          this.animacionesOcultas.transmision,
+          icono
+        );
+
+        this.animacionesOcultas.transmision.estado = estado;
       }
     },
     modificarTanque() {
