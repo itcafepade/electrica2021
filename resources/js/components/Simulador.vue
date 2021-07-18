@@ -177,13 +177,13 @@
               </div>
               <br />
               <h5>Temperatura Agua</h5>
-              <!-- <input
+              <input
                 type="text"
                 name=""
                 id=""
                 v-model="temperaturaValor"
                 class="form-control"
-              /> -->
+              />
               <div class="container">
                 <div class="row text-center">
                   <div class="col-md-12">
@@ -216,6 +216,96 @@
                 allowfullscreen
               ></iframe>
               <h5>Simulación</h5>
+              <input
+                type="number"
+                v-model="nivelTanque1"
+                class="form-control"
+                @change="modificarTanque()"
+              />
+              <input
+                type="number"
+                v-model="nivelTanque2"
+                @change="modificarTanque()"
+                class="form-control"
+              />
+              <div class="row">
+                <div class="col">
+                  <p>Tanque 1</p>
+                  <div class="water-tank1">
+                    <div class="liquid1">
+                      <svg class="water" viewBox="0 0 200 100">
+                        <defs>
+                          <linearGradient
+                            id="waterGradient"
+                            x1="0%"
+                            y1="0%"
+                            x2="0%"
+                            y2="100%"
+                          >
+                            <stop offset="0" style="stop-color: #29abe2" />
+                            <stop offset="0.1643" style="stop-color: #28a6e3" />
+                            <stop offset="0.3574" style="stop-color: #2496e6" />
+                            <stop offset="0.5431" style="stop-color: #1e7dea" />
+                            <stop offset="0.7168" style="stop-color: #1559f0" />
+                            <stop offset="0.874" style="stop-color: #0b2cf7" />
+                            <stop offset="1" style="stop-color: #0000ff" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          fill="url(#waterGradient)"
+                          d="M 0,0 v 100 h 200 v -100
+                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+                            c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5"
+                        />
+                      </svg>
+                    </div>
+                    <div ref="val1" class="val text-center">
+                      <strong>{{ nivelTanque1 }}</strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <p>Tanque 2</p>
+                  <div class="water-tank2">
+                    <div class="liquid2">
+                      <svg class="water" viewBox="0 0 200 100">
+                        <defs>
+                          <linearGradient
+                            id="waterGradient2"
+                            x1="0%"
+                            y1="0%"
+                            x2="0%"
+                            y2="100%"
+                          >
+                            <stop offset="0" style="stop-color: #29abe2" />
+                            <stop offset="0.1643" style="stop-color: #28a6e3" />
+                            <stop offset="0.3574" style="stop-color: #2496e6" />
+                            <stop offset="0.5431" style="stop-color: #1e7dea" />
+                            <stop offset="0.7168" style="stop-color: #1559f0" />
+                            <stop offset="0.874" style="stop-color: #0b2cf7" />
+                            <stop offset="1" style="stop-color: #0000ff" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          fill="url(#waterGradient2)"
+                          d="
+        M 0,0 v 100 h 200 v -100
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+        c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
+      "
+                        />
+                      </svg>
+                    </div>
+                    <div ref="val2" class="val text-center">
+                      <strong>{{ nivelTanque2 }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -251,10 +341,17 @@ export default {
           estado: false,
         },
       },
+      nivelTanque1: 0,
+      nivelTanque2: 0,
+      actualizarComponente: 0,
     };
   },
   mounted() {
     this.init();
+    ///Codigo Tanque
+    // console.log("holasdgfdgfg");
+    // console.log(this.$refs.['iniciar']);
+    ///Codigo Tanque
   },
   methods: {
     init() {
@@ -312,6 +409,8 @@ export default {
       };
 
       console.log(JSON.parse(JSON.stringify(this.data)));
+
+      this.modificarTanque();
     },
     actualizarGrafica() {
       this.data.datasets[0].data = [36, 37, 31, 35];
@@ -340,6 +439,28 @@ export default {
         this.animacionesOcultas.variables.estado = false;
       }
     },
+    modificarTanque() {
+      console.log("Valor modificado");
+      //   this.nivelTanque1 = 20;
+      //   this.nivelTanque2 = 100;
+
+      //   this.$refs.val1.innerHTML = "<strong>" + this.nivelTanque1 + "</strong>";
+      //   this.$refs.val2.innerHTML = "<strong>" + this.nivelTanque2 + "</strong>";
+
+      let rootElement1 = document.documentElement;
+      rootElement1.style.setProperty(
+        "--top1",
+        "calc(100% - " + this.nivelTanque1 + "%)"
+      );
+      let rootElement2 = document.documentElement;
+      rootElement2.style.setProperty(
+        "--top2",
+        "calc(100% - " + this.nivelTanque2 + "%)"
+      );
+
+      this.actualizarComponente++;
+    },
   },
 };
 </script>
+
