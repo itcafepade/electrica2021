@@ -1,11 +1,26 @@
 <template>
   <div class="row">
-    <div class="col-md-5 pd-5">
+    <div class="col pd-5">
       <div class="row">
-        <div class="col">
+        <div class="col-sm-12 col-12 col-md-6 col-lg-3 col-xl-2">
           <div class="card">
-            <div class="card-header">Variables</div>
-            <div class="card-body">
+            <div class="card-header">
+              <a
+                href="#"
+                class="text-dark"
+                @click="mostrarCard"
+                id="cardVariables"
+                ><i class="bi bi-chevron-down"></i
+              ></a>
+              Variables
+            </div>
+            <div
+              class="card-body wow"
+              data-wow-delay="0ms"
+              data-wow-duration="500ms"
+              data-wow-offset="0"
+              id="variables"
+            >
               <v-app>
                 <v-container>
                   <v-row align="center" justify="center">
@@ -55,7 +70,7 @@
             </div>
           </div>
         </div>
-        <div class="col">
+        <div class="col-sm-12 col-12 col-md-6 col-lg-4 col-xl-2">
           <div class="card">
             <div class="card-header">Variables</div>
             <div class="card-body">
@@ -146,14 +161,8 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- <div class="col-md-1 d-sm-none d-none d-md-block d-lg-block d-lg-block">
-      <hr class="vertical-line" />
-    </div> -->
-    <div class="col-md-7 pd-7">
-      <div class="row">
-        <div class="col">
+
+        <div class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4">
           <div class="card">
             <div class="card-header">Graficos</div>
             <div class="card-body m-0">
@@ -195,11 +204,10 @@
             </div>
           </div>
         </div>
-        <div class="col">
+        <div class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4">
           <div class="card">
-            <div class="card-header">Graficos</div>
+            <div class="card-header">Directo</div>
             <div class="card-body mx-auto">
-              <h5 class="text-info">En Vivo</h5>
               <iframe
                 src="https://www.youtube.com/embed/mGvYzzQb1_s"
                 title="YouTube video player"
@@ -213,12 +221,18 @@
         </div>
       </div>
     </div>
+    <!-- <div class="col-md-1 d-sm-none d-none d-md-block d-lg-block d-lg-block">
+      <hr class="vertical-line" />
+    </div> -->
   </div>
 </template>
 
 <script>
 import VueSpeedometer from "vue-speedometer";
 import grafico from "./Grafico.vue";
+import Interfaz from "../libs/interfaz";
+
+const ui = new Interfaz();
 
 export default {
   components: { VueSpeedometer, grafico },
@@ -231,6 +245,12 @@ export default {
       datapoints: [],
       data: {},
       options: {},
+      animacionesOcultas: {
+        variables: {
+          nombre: "variables",
+          estado: false,
+        },
+      },
     };
   },
   mounted() {
@@ -298,6 +318,27 @@ export default {
       console.log(this.data.datasets[0].data);
 
       this.renderizarComponente += 1;
+    },
+    mostrarCard(e) {
+      const card =
+        e.target.parentNode.parentNode.parentNode.querySelector(".card-body");
+
+      const ref = card.getAttribute("id");
+
+      if (ref == this.animacionesOcultas.variables.nombre) {
+        if (!this.animacionesOcultas.variables.estado) {
+          $(card).slideUp("slow");
+          $(card).hide(1000);
+
+          this.animacionesOcultas.variables.estado = true;
+          return;
+        }
+
+        $(card).slideDown("slow");
+        $(card).show();
+
+        this.animacionesOcultas.variables.estado = false;
+      }
     },
   },
 };
