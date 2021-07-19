@@ -24,8 +24,37 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
 /**
  * Vuetify
  */
-import Vuetify from 'vuetify';
-Vue.use(Vuetify);
+import Vuetify, {
+    VApp,
+    VCalendar,
+    VSheet,
+    VBtn,
+    VIcon,
+    VSpacer,
+    VToolbar,
+    VMenu,
+    VToolbarTitle,
+    VSwitch
+} from 'vuetify/lib';
+
+
+
+const opciones = {
+    components: {
+        VCalendar,
+        VApp,
+        VSheet,
+        VBtn,
+        VIcon,
+        VSpacer,
+        VToolbar,
+        VMenu,
+        VToolbarTitle,
+        VSwitch
+    }
+}
+
+Vue.use(Vuetify, opciones);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -36,9 +65,4 @@ Vue.use(Vuetify);
 const app = new Vue({
     el: '#app',
     vuetify: new Vuetify(),
-    data() {
-        return {
-            switch1: true,
-        }
-    },
 });
