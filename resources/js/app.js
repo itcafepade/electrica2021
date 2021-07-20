@@ -34,10 +34,11 @@ import Vuetify, {
     VToolbar,
     VMenu,
     VToolbarTitle,
-    VSwitch
+    VSwitch,
+    VList,
+    VListItem,
+    VListItemTitle,
 } from 'vuetify/lib';
-
-
 
 const opciones = {
     components: {
@@ -50,7 +51,10 @@ const opciones = {
         VToolbar,
         VMenu,
         VToolbarTitle,
-        VSwitch
+        VSwitch,
+        VList,
+        VListItem,
+        VListItemTitle,
     }
 }
 
