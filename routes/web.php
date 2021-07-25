@@ -30,6 +30,9 @@ Route::group(['middleware'=>'auth'], function () {
     Route::get('/simulador', function () {
         return view('simulador');
     });
+    Route::get('/ajustes', function () {
+        return view('ajustes');
+    });
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     //Usuario

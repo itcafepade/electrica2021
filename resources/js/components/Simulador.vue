@@ -203,8 +203,8 @@
                       <div class="col-md-12">
                         <vue-speedometer
                           :maxSegmentLabels="1"
-                          :customSegmentStops="[0, 50, 100]"
-                          :segmentColors="['green', 'gold']"
+                          :customSegmentStops="[0, 50, 75, 100]"
+                          :segmentColors="['green', 'gold', 'red']"
                           needleColor="#5959ac"
                           :currentValueText="'\${value}C°'"
                           :value="temperaturaValor"
@@ -233,14 +233,10 @@
                   ><i class="bi bi-chevron-down"></i> Transmisión</a
                 >
                 <div class="card-body mx-auto" id="transmision">
-                  <iframe
-                    src="https://www.youtube.com/embed/mGvYzzQb1_s"
-                    title="YouTube video player"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                  ></iframe>
-                  <h5>Simulación</h5>
+                  <div class="row">
+                    <stream />
+                  </div>
+                  <h5 class="pt-3">Simulación</h5>
                   <input
                     type="number"
                     v-model="nivelTanque1"
@@ -374,6 +370,7 @@
 import VueSpeedometer from "vue-speedometer";
 import grafico from "./Grafico.vue";
 import Interfaz from "../libs/interfaz";
+// import stream from "./Stream.vue";
 
 const ui = new Interfaz();
 
