@@ -40,12 +40,12 @@ class crearAdmin extends Command
     public function handle()
     {
         User::create([
-            'email' => 'admin@gmail.com',
+            'email' => 'admin2@gmail.com',
             'password' => Hash::make('adminItca'),
-            'name' => 'admin',
-            'access' => 'admin',
+            'name' => 'admin 2',
+            'access' => 'admin 2',
             'carrera' => 'Ing. Eléctrica',
-            'carnet' => '010101',
+            'carnet' => '020202',
         ]);
 
         $this->info('Usuario administrador creado satisfactoriamente.');
