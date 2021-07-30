@@ -40,9 +40,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/home') }}">Inicio</a>
                         </li>
+                        @if(auth()->user()->access == 'admin')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/acciones') }}">Historial</a>
                         </li>
+                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/horarios') }}">Horarios</a>
                         </li>

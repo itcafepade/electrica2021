@@ -27,6 +27,15 @@ class DatabaseSeeder extends Seeder
             'carnet' => '010101',
         ]);
 
+        User::create([
+            'email' => 'estudiante@gmail.com',
+            'password' => Hash::make('adminItca'),
+            'name' => 'estudiante',
+            'access' => 'estudiante',
+            'carrera' => 'Ing. Eléctrica',
+            'carnet' => '030303',
+        ]);
+
         Horario::create([
             'nombre'=>'Práctica evaluada - 010101',
             'fecha_inicio'=>date('Y-m-d 13:00'),
