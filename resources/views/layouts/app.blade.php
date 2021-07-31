@@ -40,9 +40,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/home') }}">Inicio</a>
                         </li>
+                        @if(auth()->user()->access == 'admin')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/acciones') }}">Historial</a>
                         </li>
+                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/horarios') }}">Horarios</a>
                         </li>
@@ -94,14 +96,15 @@
         <main class="py-4">
             @yield('content')
         </main>
+
         <footer class="footer mt-auto py-3">
             <div class="container text-center">
                 <span class="text-muted pt-3">Copyright © 2021 ITCA-FEPADE. <br>
                     Todos los derechos reservados.</span>
             </div>
         </footer>
-
     </div>
+
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"

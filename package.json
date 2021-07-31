@@ -27,6 +27,7 @@
     "dependencies": {
         "chart.js": "^3.4.1",
         "moment": "^2.29.1",
+        "socket.io-client": "^4.1.3",
         "sweetalert2": "^11.0.18",
         "vue-speedometer": "^1.8.0",
         "vuetify": "^2.5.6"

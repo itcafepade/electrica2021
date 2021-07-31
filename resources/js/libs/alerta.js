@@ -7,7 +7,7 @@ export default class Alerta {
      * @param {String} titulo
      * @param {String} icono
      */
-    mensaje(titulo, icono) {
+    mensaje(titulo, icono = 'info') {
         Swal.fire({
             position: "top-end",
             icon: icono,

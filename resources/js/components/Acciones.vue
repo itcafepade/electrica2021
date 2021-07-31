@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="acciones">
     <div class="row">
       <div class="col-6 col-md-4 pr-0 offset-2 offset-md-4">
         <input
@@ -94,3 +94,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.acciones {
+  min-height: 100%;
+}
+</style>
