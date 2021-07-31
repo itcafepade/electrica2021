@@ -18,21 +18,21 @@ Route::group(['middleware'=>'auth'], function () {
     Route::get('/', function () {
         return view('home');
     });
-    Route::get('/acciones', function () {
+    Route::get('/acciones',['middleware'=>'admin', function () {
         return view('acciones');
-    });
+    }]);
     Route::get('/horarios', function () {
         return view('horarios');
     });
-    Route::get('/usuarios', function () {
+    Route::get('/usuarios',['middleware'=>'admin', function () {
         return view('usuarios');
-    });
+    }]);
     Route::get('/simulador', function () {
         return view('simulador');
     });
-    Route::get('/ajustes', function () {
+    Route::get('/ajustes',['middleware'=>'admin', function () {
         return view('ajustes');
-    });
+    }]);
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     //Usuario
