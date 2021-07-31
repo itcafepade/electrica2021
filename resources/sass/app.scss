@@ -22,6 +22,25 @@ html {
     scroll-behavior: smooth;
 }
 
+main {
+    height: 100%;
+}
+
+/* */
+.navbar {
+    z-index: 1;
+    position: sticky;
+    top: 0px;
+}
+
+footer {
+    // clear: both;
+    position: relative;
+    width: 100%;
+    bottom: 0px;
+    top: -5%;
+}
+
 /* TANQUE 1 */
 :root {
     --top1: calc(100% - 0%);
@@ -53,6 +72,10 @@ html {
 /* TANQUE 2 */
 :root {
     --top2: calc(100% - 0%);
+}
+
+.botones-inicio {
+    height: 100%;
 }
 
 .water-tank2 {

@@ -536,6 +536,9 @@ export default {
         "calc(100% - " + this.nivelTanque2 + "%)"
       );
 
+      //   this.nivelTanque1 = this.nivelTanque1 + " mL";
+      //   this.nivelTanque2 = this.nivelTanque2 + " mL";
+
       this.actualizarComponente++;
     },
   },
