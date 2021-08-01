@@ -4,6 +4,104 @@
       <div class="col-md-3 divisor-izquierda pb-3">
         <!-- Reservar práctica -->
         <h4 class="pt-3">Registro de práctica</h4>
+
+        <!-- Peticiones de prácticas -->
+        <div v-if="usuarioActual.access == 'admin'">
+          <a
+            type="button"
+            class="btn btn-info text-white mb-3"
+            data-toggle="modal"
+            data-target="#modalPeticiones"
+          >
+            <i class="bi bi-list-task"></i> Peticiones
+          </a>
+          <br />
+        </div>
+
+        <div class="modal fade" tabindex="-1" id="modalPeticiones">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Peticiones de prácticas</h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div v-if="eventosNoAutorizados.length > 0">
+                  <div
+                    class="card mt-1"
+                    v-for="evento in eventosNoAutorizados"
+                    :key="evento.id"
+                  >
+                    <div class="card-body m-0 p-0">
+                      <div class="row m-0">
+                        <div class="col-md-9 pt-2 m-0">
+                          <p class="m-0">
+                            <strong>Nombre:</strong> {{ evento.nombre }}
+                          </p>
+                          <p class="m-0">
+                            <strong>Usuario:</strong> {{ evento.name }}
+                          </p>
+                          <p class="m-0">
+                            <strong>Carnet:</strong> {{ evento.carnet }}
+                          </p>
+                          <p class="m-0">
+                            <strong>Hora Final:</strong>
+                            {{ formatoFecha(evento.fecha_inicio) }}
+                          </p>
+                          <p class="m-0">
+                            <strong> Hora Final: </strong
+                            >{{ formatoFecha(evento.fecha_final) }}
+                          </p>
+                        </div>
+                        <div class="col-md-3">
+                          <a
+                            href="#"
+                            title="Autorizar"
+                            class="autorizar"
+                            @click="autorizarEvento(evento)"
+                            ><i
+                              class="botones-peticiones bi bi-check-circle"
+                            ></i
+                          ></a>
+                          <a
+                            href="#"
+                            title="Rechazar"
+                            class="denegar"
+                            @click="rechazarEvento(evento)"
+                            ><i class="botones-peticiones bi bi-x-circle"></i
+                          ></a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="eventosNoAutorizados.length == 0">
+                  <h6>
+                    No se encontraron peticiones de prácticas por aprobar.
+                  </h6>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary text-white"
+                  data-dismiss="modal"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Peticiones de prácticas -->
+
         <label for="">Carnet</label>
         <input
           type="text"
@@ -78,6 +176,11 @@
               </v-menu>
             </v-toolbar>
           </v-sheet>
+          <v-row class="text-center mb-1">
+            <span><i class="bi bi-circle-fill autorizar"></i> Autorizada</span>
+            <span><i class="bi bi-circle-fill pendiente"></i> Pendiente</span>
+            <span><i class="bi bi-circle-fill denegar"></i> Denegada</span>
+          </v-row>
           <v-sheet height="600">
             <v-calendar
               locale="es"
@@ -118,13 +221,12 @@ export default {
       day: "Día",
     },
     selectedEvent: {},
-    // selectedElement: null,
-    // selectedOpen: false,
     events: [],
     usuarioActual: {},
     fecha: "",
     horaInicio: "",
     horaFinal: "",
+    eventosNoAutorizados: [],
   }),
   mounted() {
     this.$refs.calendar.checkChange();
@@ -136,7 +238,9 @@ export default {
       this.usuarioActual = res.data;
 
       const eventos = await evento.obtenerEventos();
-      this.events = evento.cargarEventos(eventos);
+      this.events = evento.cargarEventos(eventos.eventos);
+
+      this.eventosNoAutorizados = eventos.eventosNoAutorizados;
     },
     viewDay({ date }) {
       this.focus = date;
@@ -164,13 +268,29 @@ export default {
 
       if (this.editando) {
         // Modificando evento existente
-
         const indice = this.events.findIndex((el) => el == this.selectedEvent);
 
         this.events.splice(indice, 1); //Eliminando el evento del array
       } else {
         //Nuevo Evento
         this.agregando = true;
+
+        let res = await axios.post("/api/horario/verificarPracticasPorDia", {
+          carnet: this.usuarioActual.carnet,
+          fecha: moment(inicio.toISOString()).format("YYYY-MM-DD"),
+        });
+        console.log(res);
+        console.log(parseInt(res.data.numeroPracticas));
+        if (parseInt(res.data.numeroPracticas) >= 1) {
+          await setTimeout(() => {
+            alerta.mensaje(
+              `Solo es posible reservar una práctica diaria.\n
+               Tu práctica será almacenada pero deberá ser autorizada por un docente.`,
+              "info",
+              2000
+            );
+          }, 2500);
+        }
       }
 
       evento.agregarNuevoEvento(
@@ -189,7 +309,7 @@ export default {
       this.agregando = false;
       this.selectedEvent = {};
       const eventos = await evento.obtenerEventos();
-      this.events = evento.cargarEventos(eventos);
+      this.events = evento.cargarEventos(eventos.eventos);
     },
     editarEvento({ nativeEvent, event }) {
       this.editando = true;
@@ -226,7 +346,7 @@ export default {
             evento.eliminarEvento(this.selectedEvent.id);
             // alerta.mensaje("Eliminado.", "success");
             const eventos = await evento.obtenerEventos();
-            this.events = evento.cargarEventos(eventos);
+            this.events = evento.cargarEventos(eventos.eventos);
           }
         } else {
           alerta.mensaje(
@@ -243,6 +363,61 @@ export default {
       this.horaInicio = "";
       this.horaFinal = "";
     },
+    formatoFecha(fecha) {
+      return moment(new Date(fecha)).format("D MMMM YYYY, h:mm a");
+    },
+    async autorizarEvento(evento) {
+      const res = await axios.post("api/horario/modificarEstado", {
+        id: evento.id,
+        estado: "Autorizada",
+        color: "green",
+      });
+
+      if (res.data.mensaje != "exito") {
+        alerta.mensaje("El horario no pudo ser autorizado", "error");
+        return;
+      }
+
+      alerta.mensaje("Horario autorizado.", "success");
+      this.init();
+    },
+    async rechazarEvento(evento) {
+      const res = await axios.post("api/horario/modificarEstado", {
+        id: evento.id,
+        estado: "Denegada",
+        color: "red",
+      });
+
+      if (res.data.mensaje != "exito") {
+        alerta.mensaje("El horario no pudo ser autorizado", "error");
+        return;
+      }
+
+      alerta.mensaje("Horario rechazado.", "info");
+      this.init();
+    },
   },
 };
 </script>
+
+<style>
+.botones-peticiones {
+  font-size: 1.6em;
+}
+
+.autorizar {
+  color: #4caf50;
+}
+
+.denegar {
+  color: #f44336;
+}
+
+.pendiente {
+  color: #ff9800;
+}
+
+.v-sheet {
+  z-index: 0;
+}
+</style>
