@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             'fecha_inicio'=>date('Y-m-d 10:00'),
             'fecha_final'=>date('Y-m-d 11:00'),
             'id_usuario'=>1,
-            'estado'=> 'Denegada',
+            'estado'=> 'Autorizada',
             'color'=> 'red',
             'created_at'=>date('Y-m-d H:i:s'),
             'updated_at'=>date('Y-m-d H:i:s'),

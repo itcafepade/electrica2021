@@ -26,7 +26,20 @@ main {
     height: 100%;
 }
 
-/* */
+/** Estados de prácticas **/
+.autorizar {
+    color: #4caf50;
+}
+
+.denegar {
+    color: #f44336;
+}
+
+.pendiente {
+    color: #ff9800;
+}
+
+/* Nabvar y footer*/
 .navbar {
     z-index: 1;
     position: sticky;

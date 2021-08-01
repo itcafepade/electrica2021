@@ -15,7 +15,7 @@
         >
       </div>
     </div>
-    <div v-if="banderaEventosAgregados == true">
+    <div v-if="banderaEventosAgregados">
       <practica
         :key="actualizarPractica"
         :usuario="usuario"
@@ -48,6 +48,10 @@ export default {
   methods: {
     init() {},
     async buscarPorCarnet() {
+      this.usuario = [];
+      this.practicas = [];
+      this.banderaEventosAgregados = false;
+
       //Obtenemos el usuario
       let res = await axios.post("/api/obtenerPorCarnet", {
         carnet: this.carnet,
@@ -58,23 +62,29 @@ export default {
       }
 
       this.usuario = res.data.usuario[0];
-      alerta.mensaje("Usuario encontrado.", "success");
 
       //Obtenemos las prácticas
-
       res = await axios
         .post("/api/practicaPorIdUsuario", {
           id: this.usuario.id,
         })
         .catch((error) => {
           console.log(error);
+          alerta.mensaje(
+            "No se pudo obtener la información del usuario.",
+            "error",
+            2000
+          );
         });
 
-      if (res.data.mensaje != "exito") {
-        alerta.mensaje("La práctica no ha sido encontrada.", "error");
-      }
-
       this.practicas = res.data.practicas;
+
+      if (this.practicas.length == 0) {
+        alerta.mensaje(
+          "Se encontró al usuario pero aún no tiene registros por mostrar.",
+          "info"
+        );
+      }
 
       //Obtenemos los eventos realizados en las practicas
       for (let index = 0; index < this.practicas.length; index++) {
