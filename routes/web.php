@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\HistorialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,22 +38,23 @@ Route::group(['middleware'=>['auth','admin']], function () {
     Route::get('/ajustes', function () {
         return view('ajustes');
     });
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     //Usuario
-    Route::post('/registrarUsuarios', [App\Http\Controllers\UserController::class, 'store']);
-    Route::get('/usuarioActual', [App\Http\Controllers\UserController::class, 'usuarioActual']);
-    Route::post('api/obtenerPorCarnet', [App\Http\Controllers\UserController::class, 'obtenerUsuarioPorCarnet']);
+    Route::post('/registrarUsuarios', [UserController::class, 'store']);
+    Route::get('/usuarioActual', [UserController::class, 'usuarioActual']);
+    Route::post('api/obtenerPorCarnet', [UserController::class, 'obtenerUsuarioPorCarnet']);
 
     //Horarios
-    Route::resource('api/horario', App\Http\Controllers\HorarioController::class);
-    Route::post('api/practicaPorIdUsuario', [App\Http\Controllers\HorarioController::class, 'obtenerPracticasPorIdUsuario']);
+    Route::resource('api/horario', HorarioController::class);
+    Route::post('api/practicaPorIdUsuario', [HorarioController::class, 'obtenerPracticasPorIdUsuario']);
+    Route::post('api/horario/verificarPracticasPorDia', [HorarioController::class, 'verificarPracticasPorDia']);
+    Route::post('api/horario/modificarEstado', [HorarioController::class, 'modificarEstadoEvento']);
 
     //Historial
-    Route::resource('api/historial', App\Http\Controllers\HistorialController::class);
-    Route::post('api/historialPorIdUsuario', [App\Http\Controllers\HistorialController::class, 'obtenerAccionesPorIdUsuario']);
+    Route::resource('api/historial', HistorialController::class);
+    Route::post('api/historialPorIdUsuario', [HistorialController::class, 'obtenerAccionesPorIdUsuario']);
 });
-
 
 Route::group(['middleware'=>'auth'], function () {
     //Vistas
@@ -70,7 +75,5 @@ Route::group(['middleware'=>'auth'], function () {
     Route::post('api/practicaPorIdUsuario', [App\Http\Controllers\HorarioController::class, 'obtenerPracticasPorIdUsuario']);
 
 });
-
-
 
 Auth::routes(['register' =>false]);

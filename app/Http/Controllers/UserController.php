@@ -19,7 +19,7 @@ class UserController extends Controller
         $usuarios = $request->usuarios;
 
         foreach ($usuarios as $usuario) {
-            User::create([
+            User::firstOrNew([
                 'email' => $usuario['correo'],
                 'password' => Hash::make('adminItca'),
                 'name' => $usuario['nombres'].' '.$usuario['apellidos'],

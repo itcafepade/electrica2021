@@ -19,9 +19,51 @@ export default class Evento {
         const fechaFinal = new Date(final);
 
         const eventosFiltrados = this.filtrarEventosPorFecha(eventos, fechaInicio);
-        const validado = this.validarPorHora(eventosFiltrados, fechaInicio, fechaFinal);
+        const horaValidado = this.validarPorHora(eventosFiltrados, fechaInicio, fechaFinal);
+        console.log(horaValidado)
+        const diaValidado = this.validarPorFechaActual(fechaInicio);
 
-        return validado;
+        let resultadoHora = {};
+        let resultadoDia = {};
+        if (!diaValidado) {
+            resultadoDia = {
+                estado: false,
+                mensaje: 'No es posible registrar prácticas a días anteriores.'
+            }
+        } else {
+            resultadoDia.estado = true;
+        }
+
+
+        if (!horaValidado) {
+            resultadoHora = {
+                estado: false,
+                mensaje: 'Ya se encuentra una práctica en este horario.'
+            }
+        } else {
+            resultadoHora.estado = true;
+        }
+
+        return {
+            resultadoHora: resultadoHora,
+            resultadoDia: resultadoDia,
+        };
+    }
+
+    /**
+     *
+     * @param {Date} fechaInicio
+     * @returns {Boolean}
+     */
+    validarPorFechaActual(fechaInicio) {
+        const diaActual = parseInt(moment(new Date()).format('DD'));
+        const diaEvento = parseInt(moment(fechaInicio.toISOString()).format("DD"));
+
+        if (diaEvento < diaActual) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -72,7 +114,7 @@ export default class Evento {
 
         eventos.forEach(el => {
             const horaEvento = parseInt(moment(new Date(el.start)).format("HH"));
-            for (i; i < fechaFinalHora; i++) {
+            for (i = fechaInicioHora; i < fechaFinalHora; i++) {
                 if (horaEvento == i) {
                     disponible = false;
                     return disponible;
@@ -131,7 +173,7 @@ export default class Evento {
                 final
             );
 
-            if (eventoValidado) {
+            if (eventoValidado.resultadoDia.estado && eventoValidado.resultadoHora.estado) {
 
                 const evento = {
                     id: idSeleccionado,
@@ -162,9 +204,14 @@ export default class Evento {
                     }
                 }
 
-            } else {
+            } else if (!eventoValidado.resultadoDia.estado) {
                 alerta.mensaje(
-                    "Ya se encuentra una práctica en este horario.",
+                    eventoValidado.resultadoDia.mensaje,
+                    "info"
+                );
+            } else if (!eventoValidado.resultadoHora.estado) {
+                alerta.mensaje(
+                    eventoValidado.resultadoHora.mensaje,
                     "info"
                 );
             }
@@ -192,7 +239,7 @@ export default class Evento {
                 carnet: el.carnet,
                 start: moment(new Date(el.fecha_inicio)).format("YYYY-MM-DD HH:mm"),
                 end: moment(new Date(el.fecha_final)).format("YYYY-MM-DD HH:mm"),
-                color: "green",
+                color: el.color,
                 timed: true,
             });
         });
@@ -206,7 +253,7 @@ export default class Evento {
     async obtenerEventos() {
         let res = await axios.get('api/horario');
 
-        const eventos = res.data.eventos;
+        const eventos = res.data;
 
         return eventos;
     }
