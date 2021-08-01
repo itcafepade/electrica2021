@@ -7,13 +7,13 @@ export default class Alerta {
      * @param {String} titulo
      * @param {String} icono
      */
-    mensaje(titulo, icono = 'info') {
+    mensaje(titulo, icono = 'info', tiempo = 1500) {
         Swal.fire({
             position: "top-end",
             icon: icono,
             title: titulo,
             showConfirmButton: false,
-            timer: 1500,
+            timer: tiempo,
         });
     }
 
@@ -44,7 +44,6 @@ export default class Alerta {
             }
         })
 
-        console.log(confirmacion)
         return confirmacion;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Horario;
 use Illuminate\Http\Request;
 use DB;
+use Carbon\Carbon;
 
 class HorarioController extends Controller
 {
@@ -15,11 +16,21 @@ class HorarioController extends Controller
      */
     public function index()
     {
-        $eventos = DB::table('horarios')
-        ->select('horarios.*', 'users.carnet as carnet')
+        $eventosAutorizados = Horario::select('horarios.*', 'users.carnet as carnet')
         ->join('users', 'users.id', '=', 'horarios.id_usuario')
         ->get();
-        return response()->json(['mensaje'=>'exito', 'eventos'=>$eventos]);
+
+        $eventosNoAutorizados = DB::table('horarios')
+        ->select('horarios.*', 'users.carnet', 'users.name')
+        ->join('users', 'users.id', '=', 'horarios.id_usuario')
+        ->where('horarios.estado', 'Pendiente')
+        ->get();
+
+        return response()->json([
+            'mensaje'=>'exito',
+            'eventos'=>$eventosAutorizados,
+            'eventosNoAutorizados'=>$eventosNoAutorizados
+        ]);
     }
 
     /**
@@ -36,9 +47,31 @@ class HorarioController extends Controller
         $evento->fecha_inicio = $request->fecha_inicio;
         $evento->fecha_final = $request->fecha_final;
         $evento->created_at = date("Y-m-dTH:m");
-        $evento->save();
 
-        return response()->json(['mensaje'=>'exito']);
+        if (auth()->user()->access == 'admin') {
+            $evento->estado = "Autorizada";
+            $evento->save();
+            return response()->json(['mensaje'=>'exito']);
+        }
+
+        if (auth()->user()->access == 'estudiante') {
+            $numeroDePracticas = DB::table('horarios')->select('horarios.*', 'users.carnet as carnet')
+            ->join('users', 'users.id', '=', 'horarios.id_usuario')
+            ->where('users.carnet', auth()->user()->carnet)
+            ->whereDate('horarios.created_at', date('Y-m-d', strtotime($request->fecha_inicio)))
+            ->count();
+
+            if ($numeroDePracticas >= 1) {
+                $evento->estado = "Pendiente";
+                $evento->color = "orange";
+            } else {
+                $evento->estado = "Autorizada";
+                $evento->color = "green";
+            }
+
+            $evento->save();
+            return response()->json(['mensaje'=>'exito']);
+        }
     }
 
     /**
@@ -110,5 +143,30 @@ class HorarioController extends Controller
         ->where('users.id', $request->id)
         ->get();
         return response()->json(['mensaje'=>'exito', 'practicas'=>$practicas]);
+    }
+
+    public function verificarPracticasPorDia(Request $request)
+    {
+        $carnet = $request->carnet;
+        $fecha = $request->fecha;
+
+        $numeroDePracticas = DB::table('horarios')->select('horarios.*', 'users.carnet as carnet')
+        ->join('users', 'users.id', '=', 'horarios.id_usuario')
+        ->where('users.carnet', $carnet)
+        ->whereDate('horarios.created_at', $fecha)
+        ->count();
+
+        return response()->json(['mensaje'=>'exito', 'numeroPracticas'=>$numeroDePracticas]);
+    }
+
+    public function modificarEstadoEvento(Request $request)
+    {
+        $estado = $request->estado;
+        $id = $request->id;
+        $color = $request->color;
+
+        $modificado = Horario::where('id', $id)->update(['estado'=>$estado, 'color'=>$color]);
+
+        return response()->json(['mensaje'=>'exito']);
     }
 }

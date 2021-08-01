@@ -38,9 +38,44 @@ class DatabaseSeeder extends Seeder
 
         Horario::create([
             'nombre'=>'Práctica evaluada - 010101',
+            'fecha_inicio'=>date('Y-m-d 10:00'),
+            'fecha_final'=>date('Y-m-d 11:00'),
+            'id_usuario'=>1,
+            'estado'=> 'Denegada',
+            'color'=> 'red',
+            'created_at'=>date('Y-m-d H:i:s'),
+            'updated_at'=>date('Y-m-d H:i:s'),
+        ]);
+
+        Horario::create([
+            'nombre'=>'Práctica evaluada - 010101',
+            'fecha_inicio'=>date('Y-m-d 08:00'),
+            'fecha_final'=>date('Y-m-d 09:00'),
+            'id_usuario'=>1,
+            'estado'=> 'Pendiente',
+            'color'=> 'orange',
+            'created_at'=>date('Y-m-d H:i:s'),
+            'updated_at'=>date('Y-m-d H:i:s'),
+        ]);
+
+        Horario::create([
+            'nombre'=>'Práctica evaluada - 010101',
+            'fecha_inicio'=>date('Y-m-d 15:00'),
+            'fecha_final'=>date('Y-m-d 16:00'),
+            'id_usuario'=>1,
+            'estado'=> 'Pendiente',
+            'color'=> 'orange',
+            'created_at'=>date('Y-m-d H:i:s'),
+            'updated_at'=>date('Y-m-d H:i:s'),
+        ]);
+
+        Horario::create([
+            'nombre'=>'Práctica evaluada - 010101',
             'fecha_inicio'=>date('Y-m-d 13:00'),
             'fecha_final'=>date('Y-m-d 14:00'),
             'id_usuario'=>1,
+            'estado'=> 'Autorizada',
+            'color'=> 'green',
             'created_at'=>date('Y-m-d H:i:s'),
             'updated_at'=>date('Y-m-d H:i:s'),
         ]);
