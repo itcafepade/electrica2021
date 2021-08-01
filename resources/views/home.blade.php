@@ -55,7 +55,7 @@
 
     <h2 class="pt-3 title-section">Actividad</h2>
     <hr class="featurette-divider">
-    <div class="row pb-5 mb-5">
+    <div class="row pb-5">
         <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3">
             <a href=" {{ url('/horarios') }}"
                 class="botones-inicio btn btn-block btn-white btn-sm p-3 shadow btn-hover">

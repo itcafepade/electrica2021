@@ -46,12 +46,16 @@ main {
     top: 0px;
 }
 
+main {
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: calc(100vh - 166.22px);
+}
+
 footer {
-    // clear: both;
-    position: relative;
-    width: 100%;
-    bottom: 0px;
-    top: -5%;
+    align-self: flex-end;
+    background-color: $light-gray;
 }
 
 /* TANQUE 1 */
