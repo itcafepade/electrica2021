@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AccessMiddleware
+class AdminMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,10 +17,10 @@ class AccessMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::user() &&  Auth::user()->access == 'admin') {
+    if (Auth::user() &&  Auth::user()->access == 'admin') {
             return $next($request);
      }
-
-       return redirect('/');
+     /*return redirect('/');*/
+    abort(404);
     }
 }

@@ -13,26 +13,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware'=>'auth'], function () {
+
+Route::group(['middleware'=>['auth','admin']], function () {
     //Vistas
     Route::get('/', function () {
         return view('home');
     });
-    Route::get('/acciones',['middleware'=>'admin', function () {
+    Route::get('/acciones', function () {
         return view('acciones');
-    }]);
+    });
     Route::get('/horarios', function () {
         return view('horarios');
     });
-    Route::get('/usuarios',['middleware'=>'admin', function () {
+    Route::get('/usuarios', function () {
         return view('usuarios');
-    }]);
+    });
     Route::get('/simulador', function () {
         return view('simulador');
     });
-    Route::get('/ajustes',['middleware'=>'admin', function () {
+    Route::get('/ajustes', function () {
         return view('ajustes');
-    }]);
+    });
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     //Usuario
@@ -47,6 +48,27 @@ Route::group(['middleware'=>'auth'], function () {
     //Historial
     Route::resource('api/historial', App\Http\Controllers\HistorialController::class);
     Route::post('api/historialPorIdUsuario', [App\Http\Controllers\HistorialController::class, 'obtenerAccionesPorIdUsuario']);
+});
+
+
+Route::group(['middleware'=>'auth'], function () {
+    //Vistas
+    Route::get('/', function () {
+        return view('home');
+    });
+
+    Route::get('/horarios', function () {
+        return view('horarios');
+    });
+    Route::get('/simulador', function () {
+        return view('simulador');
+    });
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    //Horarios
+    Route::resource('api/horario', App\Http\Controllers\HorarioController::class);
+    Route::post('api/practicaPorIdUsuario', [App\Http\Controllers\HorarioController::class, 'obtenerPracticasPorIdUsuario']);
+
 });
 
 
