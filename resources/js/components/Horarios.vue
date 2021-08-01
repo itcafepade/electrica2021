@@ -177,9 +177,18 @@
             </v-toolbar>
           </v-sheet>
           <v-row class="text-center mb-1">
-            <span><i class="bi bi-circle-fill autorizar"></i> Autorizada</span>
-            <span><i class="bi bi-circle-fill pendiente"></i> Pendiente</span>
-            <span><i class="bi bi-circle-fill denegar"></i> Denegada</span>
+            <span
+              ><i class="bi bi-circle-fill autorizar"></i>
+              <strong>Autorizada</strong></span
+            >
+            <span
+              ><i class="bi bi-circle-fill pendiente"></i>
+              <strong>Pendiente</strong></span
+            >
+            <span
+              ><i class="bi bi-circle-fill denegar"></i>
+              <strong>Denegada</strong></span
+            >
           </v-row>
           <v-sheet height="600">
             <v-calendar
