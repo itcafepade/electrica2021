@@ -40,17 +40,20 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/home') }}">Inicio</a>
                         </li>
-                        @if(auth()->user()->access == 'admin')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url('/acciones') }}">Historial</a>
-                        </li>
-                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/horarios') }}">Horarios</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/simulador') }}">Simulador</a>
                         </li>
+                        @if(auth()->user()->access == 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/acciones') }}">Historial</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/ajustes') }}">Ajustes</a>
+                        </li>
+                        @endif
                         @endauth
                     </ul>
 
