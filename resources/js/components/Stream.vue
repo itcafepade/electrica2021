@@ -1,5 +1,11 @@
 <template>
-  <video ref="imgStream" width="100%" height="100%" preload="metadata"></video>
+  <video
+    ref="imgStream"
+    width="100%"
+    height="100%"
+    preload="metadata"
+    poster="/imgs/transmision.png"
+  ></video>
 </template>
 
 <script>
@@ -29,7 +35,7 @@ export default {
       socket.on("streaming", (streaming) => {
         if (!JSON.parse(streaming)) {
           alerta.mensaje("La transmisión ha terminado.", "info");
-          this.$refs.imgStream.poster = "/imgs/logo.png";
+          this.$refs.imgStream.poster = "/imgs/transmision.png";
         } else {
           alerta.mensaje("La transmisión ha iniciado.", "success");
         }
@@ -37,7 +43,7 @@ export default {
 
       const res = await axios.get(variable.urlSocket + "getStreamValue");
       if (!res.data.streaming) {
-        this.$refs.imgStream.poster = "/imgs/logo.png";
+        this.$refs.imgStream.poster = "/imgs/transmision.png";
         alerta.mensaje("No hay una transmisión por mostrar.", "info");
         return;
       }
