@@ -1,11 +1,11 @@
 <template>
   <div>
     <div v-for="practica in practicas" :key="practica.id">
-      <div class="card mt-4">
+      <div class="card mt-2">
         <div class="card-header">Información de práctica</div>
         <div class="card-body">
           <div class="row">
-            <div class="col-12 col-sm-12 col-md-4 pt-2">
+            <div class="col-12 col-sm-12 col-md-4">
               <h5 class="pt-2">Estudiante</h5>
               <hr />
               <div v-if="usuario">

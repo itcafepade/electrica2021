@@ -48,11 +48,10 @@ export default {
   methods: {
     init() {},
     async buscarPorCarnet() {
-      //   this.carnet = "";
       this.usuario = [];
-      //   this.actualizarPractica = 0;
       this.practicas = [];
       this.banderaEventosAgregados = false;
+
       //Obtenemos el usuario
       let res = await axios.post("/api/obtenerPorCarnet", {
         carnet: this.carnet,
@@ -63,10 +62,8 @@ export default {
       }
 
       this.usuario = res.data.usuario[0];
-      //   alerta.mensaje("Usuario encontrado.", "success");
 
       //Obtenemos las prácticas
-
       res = await axios
         .post("/api/practicaPorIdUsuario", {
           id: this.usuario.id,
