@@ -414,18 +414,6 @@ export default {
   font-size: 1.6em;
 }
 
-.autorizar {
-  color: #4caf50;
-}
-
-.denegar {
-  color: #f44336;
-}
-
-.pendiente {
-  color: #ff9800;
-}
-
 .v-sheet {
   z-index: 0;
 }

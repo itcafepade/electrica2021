@@ -139,8 +139,7 @@ class HorarioController extends Controller
         $practicas = DB::table('horarios')
         ->select('horarios.*', 'users.carnet as carnet')
         ->join('users', 'users.id', '=', 'horarios.id_usuario')
-        ->join('historial', 'historial.id', '=', 'horarios.id')
-        ->where('users.id', $request->id)
+        ->where(['users.id'=> $request->id, 'horarios.estado'=>'Autorizada'])
         ->get();
         return response()->json(['mensaje'=>'exito', 'practicas'=>$practicas]);
     }

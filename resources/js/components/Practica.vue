@@ -20,6 +20,11 @@
                 <p class="mb-1">
                   <strong>Carrera: </strong> {{ usuario.carrera }}
                 </p>
+                <p class="mb-1">
+                  <strong>Estado: </strong
+                  ><i class="bi bi-circle-fill autorizar"></i>
+                  {{ practica.estado }}
+                </p>
               </div>
             </div>
             <div class="col-12 col-sm-12 col-md-8">
@@ -34,13 +39,6 @@
                   </thead>
                   <tbody v-if="practica.eventos">
                     <tr v-for="evento in practica.eventos" :key="evento.id">
-                      <td
-                        colspan="3"
-                        class="text-center"
-                        v-if="evento.length >= 0"
-                      >
-                        No se encontraron registros de esta práctica.
-                      </td>
                       <!-- <td>{{ historial.id }}</td> -->
                       <td>
                         {{ fechaAccionConFormato(evento.fecha) }}
@@ -49,6 +47,13 @@
                         {{ evento.accion }}
                       </td>
                     </tr>
+                    <td
+                      colspan="3"
+                      class="text-center"
+                      v-if="practica.eventos.length == 0"
+                    >
+                      No se encontraron registros de esta práctica.
+                    </td>
                   </tbody>
                 </table>
               </div>
