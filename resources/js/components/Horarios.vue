@@ -118,8 +118,11 @@
         <a href="#" class="btn btn-primary mt-3" @click="agregarNuevoEvento()">
           <i class="bi bi-arrow-bar-down"></i> Reservar
         </a>
+        <a href="#" class="btn btn-secondary mt-3" @click="limpiarEvento()">
+          <i class="bi bi-arrow-bar-down"></i> Limpiar
+        </a>
         <a href="#" class="btn btn-danger mt-3" @click="eliminarReservacion()">
-          <i class="bi bi-trash"></i> Eliminar reservación
+          <i class="bi bi-trash"></i> Eliminar
         </a>
         <!-- Reservar práctica -->
       </div>
@@ -433,6 +436,11 @@ export default {
         this.checkBoxPendientes,
         this.checkBoxRechazadas
       );
+    },
+    limpiarEvento() {
+      this.fecha = "";
+      this.horaInicio = "";
+      this.horaFinal = "";
     },
   },
 };
