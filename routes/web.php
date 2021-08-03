@@ -70,10 +70,15 @@ Route::group(['middleware'=>'auth'], function () {
     });
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-    //Horarios
-    Route::resource('api/horario', App\Http\Controllers\HorarioController::class);
-    Route::post('api/practicaPorIdUsuario', [App\Http\Controllers\HorarioController::class, 'obtenerPracticasPorIdUsuario']);
+    //Usuario
+    Route::post('/registrarUsuarios', [UserController::class, 'store']);
+    Route::get('/usuarioActual', [UserController::class, 'usuarioActual']);
+    Route::post('api/obtenerPorCarnet', [UserController::class, 'obtenerUsuarioPorCarnet']);
 
+    //Horarios
+    Route::resource('api/horario', HorarioController::class);
+    Route::post('api/practicaPorIdUsuario', [HorarioController::class, 'obtenerPracticasPorIdUsuario']);
+    Route::post('api/horario/verificarPracticasPorDia', [HorarioController::class, 'verificarPracticasPorDia']);
 });
 
 Auth::routes(['register' =>false]);

@@ -23,7 +23,7 @@
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+            <div class="container p-0">
                 <a class="navbar-brand" href="{{ url('/home') }}">
                     <img src="{{ asset('imgs/logo.png')}}" height="40px" width="160px">
                 </a>

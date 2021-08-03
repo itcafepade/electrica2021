@@ -20,6 +20,8 @@ class Horario extends Model
         'id_usuario',
         'fecha_inicio',
         'fecha_final',
+        'estado',
+        'color'
     ];
 
     /**

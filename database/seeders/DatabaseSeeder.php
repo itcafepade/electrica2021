@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             'fecha_final'=>date('Y-m-d 11:00'),
             'id_usuario'=>1,
             'estado'=> 'Autorizada',
-            'color'=> 'red',
+            'color'=> 'green',
             'created_at'=>date('Y-m-d H:i:s'),
             'updated_at'=>date('Y-m-d H:i:s'),
         ]);
@@ -52,8 +52,8 @@ class DatabaseSeeder extends Seeder
             'fecha_inicio'=>date('Y-m-d 08:00'),
             'fecha_final'=>date('Y-m-d 09:00'),
             'id_usuario'=>1,
-            'estado'=> 'Pendiente',
-            'color'=> 'orange',
+            'estado'=> 'Rechazada',
+            'color'=> 'red',
             'created_at'=>date('Y-m-d H:i:s'),
             'updated_at'=>date('Y-m-d H:i:s'),
         ]);

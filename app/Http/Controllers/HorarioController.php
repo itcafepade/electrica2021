@@ -50,6 +50,7 @@ class HorarioController extends Controller
 
         if (auth()->user()->access == 'admin') {
             $evento->estado = "Autorizada";
+            $evento->color = "green";
             $evento->save();
             return response()->json(['mensaje'=>'exito']);
         }
