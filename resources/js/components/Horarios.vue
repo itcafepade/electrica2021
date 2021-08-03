@@ -149,6 +149,7 @@
               <v-toolbar-title v-if="$refs.calendar">
                 {{ $refs.calendar.title }}
               </v-toolbar-title>
+
               <v-spacer></v-spacer>
               <v-menu bottom right>
                 <template v-slot:activator="{ on, attrs }">
@@ -176,20 +177,37 @@
               </v-menu>
             </v-toolbar>
           </v-sheet>
-          <v-row class="text-center mb-1">
-            <span
-              ><i class="bi bi-circle-fill autorizar"></i>
-              <strong>Autorizada</strong></span
-            >
-            <span
-              ><i class="bi bi-circle-fill pendiente"></i>
-              <strong>Pendiente</strong></span
-            >
-            <span
-              ><i class="bi bi-circle-fill denegar"></i>
-              <strong>Denegada</strong></span
-            >
-          </v-row>
+          <v-container>
+            <v-sheet>
+              <v-row>
+                <!-- <i class="bi bi-circle-fill autorizar"></i> -->
+                <v-checkbox
+                  v-model="checkBoxAutorizadas"
+                  color="green"
+                  :label="`Autorizadas`"
+                  @click="filtrarEventosPorEstado()"
+                >
+                </v-checkbox>
+                <v-spacer></v-spacer>
+
+                <v-checkbox
+                  v-model="checkBoxPendientes"
+                  color="orange"
+                  :label="`Pendientes`"
+                  @click="filtrarEventosPorEstado()"
+                >
+                </v-checkbox>
+                <v-spacer></v-spacer>
+                <v-checkbox
+                  v-model="checkBoxRechazadas"
+                  color="red"
+                  label="Rechazadas"
+                  @click="filtrarEventosPorEstado()"
+                >
+                </v-checkbox>
+              </v-row>
+            </v-sheet>
+          </v-container>
           <v-sheet height="600">
             <v-calendar
               locale="es"
@@ -236,6 +254,9 @@ export default {
     horaInicio: "",
     horaFinal: "",
     eventosNoAutorizados: [],
+    checkBoxAutorizadas: true,
+    checkBoxPendientes: true,
+    checkBoxRechazadas: false,
   }),
   mounted() {
     this.$refs.calendar.checkChange();
@@ -247,7 +268,12 @@ export default {
       this.usuarioActual = res.data;
 
       const eventos = await evento.obtenerEventos();
-      this.events = evento.cargarEventos(eventos.eventos);
+      this.events = evento.cargarEventos(
+        eventos.eventos,
+        this.checkBoxAutorizadas,
+        this.checkBoxPendientes,
+        this.checkBoxRechazadas
+      );
 
       this.eventosNoAutorizados = eventos.eventosNoAutorizados;
     },
@@ -283,23 +309,6 @@ export default {
       } else {
         //Nuevo Evento
         this.agregando = true;
-
-        let res = await axios.post("/api/horario/verificarPracticasPorDia", {
-          carnet: this.usuarioActual.carnet,
-          fecha: moment(inicio.toISOString()).format("YYYY-MM-DD"),
-        });
-        console.log(res);
-        console.log(parseInt(res.data.numeroPracticas));
-        if (parseInt(res.data.numeroPracticas) >= 1) {
-          await setTimeout(() => {
-            alerta.mensaje(
-              `Solo es posible reservar una práctica diaria.\n
-               Tu práctica será almacenada pero deberá ser autorizada por un docente.`,
-              "info",
-              2000
-            );
-          }, 2500);
-        }
       }
 
       evento.agregarNuevoEvento(
@@ -317,8 +326,14 @@ export default {
       this.editando = false;
       this.agregando = false;
       this.selectedEvent = {};
-      const eventos = await evento.obtenerEventos();
-      this.events = evento.cargarEventos(eventos.eventos);
+      this.init();
+      //   const eventos = await evento.obtenerEventos();
+      //   this.events = evento.cargarEventos(
+      //     eventos.eventos,
+      //     this.checkBoxAutorizadas,
+      //     this.checkBoxPendientes,
+      //     this.checkBoxRechazadas
+      //   );
     },
     editarEvento({ nativeEvent, event }) {
       this.editando = true;
@@ -355,7 +370,12 @@ export default {
             evento.eliminarEvento(this.selectedEvent.id);
             // alerta.mensaje("Eliminado.", "success");
             const eventos = await evento.obtenerEventos();
-            this.events = evento.cargarEventos(eventos.eventos);
+            this.events = evento.cargarEventos(
+              eventos.eventos,
+              this.checkBoxAutorizadas,
+              this.checkBoxPendientes,
+              this.checkBoxRechazadas
+            );
           }
         } else {
           alerta.mensaje(
@@ -393,7 +413,7 @@ export default {
     async rechazarEvento(evento) {
       const res = await axios.post("api/horario/modificarEstado", {
         id: evento.id,
-        estado: "Denegada",
+        estado: "Rechazada",
         color: "red",
       });
 
@@ -404,6 +424,15 @@ export default {
 
       alerta.mensaje("Horario rechazado.", "info");
       this.init();
+    },
+    async filtrarEventosPorEstado() {
+      const eventos = await evento.obtenerEventos();
+      this.events = evento.cargarEventos(
+        eventos.eventos,
+        this.checkBoxAutorizadas,
+        this.checkBoxPendientes,
+        this.checkBoxRechazadas
+      );
     },
   },
 };

@@ -9,16 +9,17 @@
 
                 <div class="card-body">
                     @if (session('resent'))
-                        <div class="alert alert-success" role="alert">
-                            {{ __('AFreshVerification') }}
-                        </div>
+                    <div class="alert alert-success" role="alert">
+                        {{ __('AFreshVerification') }}
+                    </div>
                     @endif
 
                     {{ __('auth.BeforeProceeding') }}
                     {{ __('auth.IfYouDidNotReceiveTheEmail') }},
                     <form class="d-inline" method="POST" action="{{ route('verification.resend') }}">
                         @csrf
-                        <button type="submit" class="btn btn-link p-0 m-0 align-baseline">{{ __('auth.ClickHereToRequestAnother') }}</button>.
+                        <button type="submit"
+                            class="btn btn-link p-0 m-0 align-baseline text-white">{{ __('auth.ClickHereToRequestAnother') }}</button>.
                     </form>
                 </div>
             </div>

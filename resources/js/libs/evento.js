@@ -20,7 +20,6 @@ export default class Evento {
 
         const eventosFiltrados = this.filtrarEventosPorFecha(eventos, fechaInicio);
         const horaValidado = this.validarPorHora(eventosFiltrados, fechaInicio, fechaFinal);
-        console.log(horaValidado)
         const diaValidado = this.validarPorFechaActual(fechaInicio);
 
         let resultadoHora = {};
@@ -51,6 +50,8 @@ export default class Evento {
     }
 
     /**
+     * Verifica que la fecha sea igual o mayor que la actual.
+     * Devuelve false si es menor y true si es igual o mayor.
      *
      * @param {Date} fechaInicio
      * @returns {Boolean}
@@ -115,7 +116,7 @@ export default class Evento {
         eventos.forEach(el => {
             const horaEvento = parseInt(moment(new Date(el.start)).format("HH"));
             for (i = fechaInicioHora; i < fechaFinalHora; i++) {
-                if (horaEvento == i) {
+                if (horaEvento == i && el.estado != 'Rechazada') {
                     disponible = false;
                     return disponible;
                 }
@@ -166,62 +167,153 @@ export default class Evento {
             "HH"
         ));
 
-        if (horaInicio < horaFinal) {
-            const eventoValidado = this.validarEvento(
-                eventos,
-                inicio,
-                final
-            );
-
-            if (eventoValidado.resultadoDia.estado && eventoValidado.resultadoHora.estado) {
-
-                const evento = {
-                    id: idSeleccionado,
-                    nombre: `Practica evaluada - ${usuarioActual.carnet}`,
-                    id_usuario: usuarioActual.id,
-                    fecha_inicio: inicio,
-                    fecha_final: final,
-                };
-
-                if (agregando) { //Creando nueva práctica
-
-                    const res = await axios.post("api/horario", evento);
-
-                    if (res.data.mensaje == 'exito') {
-                        alerta.mensaje('Registro de práctica exitosa.', 'success');
-                    } else {
-                        alerta.mensaje('Error: No se pudo registrar la práctica.', 'error');
-                    }
-                } else { //Modificando una práctica
-
-                    const res = await axios.put("api/horario/" +
-                        idSeleccionado, evento);
-
-                    if (res.data.mensaje == 'exito') {
-                        alerta.mensaje('Modificación de práctica exitosa.', 'success');
-                    } else {
-                        alerta.mensaje('Error: No se pudo modificar la práctica.', 'error');
-                    }
-                }
-
-            } else if (!eventoValidado.resultadoDia.estado) {
-                alerta.mensaje(
-                    eventoValidado.resultadoDia.mensaje,
-                    "info"
-                );
-            } else if (!eventoValidado.resultadoHora.estado) {
-                alerta.mensaje(
-                    eventoValidado.resultadoHora.mensaje,
-                    "info"
-                );
-            }
-
-        } else {
+        if (horaInicio > horaFinal) {
             alerta.mensaje(
                 "La hora de inicio no puede ser mayor que la final.",
                 "error"
             );
+            return;
         }
+
+        const eventoValidado = this.validarEvento(
+            eventos,
+            inicio,
+            final
+        );
+
+        if (!eventoValidado.resultadoDia.estado) {
+            alerta.mensaje(
+                eventoValidado.resultadoDia.mensaje,
+                "info"
+            );
+            return;
+        }
+
+        if (!eventoValidado.resultadoHora.estado) {
+            alerta.mensaje(
+                eventoValidado.resultadoHora.mensaje,
+                "info"
+            );
+            return;
+        }
+
+        let evento = {
+            id: idSeleccionado,
+            nombre: `Practica evaluada - ${usuarioActual.carnet}`,
+            id_usuario: usuarioActual.id,
+            fecha_inicio: inicio,
+            fecha_final: final,
+        };
+
+        if (!agregando) {
+            const res = await axios.put("api/horario/" +
+                idSeleccionado, evento);
+
+            if (res.data.mensaje == 'exito') {
+                alerta.mensaje('Modificación de práctica exitosa.', 'success');
+            } else {
+                alerta.mensaje('Error: No se pudo modificar la práctica.', 'error');
+            }
+            return;
+        }
+
+        let res = await axios.post("/api/horario/verificarPracticasPorDia", {
+            carnet: usuarioActual.carnet,
+            fecha: moment(new Date(inicio)).format("YYYY-MM-DD"),
+        });
+
+        if (parseInt(res.data.numeroPracticas) >= 1 && usuarioActual.access != "admin") {
+            await setTimeout(() => {
+                alerta.mensaje(
+                    `Solo es posible reservar una práctica diaria.\n
+                    Tu práctica será almacenada pero deberá ser autorizada por un docente.`,
+                    "info",
+                    2000
+                );
+            }, 2500);
+        }
+
+        res = await axios.post("api/horario", evento);
+
+        if (res.data.mensaje == 'exito') {
+            alerta.mensaje('Registro de práctica exitosa.', 'success');
+        } else {
+            alerta.mensaje('Error: No se pudo registrar la práctica.', 'error');
+        }
+
+        // if (horaInicio < horaFinal) {
+        //     const eventoValidado = this.validarEvento(
+        //         eventos,
+        //         inicio,
+        //         final
+        //     );
+
+        //     if (eventoValidado.resultadoDia.estado && eventoValidado.resultadoHora.estado) {
+
+        //         const evento = {
+        //             id: idSeleccionado,
+        //             nombre: `Practica evaluada - ${usuarioActual.carnet}`,
+        //             id_usuario: usuarioActual.id,
+        //             fecha_inicio: inicio,
+        //             fecha_final: final,
+        //         };
+
+        //         if (agregando) { //Creando nueva práctica
+
+        //             let res = await axios.post("/api/horario/verificarPracticasPorDia", {
+        //                 carnet: this.usuarioActual.carnet,
+        //                 fecha: moment(inicio.toISOString()).format("YYYY-MM-DD"),
+        //             });
+        //             // console.log(res);
+        //             // console.log(parseInt(res.data.numeroPracticas));
+        //             if (
+        //                 parseInt(res.data.numeroPracticas) >= 1 &&
+        //                 this.usuarioActual.access != "admin"
+        //             ) {
+        //                 await setTimeout(() => {
+        //                     alerta.mensaje(
+        //                         `Solo es posible reservar una práctica diaria.\n
+        //                      Tu práctica será almacenada pero deberá ser autorizada por un docente.`,
+        //                         "info",
+        //                         2000
+        //                     );
+        //                 }, 2500);
+        //             }
+
+        //             res = await axios.post("api/horario", evento);
+
+        //             if (res.data.mensaje == 'exito') {
+        //                 alerta.mensaje('Registro de práctica exitosa.', 'success');
+        //             } else {
+        //                 alerta.mensaje('Error: No se pudo registrar la práctica.', 'error');
+        //             }
+        //         } else { //Modificando una práctica
+
+        //             const res = await axios.put("api/horario/" +
+        //                 idSeleccionado, evento);
+
+        //             if (res.data.mensaje == 'exito') {
+        //                 alerta.mensaje('Modificación de práctica exitosa.', 'success');
+        //             } else {
+        //                 alerta.mensaje('Error: No se pudo modificar la práctica.', 'error');
+        //             }
+        //         }
+
+        //     } else if (!eventoValidado.resultadoDia.estado) {
+        //         alerta.mensaje(
+        //             eventoValidado.resultadoDia.mensaje,
+        //             "info"
+        //         );
+        //     } else if (!eventoValidado.resultadoHora.estado) {
+        //         alerta.mensaje(
+        //             eventoValidado.resultadoHora.mensaje,
+        //             "info"
+        //         );
+        //     }
+
+        // } else {
+
+        // }
     }
 
     /**
@@ -230,20 +322,38 @@ export default class Evento {
      * @param {Array} eventos
      * @returns
      */
-    cargarEventos(eventos) {
-        const arrayEventos = [];
+    cargarEventos(eventos, eventosAutorizados = true, eventosPendientes = true, eventosRechazados = false) {
+        let arrayEventos = [];
         eventos.forEach((el) => {
-            arrayEventos.push({
-                id: el.id,
-                name: el.nombre,
-                carnet: el.carnet,
-                start: moment(new Date(el.fecha_inicio)).format("YYYY-MM-DD HH:mm"),
-                end: moment(new Date(el.fecha_final)).format("YYYY-MM-DD HH:mm"),
-                color: el.color,
-                timed: true,
-            });
+            if (el.estado == 'Autorizada' && eventosAutorizados) {
+                arrayEventos = this.agregarEvento(el, arrayEventos);
+            }
+
+            if (el.estado == 'Pendiente' && eventosPendientes) {
+                arrayEventos = this.agregarEvento(el, arrayEventos);
+            }
+
+            if (el.estado == 'Rechazada' && eventosRechazados) {
+                arrayEventos = this.agregarEvento(el, arrayEventos);
+            }
+
         });
         return arrayEventos;
+    }
+
+    agregarEvento(evento, array) {
+        array.push({
+            id: evento.id,
+            name: evento.nombre,
+            carnet: evento.carnet,
+            start: moment(new Date(evento.fecha_inicio)).format("YYYY-MM-DD HH:mm"),
+            end: moment(new Date(evento.fecha_final)).format("YYYY-MM-DD HH:mm"),
+            color: evento.color,
+            estado: evento.estado,
+            timed: true,
+        });
+
+        return array;
     }
 
     /**

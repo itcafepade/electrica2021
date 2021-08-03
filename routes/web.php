@@ -17,7 +17,8 @@ use App\Http\Controllers\HistorialController;
 |
 */
 
-Route::group(['middleware'=>'auth'], function () {
+
+Route::group(['middleware'=>['auth','admin']], function () {
     //Vistas
     Route::get('/', function () {
         return view('home');
@@ -47,13 +48,37 @@ Route::group(['middleware'=>'auth'], function () {
     //Horarios
     Route::resource('api/horario', HorarioController::class);
     Route::post('api/practicaPorIdUsuario', [HorarioController::class, 'obtenerPracticasPorIdUsuario']);
+    Route::post('api/horario/verificarPracticasPorDia', [HorarioController::class, 'verificarPracticasPorDia']);
+    Route::post('api/horario/modificarEstado', [HorarioController::class, 'modificarEstadoEvento']);
 
     //Historial
     Route::resource('api/historial', HistorialController::class);
     Route::post('api/historialPorIdUsuario', [HistorialController::class, 'obtenerAccionesPorIdUsuario']);
 });
 
-Route::post('api/horario/verificarPracticasPorDia', [HorarioController::class, 'verificarPracticasPorDia']);
-Route::post('api/horario/modificarEstado', [HorarioController::class, 'modificarEstadoEvento']);
+Route::group(['middleware'=>'auth'], function () {
+    //Vistas
+    Route::get('/', function () {
+        return view('home');
+    });
+
+    Route::get('/horarios', function () {
+        return view('horarios');
+    });
+    Route::get('/simulador', function () {
+        return view('simulador');
+    });
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    //Usuario
+    Route::post('/registrarUsuarios', [UserController::class, 'store']);
+    Route::get('/usuarioActual', [UserController::class, 'usuarioActual']);
+    Route::post('api/obtenerPorCarnet', [UserController::class, 'obtenerUsuarioPorCarnet']);
+
+    //Horarios
+    Route::resource('api/horario', HorarioController::class);
+    Route::post('api/practicaPorIdUsuario', [HorarioController::class, 'obtenerPracticasPorIdUsuario']);
+    Route::post('api/horario/verificarPracticasPorDia', [HorarioController::class, 'verificarPracticasPorDia']);
+});
 
 Auth::routes(['register' =>false]);

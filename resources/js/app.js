@@ -38,6 +38,9 @@ import Vuetify, {
     VList,
     VListItem,
     VListItemTitle,
+    VRow,
+    VContainer,
+    VCheckbox,
 } from 'vuetify/lib';
 
 const opciones = {
@@ -55,6 +58,9 @@ const opciones = {
         VList,
         VListItem,
         VListItemTitle,
+        VRow,
+        VContainer,
+        VCheckbox,
     }
 }
 

@@ -23,7 +23,7 @@
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+            <div class="container p-0">
                 <a class="navbar-brand" href="{{ url('/home') }}">
                     <img src="{{ asset('imgs/logo.png')}}" height="40px" width="160px">
                 </a>
@@ -40,17 +40,20 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/home') }}">Inicio</a>
                         </li>
-                        @if(auth()->user()->access == 'admin')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url('/acciones') }}">Historial</a>
-                        </li>
-                        @endif
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/horarios') }}">Horarios</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/simulador') }}">Simulador</a>
                         </li>
+                        @if(auth()->user()->access == 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/acciones') }}">Historial</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/ajustes') }}">Ajustes</a>
+                        </li>
+                        @endif
                         @endauth
                     </ul>
 
