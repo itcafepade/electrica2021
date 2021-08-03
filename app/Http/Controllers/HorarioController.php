@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Horario;
 use Illuminate\Http\Request;
 use DB;
-use Carbon\Carbon;
 
 class HorarioController extends Controller
 {
@@ -145,6 +144,12 @@ class HorarioController extends Controller
         return response()->json(['mensaje'=>'exito', 'practicas'=>$practicas]);
     }
 
+    /**
+     * Verifica el número de prácticas agendadas para un día específico.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function verificarPracticasPorDia(Request $request)
     {
         $carnet = $request->carnet;
@@ -159,6 +164,13 @@ class HorarioController extends Controller
         return response()->json(['mensaje'=>'exito', 'numeroPracticas'=>$numeroDePracticas]);
     }
 
+    /**
+     * Modifica el estado de la práctica asignandole el estado correspondiente y un color
+     * representativo con el estado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function modificarEstadoEvento(Request $request)
     {
         $estado = $request->estado;

@@ -7,6 +7,8 @@
           type="text"
           placeholder="Carnet"
           v-model="carnet"
+          @keyup.enter="buscarPorCarnet()"
+          autofocus
         />
       </div>
       <div class="col-4 pl-0">
