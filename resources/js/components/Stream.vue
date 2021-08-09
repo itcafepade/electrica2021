@@ -37,7 +37,6 @@ import axios from "axios";
 const variable = new Variable();
 // console.log(variable.constructor.urlSocket);
 const alerta = new Alerta();
-const socket = io.connect(variable.urlSocket);
 
 export default {
   mounted() {
@@ -45,6 +44,10 @@ export default {
   },
   methods: {
     async init() {
+      const socket = io.connect(variable.urlSocket, {
+        reconnection: false,
+      });
+
       socket.on("image-wCap", (image) => {
         this.$refs.imgStreamCam0.poster = `data:image/webpp;base64,${image}`;
       });

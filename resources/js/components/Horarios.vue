@@ -112,9 +112,75 @@
         <label for="" class="pt-2">Fecha</label>
         <input type="date" class="form-control" v-model="fecha" />
         <label for="" class="pt-2">Hora Inicio</label>
-        <input type="time" class="form-control mt-2" v-model="horaInicio" />
+        <v-dialog
+          class="p-0 m-0"
+          ref="dialogInicio"
+          v-model="modalInicio"
+          :return-value.sync="horaInicio"
+          persistent
+          width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              class="p-0 m-0"
+              v-model="horaInicio"
+              label=""
+              prepend-icon="mdi-clock-time-four-outline"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-time-picker v-if="modalInicio" v-model="horaInicio" full-width>
+            <v-spacer></v-spacer>
+            <v-btn text color="primary" @click="modalInicio = false">
+              Cancelar
+            </v-btn>
+            <v-btn
+              text
+              color="primary"
+              @click="$refs.dialogInicio.save(horaInicio)"
+            >
+              Seleccionar
+            </v-btn>
+          </v-time-picker>
+        </v-dialog>
+        <!-- <input type="time" class="form-control mt-2" v-model="horaInicio" /> -->
         <label for="" class="pt-2">Hora final</label>
-        <input type="time" class="form-control mt-2" v-model="horaFinal" />
+        <v-dialog
+          class="p-0 m-0"
+          ref="dialogFinal"
+          v-model="modalFinal"
+          :return-value.sync="horaFinal"
+          persistent
+          width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              class="p-0 m-0"
+              v-model="horaFinal"
+              label=""
+              prepend-icon="mdi-clock-time-four-outline"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-time-picker v-if="modalFinal" v-model="horaFinal" full-width>
+            <v-spacer></v-spacer>
+            <v-btn text color="primary" @click="modalFinal = false">
+              Cancelar
+            </v-btn>
+            <v-btn
+              text
+              color="primary"
+              @click="$refs.dialogFinal.save(horaFinal)"
+            >
+              Seleccionar
+            </v-btn>
+          </v-time-picker>
+        </v-dialog>
+        <!-- <input type="time" class="form-control mt-2" v-model="horaFinal" /> -->
         <a href="#" class="btn btn-primary mt-3" @click="agregarNuevoEvento()">
           <i class="bi bi-arrow-bar-down"></i> Reservar
         </a>
@@ -260,6 +326,8 @@ export default {
     checkBoxAutorizadas: true,
     checkBoxPendientes: true,
     checkBoxRechazadas: false,
+    modalInicio: false,
+    modalFinal: false,
   }),
   mounted() {
     this.$refs.calendar.checkChange();
@@ -303,6 +371,8 @@ export default {
       const finalEnPunto = moment(final.toISOString()).format(
         "YYYY-MM-DDTHH:00"
       );
+
+      console.log(inicioEnPunto);
 
       if (this.editando) {
         // Modificando evento existente

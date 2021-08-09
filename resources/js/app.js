@@ -24,47 +24,31 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
 /**
  * Vuetify
  */
-import Vuetify, {
-    VApp,
-    VCalendar,
-    VSheet,
-    VBtn,
-    VIcon,
-    VSpacer,
-    VToolbar,
-    VMenu,
-    VToolbarTitle,
-    VSwitch,
-    VList,
-    VListItem,
-    VListItemTitle,
-    VRow,
-    VContainer,
-    VCheckbox,
-} from 'vuetify/lib';
+import Vuetify from 'vuetify';
 
-const opciones = {
-    components: {
-        VCalendar,
-        VApp,
-        VSheet,
-        VBtn,
-        VIcon,
-        VSpacer,
-        VToolbar,
-        VMenu,
-        VToolbarTitle,
-        VSwitch,
-        VList,
-        VListItem,
-        VListItemTitle,
-        VRow,
-        VContainer,
-        VCheckbox,
-    }
-}
+// const opciones = {
+//     components: {
+//         VCalendar,
+//         VApp,
+//         VSheet,
+//         VBtn,
+//         VIcon,
+//         VSpacer,
+//         VToolbar,
+//         VMenu,
+//         VToolbarTitle,
+//         VSwitch,
+//         VList,
+//         VListItem,
+//         VListItemTitle,
+//         VRow,
+//         VContainer,
+//         VCheckbox,
+//         VTimePicker,
+//     }
+// }
 
-Vue.use(Vuetify, opciones);
+Vue.use(Vuetify);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
