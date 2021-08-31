@@ -7,6 +7,15 @@
       <a href="/plantilla.csv" class="btn btn-success mb-3"
         ><i class="bi bi-file-earmark-medical"></i> Plantilla</a
       >
+      <a
+        href="#"
+        class="btn btn-primary mb-3"
+        data-toggle="modal"
+        data-target="#exampleModal"
+      >
+        <i class="bi bi-person-plus-fill"></i> Registrar usuario
+      </a>
+
       <!-- Descargar plantilla  -->
       <div class="input-group mb-3">
         <div class="custom-file">
@@ -20,7 +29,7 @@
         </div>
       </div>
       <a href="#" class="btn btn-primary" @click="registrarUsuarios()">
-        <i class="bi bi-calendar4-week"></i> Reservar
+        <i class="bi bi-calendar4-week"></i> Registrar por csv
       </a>
       <!-- Reservación con archivo  -->
 
@@ -79,6 +88,98 @@
         </tbody>
       </table>
     </div>
+
+    <!-- MODAL -->
+    <div class="modal fade" tabindex="-1" id="exampleModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Registro de usuario</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="d-flex align-items-center" v-if="nuevoUsuarioCargando">
+              <strong>Registrando...</strong>
+              <div
+                class="spinner-border ml-auto"
+                role="status"
+                style="width: 3rem; height: 3rem"
+                aria-hidden="true"
+              ></div>
+            </div>
+            <label for="">Carnet</label>
+            <input
+              type="number"
+              class="form-control"
+              placeholder="999999"
+              v-model="nuevoUsuario.carnet.texto"
+              @keyup="validarCampo('Carnet')"
+              ref="nuevoUsuarioCarnet"
+            />
+            <label for="" class="pt-2">Correo</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="usuario@itca.edu.sv"
+              v-model="nuevoUsuario.correo.texto"
+              @keyup="validarCampo('Correo')"
+              ref="nuevoUsuarioCorreo"
+            />
+            <label for="" class="pt-2">Nombres</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="José Roberto"
+              v-model="nuevoUsuario.nombres.texto"
+              @keyup="validarCampo('Nombres')"
+              ref="nuevoUsuarioNombres"
+            />
+            <label for="" class="pt-2">Apellidos</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Marquez Hernandez"
+              v-model="nuevoUsuario.apellidos.texto"
+              @keyup="validarCampo('Apellidos')"
+              ref="nuevoUsuarioApellidos"
+            />
+            <label for="" class="pt-2">Carrera</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Ing. Eléctrica"
+              v-model="nuevoUsuario.carrera.texto"
+              @keyup="validarCampo('Carrera')"
+              ref="nuevoUsuarioCarrera"
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="registrarNuevoUsuario()"
+            >
+              Registrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MODAL -->
   </div>
 </template>
 
@@ -86,8 +187,10 @@
 import Archivo from "../libs/archivo";
 import axios from "axios";
 import Alerta from "../libs/alerta";
+import Interfaz from "../libs/interfaz";
 
 const archivo = new Archivo();
+const interfaz = new Interfaz();
 const alerta = new Alerta();
 
 export default {
@@ -97,6 +200,29 @@ export default {
       usuario: {},
       texto: "",
       nombreArchivo: "Elige un archivo",
+      nuevoUsuario: {
+        carnet: {
+          texto: "040119",
+          validado: true,
+        },
+        correo: {
+          texto: "leonel.lopez19@itca.edu.sv",
+          validado: true,
+        },
+        nombres: {
+          texto: "Leonel Antonio",
+          validado: true,
+        },
+        apellidos: {
+          texto: "López Valencia",
+          validado: true,
+        },
+        carrera: {
+          texto: "Ing. Eléctrica",
+          validado: true,
+        },
+      },
+      nuevoUsuarioCargando: false,
     };
   },
   methods: {
@@ -138,6 +264,134 @@ export default {
       }
 
       this.nombreArchivo = "Elige un archivo";
+    },
+    validarCampo(campo, input) {
+      switch (campo) {
+        case "Carnet": {
+          const txtCarnet = this.$refs.nuevoUsuarioCarnet;
+          if (this.nuevoUsuario.carnet.texto.length == 6) {
+            this.nuevoUsuario.carnet.validado = true;
+            interfaz.actualizarClase(txtCarnet, "is-invalid", "is-valid");
+            break;
+          }
+
+          this.nuevoUsuario.carnet.validado = false;
+          txtCarnet.classList.add("is-invalid");
+          break;
+        }
+        case "Correo": {
+          const regex = /^[a-zA-Z0-9._-]+@itca.edu.sv/;
+          const txtCorreo = this.$refs.nuevoUsuarioCorreo;
+          if (this.nuevoUsuario.correo.texto.match(regex)) {
+            this.nuevoUsuario.correo.validado = true;
+            interfaz.actualizarClase(txtCorreo, "is-invalid", "is-valid");
+            break;
+          }
+
+          this.nuevoUsuario.correo.validado = false;
+          txtCorreo.classList.add("is-invalid");
+          break;
+        }
+        case "Nombres": {
+          if (this.nuevoUsuario.nombres == undefined) {
+            break;
+          }
+
+          const txtNombres = this.$refs.nuevoUsuarioNombres;
+          if (this.nuevoUsuario.nombres.texto.length > 0) {
+            this.nuevoUsuario.nombres.validado = true;
+            interfaz.actualizarClase(txtNombres, "is-invalid", "is-valid");
+            break;
+          }
+
+          this.nuevoUsuario.nombres.validado = false;
+          txtNombres.classList.add("is-invalid");
+          break;
+        }
+        case "Apellidos": {
+          if (this.nuevoUsuario.apellidos.texto == undefined) {
+            break;
+          }
+
+          const txtApellidos = this.$refs.nuevoUsuarioApellidos;
+          if (this.nuevoUsuario.apellidos.texto.length > 0) {
+            this.nuevoUsuario.apellidos.validado = true;
+            interfaz.actualizarClase(txtApellidos, "is-invalid", "is-valid");
+            break;
+          }
+
+          this.nuevoUsuario.apellidos.validado = true;
+          txtApellidos.classList.add("is-invalid");
+          break;
+        }
+        case "Carrera": {
+          if (this.nuevoUsuario.carrera == undefined) {
+            break;
+          }
+
+          const txtCarrera = this.$refs.nuevoUsuarioCarrera;
+          if (this.nuevoUsuario.carrera.texto.length > 0) {
+            this.nuevoUsuario.carrera.validado = true;
+            interfaz.actualizarClase(txtCarrera, "is-invalid", "is-valid");
+            break;
+          }
+
+          this.nuevoUsuario.carrera.validado = true;
+          txtCarrera.classList.add("is-invalid");
+          break;
+        }
+      }
+    },
+    async registrarNuevoUsuario() {
+      if (
+        !this.nuevoUsuario.carnet.validado &&
+        !this.nuevoUsuario.correo.validado &&
+        !this.nuevoUsuario.nombres.validado &&
+        !this.nuevoUsuario.apellidos.validado &&
+        !this.nuevoUsuario.carrera.validado
+      ) {
+        this.usuarios = [];
+        this.nuevoUsuario = {};
+
+        alerta.mensaje(
+          "Verifique los campos que no han sido validados.",
+          "error"
+        );
+        return;
+      }
+
+      this.usuarios = [];
+      this.usuarios.push({
+        carnet: this.nuevoUsuario.carnet.texto,
+        correo: this.nuevoUsuario.correo.texto,
+        nombres: this.nuevoUsuario.nombres.texto,
+        apellidos: this.nuevoUsuario.apellidos.texto,
+        carrera: this.nuevoUsuario.carrera.texto,
+      });
+      const usuarios = JSON.parse(JSON.stringify(this.usuarios));
+
+      const res = await axios
+        .post("/registrarUsuarios", {
+          usuarios: usuarios,
+        })
+        .catch((error) => {
+          alerta.mensaje(error, "error");
+        });
+
+      if (res.data.mensaje == "exito") {
+        alerta.mensaje("Usuario registrado correctamente.", "success");
+      } else {
+        alerta.mensaje(
+          "Usuario no pudieron ser registrados correctamente.",
+          "error"
+        );
+      }
+      this.usuarios = [];
+      this.nuevoUsuario.carnet.texto = "";
+      this.nuevoUsuario.correo.texto = "";
+      this.nuevoUsuario.nombres.texto = "";
+      this.nuevoUsuario.apellidos.texto = "";
+      this.nuevoUsuario.carrera.texto = "";
     },
   },
 };

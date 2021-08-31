@@ -16,20 +16,28 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $usuarios = $request->usuarios;
+        try {
+            $usuarios = $request->usuarios;
 
-        foreach ($usuarios as $usuario) {
-            User::firstOrNew([
-                'email' => $usuario['correo'],
-                'password' => Hash::make('adminItca'),
-                'name' => $usuario['nombres'].' '.$usuario['apellidos'],
-                'access' => 'estudiante',
-                'carrera' => $usuario['carrera'],
-                'carnet' => $usuario['carnet'],
-            ]);
+            foreach ($usuarios as $usuario) {
+                $user = User::firstOrNew([
+                    'email' => $usuario['correo'],
+                    'password' => Hash::make('adminItca'),
+                    'name' => $usuario['nombres'].' '.$usuario['apellidos'],
+                    'access' => 'estudiante',
+                    'carrera' => $usuario['carrera'],
+                    'carnet' => $usuario['carnet']
+                ]);
+
+                if ($user->exists) {
+                    $user->save();
+                }
+            }
+
+            return response()->json(['mensaje'=>'exito']);
+        } catch (\Throwable $th) {
+            //throw $th;
         }
-
-        return response()->json(['mensaje'=>'exito']);
     }
 
     /**
