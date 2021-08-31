@@ -360,6 +360,7 @@ export default {
         return;
       }
 
+      this.nuevoUsuarioCargando = true;
       this.usuarios = [];
       this.usuarios.push({
         carnet: this.nuevoUsuario.carnet.texto,
@@ -392,6 +393,7 @@ export default {
       this.nuevoUsuario.nombres.texto = "";
       this.nuevoUsuario.apellidos.texto = "";
       this.nuevoUsuario.carrera.texto = "";
+      this.nuevoUsuarioCargando = false;
     },
   },
 };
