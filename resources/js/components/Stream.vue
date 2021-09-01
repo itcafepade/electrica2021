@@ -1,9 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <button href="#" class="btn btn-danger" id="desconectar">
-        Desconectar
-      </button>
+      <button class="btn btn-danger" id="desconectar">Desconectar</button>
       <button class="btn btn-primary" style="display: none" id="conectar">
         Conectar
       </button>
@@ -53,30 +51,34 @@ export default {
   },
   methods: {
     async init() {
+      let desconectar = document.getElementById("desconectar");
+      let conectar = document.getElementById("conectar");
+
       const socket = io.connect(variable.urlSocket, {
         reconnection: false,
       });
 
+      if (localStorage.getItem("estado") == "desconectado") {
+        socket.disconnect();
+
+        desconectar.setAttribute("style", "display:none");
+        conectar.setAttribute("style", "display:block");
+      }
+
       $("#desconectar").click(() => {
-        document
-          .getElementById("desconectar")
-          .setAttribute("style", "display:none");
-        document
-          .getElementById("conectar")
-          .setAttribute("style", "display:block");
+        desconectar.setAttribute("style", "display:none");
+        conectar.setAttribute("style", "display:block");
 
         socket.disconnect();
+        localStorage.setItem("estado", "desconectado");
       });
 
       $("#conectar").click(() => {
-        document
-          .getElementById("desconectar")
-          .setAttribute("style", "display:block");
-        document
-          .getElementById("conectar")
-          .setAttribute("style", "display:none");
+        desconectar.setAttribute("style", "display:block");
+        conectar.setAttribute("style", "display:none");
 
         socket.connect();
+        localStorage.setItem("estado", "conectado");
       });
 
       socket.on("connect", () => {
