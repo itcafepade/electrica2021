@@ -236,7 +236,10 @@
                   <div class="row">
                     <stream />
                   </div>
-                  <h5 class="pt-3">Simulación</h5>
+                  <div class="row">
+                    <h5 class="pt-3">Simulación</h5>
+                  </div>
+
                   <input
                     type="number"
                     v-model="nivelTanque1"

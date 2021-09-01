@@ -1,6 +1,14 @@
 <template>
   <div class="container-fluid">
     <div class="row">
+      <button href="#" class="btn btn-danger" id="desconectar">
+        Desconectar
+      </button>
+      <button class="btn btn-primary" style="display: none" id="conectar">
+        Conectar
+      </button>
+    </div>
+    <div class="row">
       <div class="col-md-6 m-0 p-0">
         <h6 class="pb-0 mb-0 pt-3">Cámara 1</h6>
         <video
@@ -32,6 +40,7 @@ const io = require("socket.io-client");
 import Alerta from "../libs/alerta";
 import Variable from "../libs/variable";
 import axios from "axios";
+import { DatasetController } from "chart.js";
 
 // const variable.urlSocket = "http://192.168.1.24:3000/";
 const variable = new Variable();
@@ -46,6 +55,38 @@ export default {
     async init() {
       const socket = io.connect(variable.urlSocket, {
         reconnection: false,
+      });
+
+      $("#desconectar").click(() => {
+        document
+          .getElementById("desconectar")
+          .setAttribute("style", "display:none");
+        document
+          .getElementById("conectar")
+          .setAttribute("style", "display:block");
+
+        socket.disconnect();
+      });
+
+      $("#conectar").click(() => {
+        document
+          .getElementById("desconectar")
+          .setAttribute("style", "display:block");
+        document
+          .getElementById("conectar")
+          .setAttribute("style", "display:none");
+
+        socket.connect();
+      });
+
+      socket.on("connect", () => {
+        console.log("cliente reconectado");
+      });
+
+      socket.on("disconnect", () => {
+        this.$refs.imgStreamCam0.poster = "/imgs/transmision.png";
+        this.$refs.imgStreamCam1.poster = "/imgs/transmision.png";
+        console.log("cliente desconectado del servidor");
       });
 
       socket.on("image-wCap", (image) => {
