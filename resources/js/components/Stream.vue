@@ -1,10 +1,11 @@
 <template>
   <div class="container-fluid">
-    <div class="row">
-      <button class="btn btn-danger" id="desconectar">Desconectar</button>
-      <button class="btn btn-primary" style="display: none" id="conectar">
-        Conectar
-      </button>
+    <div class="container" v-if="mostrarControl">
+      <div v-if="!streamingCam0 || !streamingCam1">
+        <button class="btn btn-danger" @click="cambiarControl()" ref="control">
+          Desconectar
+        </button>
+      </div>
     </div>
     <div class="row">
       <div class="col-md-6 m-0 p-0">
@@ -38,48 +39,40 @@ const io = require("socket.io-client");
 import Alerta from "../libs/alerta";
 import Variable from "../libs/variable";
 import axios from "axios";
-import { DatasetController } from "chart.js";
+import Interfaz from "../libs/interfaz";
 
-// const variable.urlSocket = "http://192.168.1.24:3000/";
 const variable = new Variable();
-// console.log(variable.constructor.urlSocket);
 const alerta = new Alerta();
+const interfaz = new Interfaz();
+let socket;
 
 export default {
+  data() {
+    return {
+      streamingCam0: false,
+      streamingCam1: false,
+      mostrarControl: this.mostrarControles,
+    };
+  },
+  props: { mostrarControles: Boolean },
   mounted() {
+    console.log(this.mostrarControles);
     this.init();
   },
   methods: {
     async init() {
-      let desconectar = document.getElementById("desconectar");
-      let conectar = document.getElementById("conectar");
-
-      const socket = io.connect(variable.urlSocket, {
+      socket = io.connect(variable.urlSocket, {
         reconnection: false,
       });
 
-      if (localStorage.getItem("estado") == "desconectado") {
-        socket.disconnect();
-
-        desconectar.setAttribute("style", "display:none");
-        conectar.setAttribute("style", "display:block");
+      if (
+        localStorage.getItem("estado") != "desconectado" &&
+        !this.$refs.control
+      ) {
+        this.cambiarControl();
+      } else {
+        this.cambiarControl();
       }
-
-      $("#desconectar").click(() => {
-        desconectar.setAttribute("style", "display:none");
-        conectar.setAttribute("style", "display:block");
-
-        socket.disconnect();
-        localStorage.setItem("estado", "desconectado");
-      });
-
-      $("#conectar").click(() => {
-        desconectar.setAttribute("style", "display:block");
-        conectar.setAttribute("style", "display:none");
-
-        socket.connect();
-        localStorage.setItem("estado", "conectado");
-      });
 
       socket.on("connect", () => {
         console.log("cliente reconectado");
@@ -88,7 +81,7 @@ export default {
       socket.on("disconnect", () => {
         this.$refs.imgStreamCam0.poster = "/imgs/transmision.png";
         this.$refs.imgStreamCam1.poster = "/imgs/transmision.png";
-        console.log("cliente desconectado del servidor");
+        console.log("Cliente desconectado del servidor");
       });
 
       socket.on("image-wCap", (image) => {
@@ -124,6 +117,10 @@ export default {
       });
 
       const res = await axios.get(variable.urlSocket + "getStreamValue");
+
+      this.streamCam0 = res.data.streamCam0;
+      this.streamCam1 = res.data.streamCam1;
+
       if (!res.data.streamingCam0) {
         this.$refs.imgStreamCam0.poster = "/imgs/transmision.png";
         alerta.mensaje(
@@ -139,16 +136,40 @@ export default {
 
       if (!res.data.streamingCam1) {
         this.$refs.imgStreamCam1.poster = "/imgs/transmision.png";
-        alerta.mensaje(
-          "No hay una transmisión de la cámara 2 por mostrar.",
-          "info"
-        );
+        setTimeout(() => {
+          alerta.mensaje(
+            "No hay una transmisión de la cámara 2 por mostrar.",
+            "info"
+          );
+        }, 2000);
       } else {
         alerta.mensaje(
           "Te has conectado a la transmisión de la cámara 2.",
           "success"
         );
       }
+
+      this.contador++;
+    },
+    cambiarControl() {
+      if (localStorage.getItem("estado") == "conectado") {
+        interfaz.actualizarClase(
+          this.$refs.control,
+          "btn-danger",
+          "btn-primary"
+        );
+
+        this.$refs.control.innerText = "Conectar";
+        socket.disconnect();
+        localStorage.setItem("estado", "desconectado");
+
+        return;
+      }
+
+      this.$refs.control.innerText = "Desconectar";
+      interfaz.actualizarClase(this.$refs.control, "btn-primary", "btn-danger");
+      socket.connect();
+      localStorage.setItem("estado", "conectado");
     },
   },
 };

@@ -234,7 +234,7 @@
                 >
                 <div class="card-body mx-auto" id="transmision">
                   <div class="row">
-                    <stream />
+                    <stream :mostrarControles="mostrarControles" />
                   </div>
                   <div class="row">
                     <h5 class="pt-3">Simulación</h5>
@@ -381,6 +381,7 @@ export default {
   components: { VueSpeedometer, grafico },
   data() {
     return {
+      mostrarControles: true,
       switch1: true,
       temperaturaValor: 0,
       renderizarComponente: 0,

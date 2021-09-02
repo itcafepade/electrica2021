@@ -18,7 +18,7 @@
         >
       </div>
       <div class="col-12 div col-sm-12 col-md-12">
-        <stream />
+        <stream :mostrarControles="mostrarControles" />
       </div>
     </div>
   </div>
@@ -37,6 +37,7 @@ export default {
       valorStreamCam0: false,
       textoStreamCam1: "Iniciar transmisión Cámara 2",
       valorStreamCam1: false,
+      mostrarControles: false,
     };
   },
   mounted() {
