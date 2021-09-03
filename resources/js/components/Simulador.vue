@@ -61,7 +61,7 @@
                       <div class="my-2">
                         Indicador de flujo
                         <svg
-                          id="indicador"
+                          ref="indicador"
                           xmlns="http://www.w3.org/2000/svg"
                           xmlns:xlink="http://www.w3.org/1999/xlink"
                           viewBox="0 0 30 30"
@@ -81,8 +81,8 @@
                       <div class="my-2">
                         <a
                           href="#cambiarIndicador"
-                          id="btnIndicador"
-                          @click="cambiarIndicador"
+                          ref="btnIndicador"
+                          @click="actualizarIndicador"
                           class="btn btn-info text-white text-decoration-none"
                         >
                           Indicador de flujo
@@ -407,11 +407,11 @@ import Interfaz from "../libs/interfaz";
 
 const ui = new Interfaz();
 
-var cambiarIndicador = 0;
 export default {
   components: { VueSpeedometer, grafico },
   data() {
     return {
+      cambiarIndicador: 0,
       mostrarControles: true,
       switch1: true,
       temperaturaValor: 0,
@@ -576,20 +576,19 @@ export default {
 
       this.actualizarComponente++;
     },
-    cambiarIndicador() {
-      let indicador = document.getElementById("indicador");
-      if (cambiarIndicador == 0) {
-        indicador.setAttribute(
+    actualizarIndicador() {
+      if (this.cambiarIndicador == 0) {
+        this.$refs.indicador.setAttribute(
           "style",
           "width: 5rem;background: red;border-radius: 10px;border: solid 2px;"
         );
-        cambiarIndicador = 1;
+        this.cambiarIndicador = 1;
       } else {
-        indicador.setAttribute(
+        this.$refs.indicador.setAttribute(
           "style",
           "width: 5rem;background: green;border-radius: 10px;border: solid 2px;"
         );
-        cambiarIndicador = 0;
+        this.cambiarIndicador = 0;
       }
     },
   },

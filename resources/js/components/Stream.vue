@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="container" v-if="mostrarControl">
-      <div v-if="!streamingCam0 || !streamingCam1">
+      <div v-if="streamingCam0 || streamingCam1">
         <button class="btn btn-danger" @click="cambiarControl()" ref="control">
           Desconectar
         </button>
@@ -61,18 +61,14 @@ export default {
   },
   methods: {
     async init() {
+      /**
+       *
+       * SOCKET.IO
+       *
+       */
       socket = io.connect(variable.urlSocket, {
         reconnection: false,
       });
-
-      if (
-        localStorage.getItem("estado") != "desconectado" &&
-        !this.$refs.control
-      ) {
-        this.cambiarControl();
-      } else {
-        this.cambiarControl();
-      }
 
       socket.on("connect", () => {
         console.log("cliente reconectado");
@@ -116,42 +112,29 @@ export default {
         }
       });
 
+      /**
+       *
+       * SOCKET.IO
+       *
+       */
+
       const res = await axios.get(variable.urlSocket + "getStreamValue");
 
-      this.streamCam0 = res.data.streamCam0;
-      this.streamCam1 = res.data.streamCam1;
+      this.streamingCam0 = res.data.streamingCam0;
+      console.log("Streaming cam 0: " + res.data.streamingCam0);
+      this.streamingCam1 = res.data.streamingCam1;
+      console.log("Streaming cam 1: " + res.data.streamingCam1);
 
-      if (!res.data.streamingCam0) {
-        this.$refs.imgStreamCam0.poster = "/imgs/transmision.png";
-        alerta.mensaje(
-          "No hay una transmisión de la cámara 1 por mostrar.",
-          "info"
-        );
-      } else {
-        alerta.mensaje(
-          "Te has conectado a la transmisión de la cámara 1.",
-          "success"
-        );
-      }
-
-      if (!res.data.streamingCam1) {
-        this.$refs.imgStreamCam1.poster = "/imgs/transmision.png";
-        setTimeout(() => {
-          alerta.mensaje(
-            "No hay una transmisión de la cámara 2 por mostrar.",
-            "info"
-          );
-        }, 2000);
-      } else {
-        alerta.mensaje(
-          "Te has conectado a la transmisión de la cámara 2.",
-          "success"
-        );
-      }
-
-      this.contador++;
+      this.inicializarValorStream();
     },
     cambiarControl() {
+      if (!this.streamingCam0 && !this.streamingCam1) {
+        this.$refs.control.setAttribute("style", "display: none");
+        return;
+      }
+
+      this.$refs.control.setAttribute("style", "display: block");
+
       if (localStorage.getItem("estado") == "conectado") {
         interfaz.actualizarClase(
           this.$refs.control,
@@ -166,10 +149,78 @@ export default {
         return;
       }
 
+      this.mostrarAlertasDeConexion();
       this.$refs.control.innerText = "Desconectar";
       interfaz.actualizarClase(this.$refs.control, "btn-primary", "btn-danger");
       socket.connect();
       localStorage.setItem("estado", "conectado");
+    },
+
+    inicializarValorStream() {
+      if (localStorage.getItem("estado") == null) {
+        if (!this.streamingCam0 || !this.streamingCam1) {
+          localStorage.setItem("estado", "desconectado");
+        } else {
+          localStorage.setItem("estado", "conectado");
+        }
+      }
+
+      setTimeout(() => {
+        if (this.$refs.control) {
+          this.$refs.control.setAttribute("style", "display: block");
+
+          if (localStorage.getItem("estado") == "conectado") {
+            this.mostrarAlertasDeConexion();
+            this.$refs.control.innerText = "Desconectar";
+            interfaz.actualizarClase(
+              this.$refs.control,
+              "btn-primary",
+              "btn-danger"
+            );
+            socket.connect();
+          } else {
+            interfaz.actualizarClase(
+              this.$refs.control,
+              "btn-danger",
+              "btn-primary"
+            );
+
+            this.$refs.control.innerText = "Conectar";
+            socket.disconnect();
+          }
+        }
+      }, 20);
+    },
+    mostrarAlertasDeConexion() {
+      if (!this.streamingCam0) {
+        this.$refs.imgStreamCam0.poster = "/imgs/transmision.png";
+        alerta.mensaje(
+          "No hay una transmisión de la cámara 1 por mostrar.",
+          "info"
+        );
+      } else {
+        alerta.mensaje(
+          "Te has conectado a la transmisión de la cámara 1.",
+          "success"
+        );
+      }
+
+      if (!this.streamingCam1) {
+        this.$refs.imgStreamCam1.poster = "/imgs/transmision.png";
+        setTimeout(() => {
+          alerta.mensaje(
+            "No hay una transmisión de la cámara 2 por mostrar.",
+            "info"
+          );
+        }, 1575);
+      } else {
+        setTimeout(() => {
+          alerta.mensaje(
+            "Te has conectado a la transmisión de la cámara 2.",
+            "success"
+          );
+        }, 1575);
+      }
     },
   },
 };
