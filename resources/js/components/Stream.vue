@@ -156,7 +156,7 @@ export default {
       this.inicializarValorStream();
     },
     cambiarControl() {
-      if (!this.streamingCam0 || !this.streamingCam1) {
+      if (!this.streamingCam0 && !this.streamingCam1) {
         this.$refs.control.setAttribute("style", "display: none");
         return;
       }
