@@ -125,34 +125,6 @@ export default {
       this.streamingCam1 = res.data.streamingCam1;
       console.log("Streaming cam 1: " + res.data.streamingCam1);
 
-      if (!this.streamingCam0) {
-        this.$refs.imgStreamCam0.poster = "/imgs/transmision.png";
-        alerta.mensaje(
-          "No hay una transmisión de la cámara 1 por mostrar.",
-          "info"
-        );
-      } else {
-        alerta.mensaje(
-          "Te has conectado a la transmisión de la cámara 1.",
-          "success"
-        );
-      }
-
-      if (!this.streamingCam1) {
-        this.$refs.imgStreamCam1.poster = "/imgs/transmision.png";
-        setTimeout(() => {
-          alerta.mensaje(
-            "No hay una transmisión de la cámara 2 por mostrar.",
-            "info"
-          );
-        }, 2000);
-      } else {
-        alerta.mensaje(
-          "Te has conectado a la transmisión de la cámara 2.",
-          "success"
-        );
-      }
-
       this.inicializarValorStream();
     },
     cambiarControl() {
@@ -177,6 +149,7 @@ export default {
         return;
       }
 
+      this.mostrarAlertasDeConexion();
       this.$refs.control.innerText = "Desconectar";
       interfaz.actualizarClase(this.$refs.control, "btn-primary", "btn-danger");
       socket.connect();
@@ -197,6 +170,7 @@ export default {
           this.$refs.control.setAttribute("style", "display: block");
 
           if (localStorage.getItem("estado") == "conectado") {
+            this.mostrarAlertasDeConexion();
             this.$refs.control.innerText = "Desconectar";
             interfaz.actualizarClase(
               this.$refs.control,
@@ -216,6 +190,37 @@ export default {
           }
         }
       }, 20);
+    },
+    mostrarAlertasDeConexion() {
+      if (!this.streamingCam0) {
+        this.$refs.imgStreamCam0.poster = "/imgs/transmision.png";
+        alerta.mensaje(
+          "No hay una transmisión de la cámara 1 por mostrar.",
+          "info"
+        );
+      } else {
+        alerta.mensaje(
+          "Te has conectado a la transmisión de la cámara 1.",
+          "success"
+        );
+      }
+
+      if (!this.streamingCam1) {
+        this.$refs.imgStreamCam1.poster = "/imgs/transmision.png";
+        setTimeout(() => {
+          alerta.mensaje(
+            "No hay una transmisión de la cámara 2 por mostrar.",
+            "info"
+          );
+        }, 1575);
+      } else {
+        setTimeout(() => {
+          alerta.mensaje(
+            "Te has conectado a la transmisión de la cámara 2.",
+            "success"
+          );
+        }, 1575);
+      }
     },
   },
 };
