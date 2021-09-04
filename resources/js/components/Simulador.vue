@@ -58,6 +58,36 @@
                           />
                         </div>
                       </div>
+                      <div class="my-2">
+                        Indicador de flujo
+                        <svg
+                          ref="indicador"
+                          xmlns="http://www.w3.org/2000/svg"
+                          xmlns:xlink="http://www.w3.org/1999/xlink"
+                          viewBox="0 0 30 30"
+                          style="
+                            width: 5rem;
+                            background: green;
+                            border-radius: 10px;
+                            border: solid 2px;
+                          "
+                        >
+                          <path
+                            d="M12.984375 2.9863281 A 1.0001 1.0001 0 0 0 12 4L8.7285156 4 A 2 2 0 0 0 7 3 A 2 2 0 0 0 5 5 A 2 2 0 0 0 7 7 A 2 2 0 0 0 8.7304688 6L12 6L12 9.1308594 A 4 4 0 0 0 10.361328 10L4 10L4 16L10.361328 16 A 4 4 0 0 0 13 17 A 4 4 0 0 0 15.638672 16L18 16C19.105 16 20 16.895 20 18L20 21L26 21L26 18C26 13.582 22.418 10 18 10L15.638672 10 A 4 4 0 0 0 14 9.1328125L14 6L17.271484 6 A 2 2 0 0 0 19 7 A 2 2 0 0 0 21 5 A 2 2 0 0 0 19 3 A 2 2 0 0 0 17.269531 4L14 4 A 1.0001 1.0001 0 0 0 12.984375 2.9863281 z M 23 23C23 23 21 25.895 21 27C21 28.105 21.895 29 23 29C24.105 29 25 28.105 25 27C25 25.895 23 23 23 23 z"
+                            fill="#fff"
+                          />
+                        </svg>
+                      </div>
+                      <div class="my-2">
+                        <a
+                          href="#cambiarIndicador"
+                          ref="btnIndicador"
+                          @click="actualizarIndicador"
+                          class="btn btn-info text-white text-decoration-none"
+                        >
+                          Indicador de flujo
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -234,9 +264,12 @@
                 >
                 <div class="card-body mx-auto" id="transmision">
                   <div class="row">
-                    <stream />
+                    <stream :mostrarControles="mostrarControles" />
                   </div>
-                  <h5 class="pt-3">Simulación</h5>
+                  <div class="row">
+                    <h5 class="pt-3">Simulación</h5>
+                  </div>
+
                   <input
                     type="number"
                     v-model="nivelTanque1"
@@ -378,6 +411,8 @@ export default {
   components: { VueSpeedometer, grafico },
   data() {
     return {
+      cambiarIndicador: 0,
+      mostrarControles: true,
       switch1: true,
       temperaturaValor: 0,
       renderizarComponente: 0,
@@ -540,6 +575,21 @@ export default {
       //   this.nivelTanque2 = this.nivelTanque2 + " mL";
 
       this.actualizarComponente++;
+    },
+    actualizarIndicador() {
+      if (this.cambiarIndicador == 0) {
+        this.$refs.indicador.setAttribute(
+          "style",
+          "width: 5rem;background: red;border-radius: 10px;border: solid 2px;"
+        );
+        this.cambiarIndicador = 1;
+      } else {
+        this.$refs.indicador.setAttribute(
+          "style",
+          "width: 5rem;background: green;border-radius: 10px;border: solid 2px;"
+        );
+        this.cambiarIndicador = 0;
+      }
     },
   },
 };

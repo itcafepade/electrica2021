@@ -349,6 +349,13 @@ export default class Evento {
         return arrayEventos;
     }
 
+    /**
+     *  Inserta en el array el evento especificado.
+     *
+     * @param {Object} evento
+     * @param {Array} array
+     * @returns
+     */
     agregarEvento(evento, array) {
         array.push({
             id: evento.id,
