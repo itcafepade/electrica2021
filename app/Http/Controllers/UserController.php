@@ -29,7 +29,7 @@ class UserController extends Controller
                     'carnet' => $usuario['carnet']
                 ]);
 
-                if ($user->exists) {
+                if (!$user->exists) {
                     $user->save();
                 }
             }

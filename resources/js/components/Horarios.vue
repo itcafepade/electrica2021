@@ -422,7 +422,10 @@ export default {
     },
     async eliminarReservacion() {
       if (this.editando && this.selectedEvent != {}) {
-        if (this.usuarioActual.carnet == this.selectedEvent.carnet) {
+        if (
+          this.usuarioActual.carnet == this.selectedEvent.carnet ||
+          this.usuarioActual.access == "admin"
+        ) {
           const res = await Swal.fire({
             title: "Eliminar práctica",
             text: "Esta acción es irreversible.",
