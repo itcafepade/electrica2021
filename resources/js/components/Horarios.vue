@@ -393,9 +393,9 @@ export default {
         this.selectedEvent.id
       );
 
-      //   this.horaInicio = "";
-      //   this.horaFinal = "";
-      //   this.fecha = "";
+      this.horaInicio = "";
+      this.horaFinal = "";
+      this.fecha = "";
       this.editando = false;
       this.agregando = false;
       this.selectedEvent = {};

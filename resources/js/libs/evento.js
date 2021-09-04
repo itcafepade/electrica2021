@@ -222,10 +222,6 @@ export default class Evento {
             fecha: moment(new Date(inicio)).format("YYYY-MM-DD"),
         });
 
-        evento.color = 'green';
-
-        console.log(res.data.numeroPracticas)
-
         if (parseInt(res.data.numeroPracticas) >= 1 && usuarioActual.access != "admin") {
             await setTimeout(() => {
                 alerta.mensaje(
@@ -235,8 +231,6 @@ export default class Evento {
                     2000
                 );
             }, 2500);
-
-            evento.color = 'orange';
 
         }
 
@@ -248,80 +242,6 @@ export default class Evento {
             alerta.mensaje('Error: No se pudo registrar la práctica.', 'error');
         }
 
-
-        // if (horaInicio < horaFinal) {
-        //     const eventoValidado = this.validarEvento(
-        //         eventos,
-        //         inicio,
-        //         final
-        //     );
-
-        //     if (eventoValidado.resultadoDia.estado && eventoValidado.resultadoHora.estado) {
-
-        //         const evento = {
-        //             id: idSeleccionado,
-        //             nombre: `Practica evaluada - ${usuarioActual.carnet}`,
-        //             id_usuario: usuarioActual.id,
-        //             fecha_inicio: inicio,
-        //             fecha_final: final,
-        //         };
-
-        //         if (agregando) { //Creando nueva práctica
-
-        //             let res = await axios.post("/api/horario/verificarPracticasPorDia", {
-        //                 carnet: this.usuarioActual.carnet,
-        //                 fecha: moment(inicio.toISOString()).format("YYYY-MM-DD"),
-        //             });
-        //             // console.log(res);
-        //             // console.log(parseInt(res.data.numeroPracticas));
-        //             if (
-        //                 parseInt(res.data.numeroPracticas) >= 1 &&
-        //                 this.usuarioActual.access != "admin"
-        //             ) {
-        //                 await setTimeout(() => {
-        //                     alerta.mensaje(
-        //                         `Solo es posible reservar una práctica diaria.\n
-        //                      Tu práctica será almacenada pero deberá ser autorizada por un docente.`,
-        //                         "info",
-        //                         2000
-        //                     );
-        //                 }, 2500);
-        //             }
-
-        //             res = await axios.post("api/horario", evento);
-
-        //             if (res.data.mensaje == 'exito') {
-        //                 alerta.mensaje('Registro de práctica exitosa.', 'success');
-        //             } else {
-        //                 alerta.mensaje('Error: No se pudo registrar la práctica.', 'error');
-        //             }
-        //         } else { //Modificando una práctica
-
-        //             const res = await axios.put("api/horario/" +
-        //                 idSeleccionado, evento);
-
-        //             if (res.data.mensaje == 'exito') {
-        //                 alerta.mensaje('Modificación de práctica exitosa.', 'success');
-        //             } else {
-        //                 alerta.mensaje('Error: No se pudo modificar la práctica.', 'error');
-        //             }
-        //         }
-
-        //     } else if (!eventoValidado.resultadoDia.estado) {
-        //         alerta.mensaje(
-        //             eventoValidado.resultadoDia.mensaje,
-        //             "info"
-        //         );
-        //     } else if (!eventoValidado.resultadoHora.estado) {
-        //         alerta.mensaje(
-        //             eventoValidado.resultadoHora.mensaje,
-        //             "info"
-        //         );
-        //     }
-
-        // } else {
-
-        // }
     }
 
     /**
@@ -372,7 +292,7 @@ export default class Evento {
     }
 
     /**
-     *  Consulta la api de Horarios y retorna los datos
+     *  Consulta la api de Horarios y retorna los eventos encontrados
      * @returns {Array} eventos
      */
     async obtenerEventos() {

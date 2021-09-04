@@ -58,7 +58,7 @@ class HorarioController extends Controller
             $numeroDePracticas = DB::table('horarios')->select('horarios.*', 'users.carnet as carnet')
             ->join('users', 'users.id', '=', 'horarios.id_usuario')
             ->where('users.carnet', auth()->user()->carnet)
-            ->whereDate('horarios.created_at', date('Y-m-d', strtotime($request->fecha_inicio)))
+            ->whereDate('horarios.fecha_inicio', date('Y-m-d', strtotime($request->fecha_inicio)))
             ->count();
 
             if ($numeroDePracticas >= 1) {
@@ -160,8 +160,6 @@ class HorarioController extends Controller
         ->where('users.carnet', $carnet)
         ->whereDate('horarios.fecha_inicio', $fecha)
         ->count();
-
-        dd($numeroDePracticas, $fecha, $carnet);
 
         return response()->json(['mensaje'=>'exito', 'numeroPracticas'=>$numeroDePracticas]);
     }
