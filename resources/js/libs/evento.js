@@ -222,6 +222,10 @@ export default class Evento {
             fecha: moment(new Date(inicio)).format("YYYY-MM-DD"),
         });
 
+        evento.color = 'green';
+
+        console.log(res.data.numeroPracticas)
+
         if (parseInt(res.data.numeroPracticas) >= 1 && usuarioActual.access != "admin") {
             await setTimeout(() => {
                 alerta.mensaje(
@@ -231,6 +235,9 @@ export default class Evento {
                     2000
                 );
             }, 2500);
+
+            evento.color = 'orange';
+
         }
 
         res = await axios.post("api/horario", evento);
@@ -240,6 +247,7 @@ export default class Evento {
         } else {
             alerta.mensaje('Error: No se pudo registrar la práctica.', 'error');
         }
+
 
         // if (horaInicio < horaFinal) {
         //     const eventoValidado = this.validarEvento(

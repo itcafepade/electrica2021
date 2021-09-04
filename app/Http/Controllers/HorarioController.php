@@ -153,8 +153,10 @@ class HorarioController extends Controller
         $numeroDePracticas = DB::table('horarios')->select('horarios.*', 'users.carnet as carnet')
         ->join('users', 'users.id', '=', 'horarios.id_usuario')
         ->where('users.carnet', $carnet)
-        ->whereDate('horarios.created_at', $fecha)
+        ->whereDate('horarios.fecha_inicio', $fecha)
         ->count();
+
+        dd($numeroDePracticas, $fecha, $carnet);
 
         return response()->json(['mensaje'=>'exito', 'numeroPracticas'=>$numeroDePracticas]);
     }
