@@ -9,7 +9,7 @@
     </div>
     <div class="row">
       <div class="col-md-6 m-0 p-0">
-        <h6 class="pb-0 mb-0 pt-3">Cámara 1</h6>
+        <h6 class="pb-0 mb-0 pt-3">Camera 1</h6>
         <video
           ref="imgStreamCam0"
           width="100%"
@@ -20,7 +20,7 @@
         ></video>
       </div>
       <div class="col-md-6 m-0 p-0 pb-5 mb-5">
-        <h6 class="pb-0 mb-0 pt-3">Cámara 2</h6>
+        <h6 class="pb-0 mb-0 pt-3">Camera 2</h6>
         <video
           ref="imgStreamCam1"
           width="100%"

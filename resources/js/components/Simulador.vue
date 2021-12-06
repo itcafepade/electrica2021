@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col pd-5">
           <div class="row">
-            <!-- Generales -->
+            <!-- Generals -->
             <div
               class="col-sm-12 col-12 col-md-6 col-lg-3 col-xl-2"
               id="cardGenerales"
@@ -14,14 +14,14 @@
                   href="#cardGenerales"
                   class="text-dark card-header text-decoration-none"
                   @click="mostrarCard"
-                  ><i class="bi bi-chevron-down"></i> Generales</a
+                  ><i class="bi bi-chevron-down"></i> Generals</a
                 >
 
                 <div class="card-body" id="generales">
                   <div class="col" align="center" justify="center">
                     <div class="col">
                       <div class="text-center pt-0">
-                        INICIO
+                        START
                         <div class="my-2">
                           <v-btn
                             color="success"
@@ -30,10 +30,10 @@
                             dark
                             @click="eventoStart()"
                           >
-                            INICIO
+                            START
                           </v-btn>
                         </div>
-                        PARAR
+                        STOP
                         <div class="my-2">
                           <v-btn
                             color="error"
@@ -42,11 +42,11 @@
                             dark
                             @click="eventoStop()"
                           >
-                            PARAR
+                            STOP
                           </v-btn>
                         </div>
                         <div class="my-2">
-                          PERTURBACION
+                          PERTURBATION
                           <v-switch v-model="switch1"></v-switch>
                         </div>
                         <div class="my-2">
@@ -65,20 +65,24 @@
                           />
                           <br />
                           <label for="variableProceso" class="form-label"
-                            >Variable Proceso(C)</label
+                            >Process variable(C)</label
                           >
                           <input
                             type="number"
                             id="variableProceso"
                             class="form-control"
-                            value="32"
+                            value="0.00"
+                            min="0.00"
+                            max="100.00"
+                            step=".01"
                             disabled
                             v-model="variableProceso"
                           />
                         </div>
                       </div>
                       <div class="my-2">
-                        Indicador de flujo
+                        Flow indicator
+                        <br />
                         <svg
                           ref="indicador"
                           xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +108,7 @@
                           @click="actualizarIndicador"
                           class="btn btn-info text-white text-decoration-none"
                         >
-                          Indicador de flujo
+                          Flow indicator
                         </a>
                       </div>
                     </div>
@@ -112,7 +116,7 @@
                 </div>
               </div>
             </div>
-            <!-- Generales -->
+            <!-- Generals -->
 
             <!-- Variables -->
             <div
@@ -134,7 +138,7 @@
                           <h4>Output High</h4>
                           <hr />
                           <label for="outputHigh" class="form-label"
-                            >Datos PID</label
+                            >PID Data</label
                           >
                           <input
                             type="number"
@@ -143,18 +147,6 @@
                             min="0.00"
                             max="1000.00"
                             step="0.01"
-                            v-model="pidDerivativo"
-                            @keyup="eventoDerivativo()"
-                          />
-                          <br />
-                          <label for="outputLow" class="form-label"
-                            >Output Low</label
-                          >
-                          <input
-                            type="number"
-                            id="outputLow"
-                            class="form-control"
-                            value="500.00"
                           />
                           <br />
                           <label for="kcal" class="form-label">kcal/min</label>
@@ -163,6 +155,8 @@
                             id="kcal"
                             class="form-control"
                             value="500.00"
+                            min="0.00"
+                            step=".01"
                           />
                         </div>
                         <div class="my-2">
@@ -176,23 +170,15 @@
                             type="number"
                             id="proportionalGain"
                             class="form-control"
+                            min="0.00"
+                            max="1000.00"
+                            step=".01"
                             v-model="datoPID"
                             @keyup="eventoProporcional()"
                           />
                           <br />
-                          <label for="integralTimeTi" class="form-label"
-                            >Integral Time <br />
-                            (Ti, min)</label
-                          >
-                          <input
-                            type="number"
-                            id="integralTimeTi"
-                            class="form-control"
-                            value="0.010"
-                          />
-                          <br />
                           <label for="integralTime" class="form-label"
-                            >Integral Time</label
+                            >Integral</label
                           >
                           <input
                             type="number"
@@ -200,10 +186,56 @@
                             class="form-control"
                             v-model="integralTime"
                             @keyup="eventoIntegralTime()"
+                            value="0.000"
+                            min="0.000"
+                            max="1000.00"
+                            step=".001"
+                          />
+                          <br />
+                          <label for="derivative" class="form-label"
+                            >Derivative</label
+                          >
+                          <input
+                            type="number"
+                            id="derivative"
+                            class="form-control"
+                            value="0.000"
+                            min="0.000"
+                            max="1000.00"
+                            step=".001"
+                            v-model="pidDerivativo"
+                            @keyup="eventoDerivativo()"
+                          />
+                          <br />
+                          <label for="heater" class="form-label">Heater</label>
+                          <input
+                            type="number"
+                            id="heater"
+                            class="form-control"
+                            value="0"
+                            min="0"
+                            max="1023"
+                            step="1"
+                            v-model="cicloCalentador"
+                            @keyup="eventoCicloCalentador()"
+                          />
+                          <br />
+                          <label for="refresh" class="form-label"
+                            >Refresh</label
+                          >
+                          <input
+                            type="number"
+                            id="refresh"
+                            class="form-control"
+                            min="0.1"
+                            max="30"
+                            step=".1"
+                            v-model="refresco"
+                            @keyup="eventoRefresco()"
                           />
                           <br />
                           <label for="tempTanque2" class="form-label"
-                            >Temperatura de agua en Tanque 2</label
+                            >Water temperature in tank 2</label
                           >
                           <input
                             type="number"
@@ -211,6 +243,8 @@
                             class="form-control"
                             v-model="temperatura"
                             @keyup="eventotemperatura()"
+                            value="0.00"
+                            step=".01"
                           />
                         </div>
                       </div>
@@ -221,7 +255,7 @@
             </div>
             <!-- Variables -->
 
-            <!-- Gráficos -->
+            <!-- Charts -->
             <div
               class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4"
               id="cardGraficos"
@@ -231,7 +265,7 @@
                   href="#cardGraficos"
                   class="text-dark card-header text-decoration-none"
                   @click="mostrarCard"
-                  ><i class="bi bi-chevron-down"></i> Gráficos</a
+                  ><i class="bi bi-chevron-down"></i> Charts</a
                 >
                 <div class="card-body m-0" id="graficos">
                   <div v-if="datapoints.length > 0">
@@ -251,6 +285,8 @@
                     type="text"
                     name=""
                     id=""
+                    value="0.00"
+                    step=".01"
                     v-model="temperaturaValor"
                     class="form-control"
                   /> -->
@@ -274,7 +310,7 @@
                 </div>
               </div>
             </div>
-            <!-- Gráficos -->
+            <!-- Charts -->
 
             <!-- Transmisión -->
             <div
@@ -286,34 +322,36 @@
                   href="#cardTransmision"
                   class="text-dark card-header text-decoration-none"
                   @click="mostrarCard"
-                  ><i class="bi bi-chevron-down"></i> Transmisión</a
+                  ><i class="bi bi-chevron-down"></i> Streaming</a
                 >
                 <div class="card-body mx-auto" id="transmision">
                   <div class="row">
                     <stream :mostrarControles="mostrarControles" />
                   </div>
                   <div class="row">
-                    <h5 class="pt-3">Simulación</h5>
+                    <h5 class="pt-3">Simulation</h5>
                   </div>
 
                   <input
                     type="number"
                     v-model="nivelTanque1"
                     class="form-control"
+                    step="0.01"
                     @change="modificarTanque()"
                   />
                   <input
                     type="number"
                     v-model="nivelTanque2"
-                    @change="modificarTanque()"
                     class="form-control"
+                    step="0.01"
+                    @change="modificarTanque()"
                   />
                   <div class="row">
                     <div class="col">
-                      <p>Tanque 1</p>
+                      <p>Tank 1</p>
                       <div class="water-tank1">
                         <div class="liquid1">
-                          <svg class="water" viewBox="0 0 200 100">
+                          <svg class="water" viewBox="0 0 400 200">
                             <defs>
                               <linearGradient
                                 id="waterGradient"
@@ -362,10 +400,10 @@
                       </div>
                     </div>
                     <div class="col">
-                      <p>Tanque 2</p>
+                      <p>Tank 2</p>
                       <div class="water-tank2">
                         <div class="liquid2">
-                          <svg class="water" viewBox="0 0 200 100">
+                          <svg class="water" viewBox="0 0 400 200">
                             <defs>
                               <linearGradient
                                 id="waterGradient2"
@@ -468,8 +506,8 @@ export default {
           estado: false,
         },
       },
-      nivelTanque1: 0,
-      nivelTanque2: 0,
+      nivelTanque1: 0.0,
+      nivelTanque2: 0.0,
       actualizarComponente: 0,
       variableProceso: 32,
       setPoint: 32,
@@ -477,6 +515,8 @@ export default {
       integralTime: 0.01,
       temperatura: 25,
       pidDerivativo: 100,
+      cicloCalentador: 20,
+      refresco: 15,
     };
   },
   mounted() {
@@ -673,6 +713,14 @@ export default {
     eventoDerivativo() {
       console.log("DERIVATIVO", this.pidDerivativo);
       socket.emit("DERIVATIVO", this.pidDerivativo);
+    },
+    eventoCicloCalentador() {
+      console.log("CICLO DE TRABAJO DEL CALENTADOR", this.cicloCalentador);
+      socket.emit("CICLO DE TRABAJO DEL CALENTADOR", this.cicloCalentador);
+    },
+    eventoRefresco() {
+      console.log("REFRESCO", this.refresco);
+      socket.emit("REFRESCO", this.refresco);
     },
   },
 };
