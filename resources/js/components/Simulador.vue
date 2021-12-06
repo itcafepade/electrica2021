@@ -23,13 +23,27 @@
                       <div class="text-center pt-0">
                         INICIO
                         <div class="my-2">
-                          <v-btn color="success" fab x-large dark>
+                          <v-btn
+                            color="success"
+                            fab
+                            x-large
+                            dark
+                            @click="eventoStart()"
+                          >
                             INICIO
                           </v-btn>
                         </div>
                         PARAR
                         <div class="my-2">
-                          <v-btn color="error" fab x-large dark> PARAR </v-btn>
+                          <v-btn
+                            color="error"
+                            fab
+                            x-large
+                            dark
+                            @click="eventoStop()"
+                          >
+                            PARAR
+                          </v-btn>
                         </div>
                         <div class="my-2">
                           PERTURBACION
@@ -43,7 +57,11 @@
                             type="number"
                             id="inputSetPoint"
                             class="form-control"
-                            value="32"
+                            min="0.00"
+                            max="100.00"
+                            step="0.01"
+                            v-model="setPoint"
+                            @keyup="eventoVariableProceso()"
                           />
                           <br />
                           <label for="variableProceso" class="form-label"
@@ -55,6 +73,7 @@
                             class="form-control"
                             value="32"
                             disabled
+                            v-model="variableProceso"
                           />
                         </div>
                       </div>
@@ -121,7 +140,11 @@
                             type="number"
                             id="outputHigh"
                             class="form-control"
-                            value="500.00"
+                            min="0.00"
+                            max="1000.00"
+                            step="0.01"
+                            v-model="pidDerivativo"
+                            @keyup="eventoDerivativo()"
                           />
                           <br />
                           <label for="outputLow" class="form-label"
@@ -153,7 +176,8 @@
                             type="number"
                             id="proportionalGain"
                             class="form-control"
-                            value="1.000"
+                            v-model="datoPID"
+                            @keyup="eventoProporcional()"
                           />
                           <br />
                           <label for="integralTimeTi" class="form-label"
@@ -174,7 +198,8 @@
                             type="number"
                             id="integralTime"
                             class="form-control"
-                            value="0.010"
+                            v-model="integralTime"
+                            @keyup="eventoIntegralTime()"
                           />
                           <br />
                           <label for="tempTanque2" class="form-label"
@@ -184,7 +209,8 @@
                             type="number"
                             id="tempTanque2"
                             class="form-control"
-                            value="25"
+                            v-model="temperatura"
+                            @keyup="eventotemperatura()"
                           />
                         </div>
                       </div>
@@ -221,13 +247,13 @@
                   </div>
                   <br />
                   <h5>Temperatura Agua</h5>
-                  <input
+                  <!-- <input
                     type="text"
                     name=""
                     id=""
                     v-model="temperaturaValor"
                     class="form-control"
-                  />
+                  /> -->
                   <div class="container">
                     <div class="row text-center">
                       <div class="col-md-12">
@@ -237,7 +263,7 @@
                           :segmentColors="['green', 'gold', 'red']"
                           needleColor="#5959ac"
                           :currentValueText="'\${value}C°'"
-                          :value="temperaturaValor"
+                          :value="temperatura"
                           :minValue="0"
                           :maxValue="100"
                           textColor="${textColor}"
@@ -400,12 +426,16 @@
 </template>
 
 <script>
+const io = require("socket.io-client");
 import VueSpeedometer from "vue-speedometer";
 import grafico from "./Grafico.vue";
 import Interfaz from "../libs/interfaz";
+import Variable from "../libs/variable";
 // import stream from "./Stream.vue";
 
 const ui = new Interfaz();
+const variable = new Variable();
+let socket;
 
 export default {
   components: { VueSpeedometer, grafico },
@@ -441,6 +471,12 @@ export default {
       nivelTanque1: 0,
       nivelTanque2: 0,
       actualizarComponente: 0,
+      variableProceso: 32,
+      setPoint: 32,
+      datoPID: 10,
+      integralTime: 0.01,
+      temperatura: 25,
+      pidDerivativo: 100,
     };
   },
   mounted() {
@@ -500,6 +536,22 @@ export default {
       };
 
       this.modificarTanque();
+
+      /**
+       * SOCKET.IO
+       */
+      socket = io.connect(variable.urlSocket, {
+        reconnection: false,
+      });
+
+      //   const action = {
+      //     accion: "UPLS",
+      //     valor: 1,
+      //   };
+      //   socket.emit("UPLS", action);
+      socket.on("TEMPERATURA", (temperatura) => {
+        this.variableProceso = temperatura;
+      });
     },
     actualizarGrafica() {
       this.data.datasets[0].data = [36, 37, 31, 35];
@@ -590,6 +642,37 @@ export default {
         );
         this.cambiarIndicador = 0;
       }
+    },
+
+    eventoStart() {
+      const valor = 1;
+      console.log("START", valor);
+      socket.emit("START", valor);
+    },
+    eventoStop() {
+      const valor = 1;
+      console.log("STOP", valor);
+      socket.emit("STOP", valor);
+    },
+    eventoVariableProceso() {
+      console.log("SETPOINT", this.setPoint);
+      socket.emit("SETPOINT", this.setPoint);
+    },
+    eventoProporcional() {
+      console.log("PROPORCIONAL", this.datoPID);
+      socket.emit("PROPORCIONAL", this.datoPID);
+    },
+    eventoIntegralTime() {
+      console.log("INTEGRAL", this.integralTime);
+      socket.emit("INTEGRAL", this.integralTime);
+    },
+    eventotemperatura() {
+      console.log("TEMPERATURA", this.temperatura);
+      socket.emit("TEMPERATURA", this.temperatura);
+    },
+    eventoDerivativo() {
+      console.log("DERIVATIVO", this.pidDerivativo);
+      socket.emit("DERIVATIVO", this.pidDerivativo);
     },
   },
 };
