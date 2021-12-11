@@ -14,7 +14,7 @@
                   href="#cardGenerales"
                   class="text-dark card-header text-decoration-none"
                   @click="mostrarCard"
-                  ><i class="bi bi-chevron-down"></i> Generals</a
+                  ><i class="bi bi-chevron-down"></i> Main Control</a
                 >
 
                 <div class="card-body" id="generales">
@@ -46,7 +46,7 @@
                           </v-btn>
                         </div>
                         <div class="my-2">
-                          PERTURBATION
+                          DISTURBANCE
                           <v-switch v-model="switch1"></v-switch>
                         </div>
                         <div class="my-2">
@@ -65,7 +65,7 @@
                           />
                           <br />
                           <label for="variableProceso" class="form-label"
-                            >Process variable(C)</label
+                            >Process variable</label
                           >
                           <input
                             type="number"
@@ -135,31 +135,6 @@
                     <div class="col">
                       <div class="text-center">
                         <div class="my-2">
-                          <h4>Output High</h4>
-                          <hr />
-                          <label for="outputHigh" class="form-label"
-                            >PID Data</label
-                          >
-                          <input
-                            type="number"
-                            id="outputHigh"
-                            class="form-control"
-                            min="0.00"
-                            max="1000.00"
-                            step="0.01"
-                          />
-                          <br />
-                          <label for="kcal" class="form-label">kcal/min</label>
-                          <input
-                            type="number"
-                            id="kcal"
-                            class="form-control"
-                            value="500.00"
-                            min="0.00"
-                            step=".01"
-                          />
-                        </div>
-                        <div class="my-2">
                           <h4>PID Gains</h4>
                           <hr />
                           <label for="outputHigh" class="form-label"
@@ -178,7 +153,7 @@
                           />
                           <br />
                           <label for="integralTime" class="form-label"
-                            >Integral</label
+                            >Integral Time <br />(Ti, min)</label
                           >
                           <input
                             type="number"
@@ -193,7 +168,7 @@
                           />
                           <br />
                           <label for="derivative" class="form-label"
-                            >Derivative</label
+                            >Derivative <br />(Td, min)</label
                           >
                           <input
                             type="number"
@@ -207,7 +182,7 @@
                             @keyup="eventoDerivativo()"
                           />
                           <br />
-                          <label for="heater" class="form-label">Heater</label>
+                          <!--  <label for="heater" class="form-label">Heater</label>
                           <input
                             type="number"
                             id="heater"
@@ -233,9 +208,9 @@
                             v-model="refresco"
                             @keyup="eventoRefresco()"
                           />
-                          <br />
+                          <br /> -->
                           <label for="tempTanque2" class="form-label"
-                            >Water temperature in tank 2</label
+                            >Tank 2: Water temperature (C)</label
                           >
                           <input
                             type="number"
@@ -265,7 +240,7 @@
                   href="#cardGraficos"
                   class="text-dark card-header text-decoration-none"
                   @click="mostrarCard"
-                  ><i class="bi bi-chevron-down"></i> Charts</a
+                  ><i class="bi bi-chevron-down"></i> Graphs</a
                 >
                 <div class="card-body m-0" id="graficos">
                   <div v-if="datapoints.length > 0">
@@ -274,13 +249,13 @@
                       :options="options"
                       :key="renderizarComponente"
                     />
-                    <grafico :data="data" :options="options" />
+                    <grafico :data="data2" :options="options2" />
                     <a href="#" @click="actualizarGrafica()"
                       >Actualizar gráfica</a
                     >
                   </div>
                   <br />
-                  <h5>Temperatura Agua</h5>
+                  <h5>Water Temperature (C)</h5>
                   <!-- <input
                     type="text"
                     name=""
@@ -322,15 +297,16 @@
                   href="#cardTransmision"
                   class="text-dark card-header text-decoration-none"
                   @click="mostrarCard"
-                  ><i class="bi bi-chevron-down"></i> Streaming</a
+                  ><i class="bi bi-chevron-down"></i> Transmision</a
                 >
                 <div class="card-body mx-auto" id="transmision">
                   <div class="row">
                     <stream :mostrarControles="mostrarControles" />
                   </div>
+                  <!-- 
                   <div class="row">
                     <h5 class="pt-3">Simulation</h5>
-                  </div>
+                  </div> -->
 
                   <input
                     type="number"
@@ -348,7 +324,7 @@
                   />
                   <div class="row">
                     <div class="col">
-                      <p>Tank 1</p>
+                      <p>View 1</p>
                       <div class="water-tank1">
                         <div class="liquid1">
                           <svg class="water" viewBox="0 0 400 200">
@@ -400,7 +376,7 @@
                       </div>
                     </div>
                     <div class="col">
-                      <p>Tank 2</p>
+                      <p>View 2</p>
                       <div class="water-tank2">
                         <div class="liquid2">
                           <svg class="water" viewBox="0 0 400 200">
@@ -530,6 +506,7 @@ export default {
       }
 
       this.datapoints = [31.5, 31.6, 31.7, 32.0, 31.1, 31.5];
+      this.datapoints2 = [31.3, 31.6, 31.3, 31.4, 31.1, 31.7];
 
       this.options = {
         responsive: true,
@@ -539,6 +516,7 @@ export default {
             text: "Process Variable and Set Point",
           },
         },
+
         interaction: {
           intersect: false,
         },
@@ -565,6 +543,57 @@ export default {
         labels: this.labels,
         datasets: [
           {
+            label: "Set Point (SP)",
+            data: this.datapoints,
+            borderColor: "#FF6384",
+            fill: false,
+            cubicInterpolationMode: "monotone",
+            tension: 0.4,
+          },
+          {
+            label: "Process Variable (PV)",
+            data: this.datapoints2,
+            borderColor: "#0078b9",
+            fill: false,
+            cubicInterpolationMode: "monotone",
+            tension: 0.4,
+          },
+        ],
+      };
+      this.options2 = {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Controller Output (%)",
+          },
+        },
+
+        interaction: {
+          intersect: false,
+        },
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+            },
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: "Value",
+            },
+            suggestedMin: 31.85,
+            suggestedMax: 32.1,
+          },
+        },
+      };
+      this.data2 = {
+        labels: this.labels,
+        datasets: [
+          {
             label: "Process Variable",
             data: this.datapoints,
             borderColor: "#FF6384",
@@ -574,7 +603,6 @@ export default {
           },
         ],
       };
-
       this.modificarTanque();
 
       /**
