@@ -210,7 +210,7 @@
                           />
                           <br /> -->
                           <label for="tempTanque2" class="form-label"
-                            >Tank 2: Water temperature (C)</label
+                            >Tank 2: Water Temperature (C)</label
                           >
                           <input
                             type="number"
@@ -297,7 +297,7 @@
                   href="#cardTransmision"
                   class="text-dark card-header text-decoration-none"
                   @click="mostrarCard"
-                  ><i class="bi bi-chevron-down"></i> Transmision</a
+                  ><i class="bi bi-chevron-down"></i> Transmission</a
                 >
                 <div class="card-body mx-auto" id="transmision">
                   <div class="row">
