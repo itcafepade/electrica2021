@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\HistorialController;
+use App\Http\Controllers\EventoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +80,9 @@ Route::group(['middleware'=>'auth'], function () {
     Route::resource('api/horario', HorarioController::class);
     Route::post('api/practicaPorIdUsuario', [HorarioController::class, 'obtenerPracticasPorIdUsuario']);
     Route::post('api/horario/verificarPracticasPorDia', [HorarioController::class, 'verificarPracticasPorDia']);
+
+    // Eventos
+    Route::post('api/enviarEvento', [EventoController::class, 'enviarEvento']);
 });
 
 Auth::routes(['register' =>false]);

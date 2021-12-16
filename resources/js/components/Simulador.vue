@@ -9,7 +9,7 @@
               class="col-sm-12 col-12 col-md-6 col-lg-3 col-xl-2"
               id="cardGenerales"
             >
-              <div class="card shadow-sm bg-body rounded">
+              <div class="card shadow-sm bg-body rounded h-100">
                 <a
                   href="#cardGenerales"
                   class="text-dark card-header text-decoration-none"
@@ -28,7 +28,7 @@
                             fab
                             x-large
                             dark
-                            @click="eventoStart()"
+                            @click="enviarEvento(12)"
                           >
                             START
                           </v-btn>
@@ -40,9 +40,21 @@
                             fab
                             x-large
                             dark
-                            @click="eventoStop()"
+                            @click="enviarEvento(13)"
                           >
                             STOP
+                          </v-btn>
+                        </div>
+                        RESET
+                        <div class="my-2">
+                          <v-btn
+                            color="blue"
+                            fab
+                            x-large
+                            dark
+                            @click="enviarEvento(14)"
+                          >
+                            RESET
                           </v-btn>
                         </div>
                         <div class="my-2">
@@ -61,7 +73,7 @@
                             max="100.00"
                             step="0.01"
                             v-model="setPoint"
-                            @keyup="eventoVariableProceso()"
+                            @keyup="enviarEvento(50)"
                           />
                           <br />
                           <label for="variableProceso" class="form-label"
@@ -123,7 +135,7 @@
               class="col-sm-12 col-12 col-md-6 col-lg-4 col-xl-2"
               id="cardVariables"
             >
-              <div class="card shadow-sm bg-body rounded">
+              <div class="card shadow-sm bg-body rounded h-100">
                 <a
                   href="#cardVariables"
                   class="text-dark card-header text-decoration-none"
@@ -149,7 +161,7 @@
                             max="1000.00"
                             step=".01"
                             v-model="datoPID"
-                            @keyup="eventoProporcional()"
+                            @keyup="enviarEvento(51)"
                           />
                           <br />
                           <label for="integralTime" class="form-label"
@@ -160,7 +172,7 @@
                             id="integralTime"
                             class="form-control"
                             v-model="integralTime"
-                            @keyup="eventoIntegralTime()"
+                            @keyup="enviarEvento(52)"
                             value="0.000"
                             min="0.000"
                             max="1000.00"
@@ -179,36 +191,9 @@
                             max="1000.00"
                             step=".001"
                             v-model="pidDerivativo"
-                            @keyup="eventoDerivativo()"
+                            @keyup="enviarEvento(53)"
                           />
                           <br />
-                          <!--  <label for="heater" class="form-label">Heater</label>
-                          <input
-                            type="number"
-                            id="heater"
-                            class="form-control"
-                            value="0"
-                            min="0"
-                            max="1023"
-                            step="1"
-                            v-model="cicloCalentador"
-                            @keyup="eventoCicloCalentador()"
-                          />
-                          <br />
-                          <label for="refresh" class="form-label"
-                            >Refresh</label
-                          >
-                          <input
-                            type="number"
-                            id="refresh"
-                            class="form-control"
-                            min="0.1"
-                            max="30"
-                            step=".1"
-                            v-model="refresco"
-                            @keyup="eventoRefresco()"
-                          />
-                          <br /> -->
                           <label for="tempTanque2" class="form-label"
                             >Tank 2: Water Temperature (C)</label
                           >
@@ -217,7 +202,7 @@
                             id="tempTanque2"
                             class="form-control"
                             v-model="temperatura"
-                            @keyup="eventotemperatura()"
+                            @keyup="enviarEvento()"
                             value="0.00"
                             step=".01"
                           />
@@ -235,7 +220,7 @@
               class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4"
               id="cardGraficos"
             >
-              <div class="card shadow-sm bg-body rounded">
+              <div class="card shadow-sm bg-body rounded h-100">
                 <a
                   href="#cardGraficos"
                   class="text-dark card-header text-decoration-none"
@@ -256,15 +241,6 @@
                   </div>
                   <br />
                   <h5>Water Temperature (C)</h5>
-                  <!-- <input
-                    type="text"
-                    name=""
-                    id=""
-                    value="0.00"
-                    step=".01"
-                    v-model="temperaturaValor"
-                    class="form-control"
-                  /> -->
                   <div class="container">
                     <div class="row text-center">
                       <div class="col-md-12">
@@ -292,7 +268,7 @@
               class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4"
               id="cardTransmision"
             >
-              <div class="card shadow-sm bg-body rounded">
+              <div class="card shadow-sm bg-body rounded h-100">
                 <a
                   href="#cardTransmision"
                   class="text-dark card-header text-decoration-none"
@@ -303,7 +279,7 @@
                   <div class="row">
                     <stream :mostrarControles="mostrarControles" />
                   </div>
-                  <!-- 
+                  <!--
                   <div class="row">
                     <h5 class="pt-3">Simulation</h5>
                   </div> -->
@@ -712,43 +688,40 @@ export default {
       }
     },
 
-    eventoStart() {
-      const valor = 1;
-      console.log("START", valor);
-      socket.emit("START", valor);
-    },
-    eventoStop() {
-      const valor = 1;
-      console.log("STOP", valor);
-      socket.emit("STOP", valor);
-    },
-    eventoVariableProceso() {
-      console.log("SETPOINT", this.setPoint);
-      socket.emit("SETPOINT", this.setPoint);
-    },
-    eventoProporcional() {
-      console.log("PROPORCIONAL", this.datoPID);
-      socket.emit("PROPORCIONAL", this.datoPID);
-    },
-    eventoIntegralTime() {
-      console.log("INTEGRAL", this.integralTime);
-      socket.emit("INTEGRAL", this.integralTime);
-    },
-    eventotemperatura() {
-      console.log("TEMPERATURA", this.temperatura);
-      socket.emit("TEMPERATURA", this.temperatura);
-    },
-    eventoDerivativo() {
-      console.log("DERIVATIVO", this.pidDerivativo);
-      socket.emit("DERIVATIVO", this.pidDerivativo);
-    },
-    eventoCicloCalentador() {
-      console.log("CICLO DE TRABAJO DEL CALENTADOR", this.cicloCalentador);
-      socket.emit("CICLO DE TRABAJO DEL CALENTADOR", this.cicloCalentador);
-    },
-    eventoRefresco() {
-      console.log("REFRESCO", this.refresco);
-      socket.emit("REFRESCO", this.refresco);
+    async enviarEvento(valor) {
+      console.log(typeof valor);
+      let valores = {
+        primerValor: valor,
+        segundoValor: -1,
+      };
+
+      switch (valor) {
+        //   SetPoint
+        case 50:
+          valores.segundoValor = this.setPoint;
+          break;
+        case 51:
+          valores.segundoValor = this.datoPID;
+          break;
+        case 52:
+          valores.segundoValor = this.integralTime;
+          break;
+        case 53:
+          valores.segundoValor = this.pidDerivativo;
+          break;
+        default:
+          valores.segundoValor = -1;
+          break;
+      }
+
+      const res = await axios
+        .post("/api/enviarEvento", valores)
+        .catch((error) => {
+          console.log("No se pudo actualizar el valor.");
+        });
+      if (res.data.message == "success") {
+        console.log("Valor actualizado correctamente.");
+      }
     },
   },
 };
