@@ -228,18 +228,6 @@
                   ><i class="bi bi-chevron-down"></i> Graphs</a
                 >
                 <div class="card-body m-0" id="graficos">
-                  <div v-if="datapoints.length > 0">
-                    <grafico
-                      :data="data"
-                      :options="options"
-                      :key="renderizarComponente"
-                    />
-                    <grafico :data="data2" :options="options2" />
-                    <a href="#" @click="actualizarGrafica()"
-                      >Actualizar gráfica</a
-                    >
-                  </div>
-                  <br />
                   <h5>Water Temperature (C)</h5>
                   <div class="container">
                     <div class="row text-center">
@@ -257,6 +245,23 @@
                         />
                       </div>
                     </div>
+                  </div>
+                  <br />
+                  <div v-if="datapoints.length > 0">
+                    <h5>Graphics</h5>
+                    <grafico
+                      :data="data"
+                      :options="options"
+                      :key="renderizarComponente"
+                    />
+                    <grafico
+                      :data="data2"
+                      :options="options2"
+                      :key="renderizarComponente"
+                    />
+                    <!-- <a href="#" @click="actualizarGrafica()"
+                      >Actualizar gráfica</a
+                    > -->
                   </div>
                 </div>
               </div>
@@ -420,10 +425,12 @@ const io = require("socket.io-client");
 import VueSpeedometer from "vue-speedometer";
 import grafico from "./Grafico.vue";
 import Interfaz from "../libs/interfaz";
+import Alerta from "../libs/alerta";
 import Variable from "../libs/variable";
 // import stream from "./Stream.vue";
 
 const ui = new Interfaz();
+const alerta = new Alerta();
 const variable = new Variable();
 let socket;
 
@@ -438,7 +445,9 @@ export default {
       renderizarComponente: 0,
       labels: [],
       datapoints: [],
+      datapoints2: [],
       data: {},
+      data2: {},
       options: {},
       animacionesOcultas: {
         generales: {
@@ -469,6 +478,9 @@ export default {
       pidDerivativo: 100,
       cicloCalentador: 20,
       refresco: 15,
+      timeOutEntrenador: 0,
+      simuladorIniciado: false,
+      intervalLecturas: "",
     };
   },
   mounted() {
@@ -476,13 +488,14 @@ export default {
   },
   methods: {
     init() {
-      let DATA_COUNT = 6;
+      let DATA_COUNT = 30;
       for (let i = 0; i < DATA_COUNT; ++i) {
         this.labels.push(i.toString());
       }
-
-      this.datapoints = [31.5, 31.6, 31.7, 32.0, 31.1, 31.5];
-      this.datapoints2 = [31.3, 31.6, 31.3, 31.4, 31.1, 31.7];
+      // 31.5, 31.6, 31.7, 32.0, 31.1, 31.5
+      // 31.3, 31.6, 31.3, 31.4, 31.1, 31.7
+      this.datapoints = [];
+      this.datapoints2 = [];
 
       this.options = {
         responsive: true,
@@ -536,6 +549,7 @@ export default {
           },
         ],
       };
+
       this.options2 = {
         responsive: true,
         plugins: {
@@ -566,12 +580,13 @@ export default {
           },
         },
       };
+
       this.data2 = {
         labels: this.labels,
         datasets: [
           {
             label: "Process Variable",
-            data: this.datapoints,
+            data: this.datapoints2,
             borderColor: "#FF6384",
             fill: false,
             cubicInterpolationMode: "monotone",
@@ -580,28 +595,52 @@ export default {
         ],
       };
       this.modificarTanque();
-
-      /**
-       * SOCKET.IO
-       */
-      socket = io.connect(variable.urlSocket, {
-        reconnection: false,
-      });
-
-      //   const action = {
-      //     accion: "UPLS",
-      //     valor: 1,
-      //   };
-      //   socket.emit("UPLS", action);
-      socket.on("TEMPERATURA", (temperatura) => {
-        this.variableProceso = temperatura;
-      });
     },
-    actualizarGrafica() {
-      this.data.datasets[0].data = [36, 37, 31, 35];
 
-      this.renderizarComponente += 1;
+    actualizarGrafica(index, valor) {
+      //   console.log(valor);
+      if (valor) {
+        // this.datapoints.push(valor);
+        if (this.data.datasets[index].data.length == 30) {
+          this.data.datasets[index].data.shift();
+        }
+        this.data.labels = [];
+
+        let DATA_COUNT = this.datapoints.length;
+
+        for (let i = 1; i < DATA_COUNT; ++i) {
+          this.data.labels.push(i.toString());
+        }
+        // console.log(this.data.datasets, index);
+
+        this.data.datasets[index].data.push(valor);
+        // this.datapoints2.push(valor);
+        this.renderizarComponente += 1;
+      }
+
+      //   this.data.datasets[index].data.push(valor);
     },
+
+    actualizarGraficaSalida(valor) {
+      if (valor) {
+        if (this.data2.datasets[0].data.length == 30) {
+          this.data2.datasets[0].data.shift();
+        }
+        this.data2.labels = [];
+
+        let DATA_COUNT = this.datapoints.length;
+        console.log(this.datapoints2.length);
+
+        for (let i = 1; i < DATA_COUNT; ++i) {
+          this.data2.labels.push(i.toString());
+        }
+
+        this.data2.datasets[0].data.push(valor);
+        // this.datapoints2.push(valor);
+        this.renderizarComponente += 1;
+      }
+    },
+
     mostrarCard(e) {
       const icono = e.target.parentNode.parentNode.querySelector(".bi");
       const card = e.target.parentNode.parentNode.querySelector(".card-body");
@@ -688,42 +727,130 @@ export default {
       }
     },
 
-    async enviarEvento(valor) {
-      console.log(typeof valor);
-      let valores = {
-        primerValor: valor,
-        segundoValor: -1,
-      };
+    async enviarEvento(valor = 0) {
+      window.clearTimeout(this.timeOutEntrenador);
 
-      switch (valor) {
-        //   SetPoint
-        case 50:
-          valores.segundoValor = this.setPoint;
-          break;
-        case 51:
-          valores.segundoValor = this.datoPID;
-          break;
-        case 52:
-          valores.segundoValor = this.integralTime;
-          break;
-        case 53:
-          valores.segundoValor = this.pidDerivativo;
-          break;
-        default:
-          valores.segundoValor = -1;
-          break;
-      }
+      this.timeOutEntrenador = setTimeout(async () => {
+        // console.log(typeof valor);
+        let valores = {
+          primerValor: valor,
+          segundoValor: -1,
+        };
 
-      const res = await axios
-        .post("/api/enviarEvento", valores)
-        .catch((error) => {
-          console.log("No se pudo actualizar el valor.");
-        });
-      if (res.data.message == "success") {
-        console.log("Valor actualizado correctamente.");
-      }
+        switch (valor) {
+          case 50:
+            valores.segundoValor = this.setPoint;
+            break;
+          case 51:
+            valores.segundoValor = this.datoPID;
+            break;
+          case 52:
+            valores.segundoValor = this.integralTime;
+            break;
+          case 53:
+            valores.segundoValor = this.pidDerivativo;
+            break;
+          default:
+            valores.segundoValor = -1;
+            break;
+        }
+
+        const res = await axios
+          .post("/api/enviarEvento", valores)
+          .catch((error) => {
+            console.log("No se pudo actualizar el valor.");
+            alerta.mensaje("El Entrenador no pudo ser actualizado.", "error");
+          });
+
+        if (res.data.message == "success") {
+          alerta.mensaje("Entrenador actualizado correctamente.", "success");
+          console.log("Valor actualizado correctamente.");
+        }
+
+        const opt = valores.primerValor;
+        console.log(opt);
+        switch (opt) {
+          case 10: //   SetPoint
+            //   valores.primerValor = 10;
+            break;
+          case 11:
+            //   valores.primerValor = 11;
+            break;
+          case 12: //Iniciar
+            alerta.mensaje("Entrenador iniciado correctamente.", "success");
+            if (!this.simuladorIniciado) {
+              this.iniciarLecturas();
+            }
+            break;
+          case 13: //Parar
+            alerta.mensaje("Entrenador detenido correctamente.", "success");
+            //   valores.primerValor = 13;
+            window.clearInterval(this.intervalLecturas);
+            break;
+          case 14:
+            //   valores.primerValor = 14;
+            this.init();
+            break;
+          case 20:
+            this.iniciarLecturas();
+            break;
+          case 21:
+            //   valores.primerValor = 21;
+            break;
+          case 22:
+            this.temperatura = parseFloat(res.data.lectura);
+            // this.data2.datasets.data.push(valor);
+            break;
+          case 23:
+            this.actualizarGrafica(
+              0,
+              parseFloat(res.data.lectura + Math.random() * (2 - 1) + 1)
+            );
+            // console.log(parseFloat(Math.random() * (50 - 20) + 1).toFixed(2));
+            this.actualizarGrafica(
+              1,
+              parseFloat(
+                res.data.lectura + Math.random() * (50 - 20) + 1
+              ).toFixed(2)
+            );
+            this.actualizarGraficaSalida(
+              parseFloat(res.data.lectura + Math.random() * (2 - 1) + 1)
+            );
+            break;
+          case 24:
+            //   valores.primerValor = 24;
+            break;
+          case 25:
+            //   valores.primerValor = 25;
+            break;
+          case 26:
+            //   valores.primerValor = 26;
+            break;
+        }
+      }, 500);
+    },
+
+    async iniciarLecturas() {
+      //   Lectura de temperatura del agua c/seg
+      //   console.log(this.intervalLecturas);
+      this.intervalLecturas = setInterval(async () => {
+        console.log("Actualizado");
+        await this.enviarEvento(22);
+      }, 5000);
+
+      this.intervalLecturas = setInterval(async () => {
+        //     console.log("Actualizado setpoint");
+        await this.enviarEvento(23);
+      }, 6000);
     },
   },
 };
 </script>
+
+<style>
+.speedometer {
+  width: 300px;
+  height: 200px !important;
+}
+</style>
 
