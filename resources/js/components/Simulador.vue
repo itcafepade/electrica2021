@@ -9,7 +9,7 @@
               class="col-sm-12 col-12 col-md-6 col-lg-3 col-xl-2"
               id="cardGenerales"
             >
-              <div class="card shadow-sm bg-body rounded h-100">
+              <div class="card shadow-sm bg-body rounded">
                 <a
                   href="#cardGenerales"
                   class="text-dark card-header text-decoration-none"
@@ -28,7 +28,10 @@
                             fab
                             x-large
                             dark
-                            @click="enviarEvento(12)"
+                            @click="
+                              simuladorIniciado = true;
+                              enviarEvento(12);
+                            "
                           >
                             START
                           </v-btn>
@@ -56,10 +59,6 @@
                           >
                             RESET
                           </v-btn>
-                        </div>
-                        <div class="my-2">
-                          DISTURBANCE
-                          <v-switch v-model="switch1"></v-switch>
                         </div>
                         <div class="my-2">
                           <label for="inputSetPoint" class="form-label"
@@ -93,6 +92,14 @@
                         </div>
                       </div>
                       <div class="my-2">
+                        DISTURBANCE
+                        <v-switch
+                          v-model="switch1"
+                          @click="actualizarIndicador"
+                          :key="renderizarComponenteSwitch"
+                        ></v-switch>
+                      </div>
+                      <div class="my-2">
                         Flow indicator
                         <br />
                         <svg
@@ -102,7 +109,7 @@
                           viewBox="0 0 30 30"
                           style="
                             width: 5rem;
-                            background: green;
+                            background: red;
                             border-radius: 10px;
                             border: solid 2px;
                           "
@@ -112,16 +119,6 @@
                             fill="#fff"
                           />
                         </svg>
-                      </div>
-                      <div class="my-2">
-                        <a
-                          href="#cambiarIndicador"
-                          ref="btnIndicador"
-                          @click="actualizarIndicador"
-                          class="btn btn-info text-white text-decoration-none"
-                        >
-                          Flow indicator
-                        </a>
                       </div>
                     </div>
                   </div>
@@ -135,7 +132,7 @@
               class="col-sm-12 col-12 col-md-6 col-lg-4 col-xl-2"
               id="cardVariables"
             >
-              <div class="card shadow-sm bg-body rounded h-100">
+              <div class="card shadow-sm bg-body rounded">
                 <a
                   href="#cardVariables"
                   class="text-dark card-header text-decoration-none"
@@ -193,19 +190,6 @@
                             v-model="pidDerivativo"
                             @keyup="enviarEvento(53)"
                           />
-                          <br />
-                          <label for="tempTanque2" class="form-label"
-                            >Tank 2: Water Temperature (C)</label
-                          >
-                          <input
-                            type="number"
-                            id="tempTanque2"
-                            class="form-control"
-                            v-model="temperatura"
-                            @keyup="enviarEvento()"
-                            value="0.00"
-                            step=".01"
-                          />
                         </div>
                       </div>
                     </div>
@@ -220,7 +204,7 @@
               class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4"
               id="cardGraficos"
             >
-              <div class="card shadow-sm bg-body rounded h-100">
+              <div class="card shadow-sm bg-body rounded">
                 <a
                   href="#cardGraficos"
                   class="text-dark card-header text-decoration-none"
@@ -242,6 +226,7 @@
                           :minValue="0"
                           :maxValue="100"
                           textColor="${textColor}"
+                          :key="renderizarComponenteTemp"
                         />
                       </div>
                     </div>
@@ -259,9 +244,6 @@
                       :options="options2"
                       :key="renderizarComponente"
                     />
-                    <!-- <a href="#" @click="actualizarGrafica()"
-                      >Actualizar gráfica</a
-                    > -->
                   </div>
                 </div>
               </div>
@@ -273,7 +255,7 @@
               class="col-sm-12 col-12 col-md-6 col-lg-5 col-xl-4"
               id="cardTransmision"
             >
-              <div class="card shadow-sm bg-body rounded h-100">
+              <div class="card shadow-sm bg-body rounded">
                 <a
                   href="#cardTransmision"
                   class="text-dark card-header text-decoration-none"
@@ -283,131 +265,6 @@
                 <div class="card-body mx-auto" id="transmision">
                   <div class="row">
                     <stream :mostrarControles="mostrarControles" />
-                  </div>
-                  <!--
-                  <div class="row">
-                    <h5 class="pt-3">Simulation</h5>
-                  </div> -->
-
-                  <input
-                    type="number"
-                    v-model="nivelTanque1"
-                    class="form-control"
-                    step="0.01"
-                    @change="modificarTanque()"
-                  />
-                  <input
-                    type="number"
-                    v-model="nivelTanque2"
-                    class="form-control"
-                    step="0.01"
-                    @change="modificarTanque()"
-                  />
-                  <div class="row">
-                    <div class="col">
-                      <p>View 1</p>
-                      <div class="water-tank1">
-                        <div class="liquid1">
-                          <svg class="water" viewBox="0 0 400 200">
-                            <defs>
-                              <linearGradient
-                                id="waterGradient"
-                                x1="0%"
-                                y1="0%"
-                                x2="0%"
-                                y2="100%"
-                              >
-                                <stop offset="0" style="stop-color: #29abe2" />
-                                <stop
-                                  offset="0.1643"
-                                  style="stop-color: #28a6e3"
-                                />
-                                <stop
-                                  offset="0.3574"
-                                  style="stop-color: #2496e6"
-                                />
-                                <stop
-                                  offset="0.5431"
-                                  style="stop-color: #1e7dea"
-                                />
-                                <stop
-                                  offset="0.7168"
-                                  style="stop-color: #1559f0"
-                                />
-                                <stop
-                                  offset="0.874"
-                                  style="stop-color: #0b2cf7"
-                                />
-                                <stop offset="1" style="stop-color: #0000ff" />
-                              </linearGradient>
-                            </defs>
-                            <path
-                              fill="url(#waterGradient)"
-                              d="M 0,0 v 100 h 200 v -100
-                                c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                                c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                                c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                                c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5"
-                            />
-                          </svg>
-                        </div>
-                        <div ref="val1" class="val text-center">
-                          <strong>{{ nivelTanque1 }}</strong>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <p>View 2</p>
-                      <div class="water-tank2">
-                        <div class="liquid2">
-                          <svg class="water" viewBox="0 0 400 200">
-                            <defs>
-                              <linearGradient
-                                id="waterGradient2"
-                                x1="0%"
-                                y1="0%"
-                                x2="0%"
-                                y2="100%"
-                              >
-                                <stop offset="0" style="stop-color: #29abe2" />
-                                <stop
-                                  offset="0.1643"
-                                  style="stop-color: #28a6e3"
-                                />
-                                <stop
-                                  offset="0.3574"
-                                  style="stop-color: #2496e6"
-                                />
-                                <stop
-                                  offset="0.5431"
-                                  style="stop-color: #1e7dea"
-                                />
-                                <stop
-                                  offset="0.7168"
-                                  style="stop-color: #1559f0"
-                                />
-                                <stop
-                                  offset="0.874"
-                                  style="stop-color: #0b2cf7"
-                                />
-                                <stop offset="1" style="stop-color: #0000ff" />
-                              </linearGradient>
-                            </defs>
-                            <path
-                              fill="url(#waterGradient2)"
-                              d="M 0,0 v 100 h 200 v -100
-                                 c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                                 c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                                 c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5
-                                 c -10,0 -15,5 -25,5 c -10,0 -15,-5 -25,-5"
-                            />
-                          </svg>
-                        </div>
-                        <div ref="val2" class="val text-center">
-                          <strong>{{ nivelTanque2 }}</strong>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -440,7 +297,7 @@ export default {
     return {
       cambiarIndicador: 0,
       mostrarControles: true,
-      switch1: true,
+      switch1: false,
       temperaturaValor: 0,
       renderizarComponente: 0,
       labels: [],
@@ -477,14 +334,22 @@ export default {
       temperatura: 25,
       pidDerivativo: 100,
       cicloCalentador: 20,
-      refresco: 15,
       timeOutEntrenador: 0,
       simuladorIniciado: false,
       intervalLecturas: "",
+      renderizarComponenteTemp: 0,
+      renderizarComponenteSwitch: 0,
     };
   },
   mounted() {
     this.init();
+  },
+  watch: {
+    simuladorIniciado(val) {
+      if (val) {
+        this.switch1 = false;
+      }
+    },
   },
   methods: {
     init() {
@@ -598,9 +463,7 @@ export default {
     },
 
     actualizarGrafica(index, valor) {
-      //   console.log(valor);
       if (valor) {
-        // this.datapoints.push(valor);
         if (this.data.datasets[index].data.length == 30) {
           this.data.datasets[index].data.shift();
         }
@@ -611,14 +474,10 @@ export default {
         for (let i = 1; i < DATA_COUNT; ++i) {
           this.data.labels.push(i.toString());
         }
-        // console.log(this.data.datasets, index);
 
         this.data.datasets[index].data.push(valor);
-        // this.datapoints2.push(valor);
         this.renderizarComponente += 1;
       }
-
-      //   this.data.datasets[index].data.push(valor);
     },
 
     actualizarGraficaSalida(valor) {
@@ -636,7 +495,6 @@ export default {
         }
 
         this.data2.datasets[0].data.push(valor);
-        // this.datapoints2.push(valor);
         this.renderizarComponente += 1;
       }
     },
@@ -687,6 +545,7 @@ export default {
         this.animacionesOcultas.transmision.estado = estado;
       }
     },
+
     modificarTanque() {
       console.log("Valor modificado");
       //   this.nivelTanque1 = 20;
@@ -711,27 +570,35 @@ export default {
 
       this.actualizarComponente++;
     },
+
     actualizarIndicador() {
+      if (!this.simuladorIniciado) {
+        this.switch1 = false;
+        this.renderizarComponenteSwitch++;
+        alerta.mensaje(
+          "Debes iniciar el simulador antes de continuar.",
+          "error"
+        );
+        return;
+      }
+
       if (this.cambiarIndicador == 0) {
-        this.$refs.indicador.setAttribute(
-          "style",
-          "width: 5rem;background: red;border-radius: 10px;border: solid 2px;"
-        );
         this.cambiarIndicador = 1;
+        this.enviarEvento(10);
       } else {
-        this.$refs.indicador.setAttribute(
-          "style",
-          "width: 5rem;background: green;border-radius: 10px;border: solid 2px;"
-        );
         this.cambiarIndicador = 0;
+        this.enviarEvento(11);
       }
     },
 
     async enviarEvento(valor = 0) {
       window.clearTimeout(this.timeOutEntrenador);
+      if (valor == 12 || valor == 22 || valor == 23) {
+        console.log(typeof 12, 12, typeof valor, valor, "Parando intervalor");
+        this.clearAllIntervals();
+      }
 
       this.timeOutEntrenador = setTimeout(async () => {
-        // console.log(typeof valor);
         let valores = {
           primerValor: valor,
           segundoValor: -1,
@@ -755,6 +622,14 @@ export default {
             break;
         }
 
+        if (!this.simuladorIniciado && valor != 12) {
+          alerta.mensaje(
+            "Debes iniciar el simulador antes de continuar.",
+            "error"
+          );
+          return;
+        }
+
         const res = await axios
           .post("/api/enviarEvento", valores)
           .catch((error) => {
@@ -768,54 +643,52 @@ export default {
         }
 
         const opt = valores.primerValor;
-        console.log(opt);
         switch (opt) {
-          case 10: //   SetPoint
-            //   valores.primerValor = 10;
+          case 10: // Inicar perturbación
+            this.$refs.indicador.setAttribute(
+              "style",
+              "width: 5rem;background: green;border-radius: 10px;border: solid 2px;"
+            );
+            alerta.mensaje("Perturbación iniciada correctamente.", "success");
+            this.iniciarLecturas();
             break;
-          case 11:
-            //   valores.primerValor = 11;
+          case 11: // Detener perturbación
+            this.$refs.indicador.setAttribute(
+              "style",
+              "width: 5rem;background: red;border-radius: 10px;border: solid 2px;"
+            );
+            alerta.mensaje("Perturbación detenida correctamente.", "success");
+            this.iniciarLecturas();
             break;
           case 12: //Iniciar
             alerta.mensaje("Entrenador iniciado correctamente.", "success");
-            if (!this.simuladorIniciado) {
-              this.iniciarLecturas();
-            }
+            this.iniciarLecturas();
             break;
           case 13: //Parar
             alerta.mensaje("Entrenador detenido correctamente.", "success");
-            //   valores.primerValor = 13;
-            window.clearInterval(this.intervalLecturas);
             break;
-          case 14:
-            //   valores.primerValor = 14;
+          case 14: //Reiniciar
+            alerta.mensaje("Entrenador reiniciado correctamente.", "success");
             this.init();
-            break;
-          case 20:
             this.iniciarLecturas();
             break;
+          case 20:
+            // this.iniciarLecturas();
+            break;
           case 21:
-            //   valores.primerValor = 21;
+            this.actualizarGraficaSalida(parseFloat(res.data.lectura));
+            // this.actualizarGraficaSalida(parseFloat(this.prueba + 1));
+            this.iniciarLecturas();
             break;
           case 22:
             this.temperatura = parseFloat(res.data.lectura);
-            // this.data2.datasets.data.push(valor);
+            this.renderizarComponenteTemp += 1;
+            // this.iniciarLecturas();
             break;
           case 23:
-            this.actualizarGrafica(
-              0,
-              parseFloat(res.data.lectura + Math.random() * (2 - 1) + 1)
-            );
-            // console.log(parseFloat(Math.random() * (50 - 20) + 1).toFixed(2));
-            this.actualizarGrafica(
-              1,
-              parseFloat(
-                res.data.lectura + Math.random() * (50 - 20) + 1
-              ).toFixed(2)
-            );
-            this.actualizarGraficaSalida(
-              parseFloat(res.data.lectura + Math.random() * (2 - 1) + 1)
-            );
+            this.actualizarGrafica(0, parseFloat(res.data.lectura));
+            this.actualizarGrafica(1, parseFloat(this.setPoint).toFixed(2));
+            // this.iniciarLecturas();
             break;
           case 24:
             //   valores.primerValor = 24;
@@ -832,16 +705,26 @@ export default {
 
     async iniciarLecturas() {
       //   Lectura de temperatura del agua c/seg
-      //   console.log(this.intervalLecturas);
-      this.intervalLecturas = setInterval(async () => {
-        console.log("Actualizado");
-        await this.enviarEvento(22);
-      }, 5000);
+      setInterval(async () => {
+        this.enviarEvento(22);
+        // console.clear();
+      }, 1000);
 
-      this.intervalLecturas = setInterval(async () => {
-        //     console.log("Actualizado setpoint");
-        await this.enviarEvento(23);
-      }, 6000);
+      setInterval(async () => {
+        this.enviarEvento(23);
+        // console.clear();
+      }, 1250);
+    },
+
+    clearAllIntervals() {
+      // Get a reference to the last interval + 1
+      const interval_id = window.setInterval(function () {},
+      Number.MAX_SAFE_INTEGER);
+
+      // Clear any timeout/interval up to that id
+      for (let i = 1; i < interval_id; i++) {
+        window.clearInterval(i);
+      }
     },
   },
 };
