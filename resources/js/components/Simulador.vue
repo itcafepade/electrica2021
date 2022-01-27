@@ -57,6 +57,7 @@
                             fab
                             x-large
                             dark
+                            :disabled="enableToReset"
                             @click="enviarEvento('14')"
                           >
                             RESET
@@ -351,6 +352,7 @@ export default {
       leerValores: false,
       leerFinalizado: false,
       enableToStart: false,
+      enableToReset: false,
     };
   },
   mounted() {
@@ -654,7 +656,6 @@ export default {
       window.clearTimeout(this.timeOutEntrenador);
 
       this.timeOutEntrenador = setTimeout(async () => {
-        // console.log("Comando: " + valor);
         let valores = {
           primerValor: valor,
           segundoValor: "-1",
@@ -679,6 +680,7 @@ export default {
         let valido = true;
         switch (valor) {
           case "50":
+            this.leerValores = false;
             valores.segundoValor = this.setPoint;
 
             if (
@@ -690,6 +692,7 @@ export default {
             }
             break;
           case "51":
+            this.leerValores = false;
             valores.segundoValor = this.datoPID;
 
             if (
@@ -702,6 +705,7 @@ export default {
 
             break;
           case "52":
+            this.leerValores = false;
             valores.segundoValor = this.integralTime;
 
             if (
@@ -713,6 +717,7 @@ export default {
             }
             break;
           case "53":
+            this.leerValores = false;
             valores.segundoValor = this.pidDerivativo;
 
             if (
@@ -768,17 +773,22 @@ export default {
           case "12": //Iniciar
             alerta.mensaje("Entrenador iniciado correctamente.", "success");
             this.leerValores = true;
+            // this.enableToStart = false;
             this.iniciarLecturas();
             break;
           case "13": //Parar
             alerta.mensaje("Entrenador detenido correctamente.", "success");
             this.leerValores = false;
+            this.enableToReset = false;
+            this.enableToStart = false;
+            // this.enableToStart = true;
             break;
           case "14": //Reiniciar
             alerta.mensaje("Entrenador reiniciado correctamente.", "success");
             this.init();
-            this.leerValores = true;
+            this.enableToReset = true;
             this.enableToStart = true;
+            this.leerValores = true;
             // this.iniciarLecturas();
             break;
           case "20":
@@ -814,16 +824,20 @@ export default {
             //   valores.primerValor = 26;
             break;
           case "50":
+            this.leerValores = true;
             // this.iniciarLecturas();
             break;
           case "51":
+            this.leerValores = true;
             // this.iniciarLecturas();
             break;
           case "52":
+            this.leerValores = true;
             // console.log("52: " + res.data.lectura);
             // this.iniciarLecturas();
             break;
           case "53":
+            this.leerValores = true;
             // this.iniciarLecturas();
             break;
         }
@@ -831,7 +845,6 @@ export default {
     },
 
     async iniciarLecturas(value = "21") {
-      //   await this.enviarEvento("23");
       if (value == "21") {
         await this.enviarEvento("21");
         value = "22";
@@ -842,12 +855,11 @@ export default {
         await this.enviarEvento("23");
         value = "21";
       }
-      //   console.clear();
 
       if (this.leerValores) {
         await setTimeout(() => {
           this.iniciarLecturas(value);
-        }, 1000);
+        }, 1500);
       }
     },
 
