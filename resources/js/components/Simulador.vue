@@ -28,9 +28,10 @@
                             fab
                             x-large
                             dark
+                            :disabled="!enableToStart"
                             @click="
                               simuladorIniciado = true;
-                              enviarEvento(12);
+                              enviarEvento('12');
                             "
                           >
                             START
@@ -43,7 +44,8 @@
                             fab
                             x-large
                             dark
-                            @click="enviarEvento(13)"
+                            :disabled="!enableToStart"
+                            @click="enviarEvento('13')"
                           >
                             STOP
                           </v-btn>
@@ -55,7 +57,7 @@
                             fab
                             x-large
                             dark
-                            @click="enviarEvento(14)"
+                            @click="enviarEvento('14')"
                           >
                             RESET
                           </v-btn>
@@ -72,7 +74,8 @@
                             max="100.00"
                             step="0.01"
                             v-model="setPoint"
-                            @keyup="enviarEvento(50)"
+                            :disabled="!simuladorIniciado"
+                            @keyup="enviarEvento('50')"
                           />
                           <br />
                           <label for="variableProceso" class="form-label"
@@ -97,6 +100,7 @@
                           v-model="switch1"
                           @click="actualizarIndicador"
                           :key="renderizarComponenteSwitch"
+                          :disabled="!simuladorIniciado"
                         ></v-switch>
                       </div>
                       <div class="my-2">
@@ -158,7 +162,8 @@
                             max="1000.00"
                             step=".01"
                             v-model="datoPID"
-                            @keyup="enviarEvento(51)"
+                            :disabled="!simuladorIniciado"
+                            @keyup="enviarEvento('51')"
                           />
                           <br />
                           <label for="integralTime" class="form-label"
@@ -169,7 +174,8 @@
                             id="integralTime"
                             class="form-control"
                             v-model="integralTime"
-                            @keyup="enviarEvento(52)"
+                            :disabled="!simuladorIniciado"
+                            @keyup="enviarEvento('52')"
                             value="0.000"
                             min="0.000"
                             max="1000.00"
@@ -187,8 +193,9 @@
                             min="0.000"
                             max="1000.00"
                             step=".001"
+                            :disabled="!simuladorIniciado"
                             v-model="pidDerivativo"
-                            @keyup="enviarEvento(53)"
+                            @keyup="enviarEvento('53')"
                           />
                         </div>
                       </div>
@@ -232,7 +239,7 @@
                     </div>
                   </div>
                   <br />
-                  <div v-if="datapoints.length > 0">
+                  <div>
                     <h5>Graphics</h5>
                     <grafico
                       :data="data"
@@ -240,9 +247,9 @@
                       :key="renderizarComponente"
                     />
                     <grafico
-                      :data="data2"
-                      :options="options2"
-                      :key="renderizarComponente"
+                      :data="data3"
+                      :options="options3"
+                      :key="renderizarComponente + 1"
                     />
                   </div>
                 </div>
@@ -303,9 +310,13 @@ export default {
       labels: [],
       datapoints: [],
       datapoints2: [],
+      datapoints3: [],
       data: {},
       data2: {},
+      data3: {},
       options: {},
+      options2: {},
+      options3: {},
       animacionesOcultas: {
         generales: {
           nombre: "generales",
@@ -339,6 +350,9 @@ export default {
       intervalLecturas: "",
       renderizarComponenteTemp: 0,
       renderizarComponenteSwitch: 0,
+      leerValores: false,
+      leerFinalizado: false,
+      enableToStart: false,
     };
   },
   mounted() {
@@ -357,10 +371,10 @@ export default {
       for (let i = 0; i < DATA_COUNT; ++i) {
         this.labels.push(i.toString());
       }
-      // 31.5, 31.6, 31.7, 32.0, 31.1, 31.5
-      // 31.3, 31.6, 31.3, 31.4, 31.1, 31.7
+
       this.datapoints = [];
       this.datapoints2 = [];
+      this.datapoints3 = [];
 
       this.options = {
         responsive: true,
@@ -450,8 +464,53 @@ export default {
         labels: this.labels,
         datasets: [
           {
-            label: "Process Variable",
+            label: "Ciclo de trabajo del controlador",
             data: this.datapoints2,
+            borderColor: "#FF6384",
+            fill: false,
+            cubicInterpolationMode: "monotone",
+            tension: 0.4,
+          },
+        ],
+      };
+
+      this.options3 = {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Controller Output (%)",
+          },
+        },
+
+        interaction: {
+          intersect: false,
+        },
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+            },
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: "Value",
+            },
+            suggestedMin: 31.85,
+            suggestedMax: 32.1,
+          },
+        },
+      };
+
+      this.data3 = {
+        labels: this.labels,
+        datasets: [
+          {
+            label: "Ciclo de trabajo del controlador",
+            data: this.datapoints3,
             borderColor: "#FF6384",
             fill: false,
             cubicInterpolationMode: "monotone",
@@ -469,7 +528,7 @@ export default {
         }
         this.data.labels = [];
 
-        let DATA_COUNT = this.datapoints.length;
+        let DATA_COUNT = this.datapoints3.length;
 
         for (let i = 1; i < DATA_COUNT; ++i) {
           this.data.labels.push(i.toString());
@@ -481,20 +540,21 @@ export default {
     },
 
     actualizarGraficaSalida(valor) {
+      // console.log("Gola");
       if (valor) {
-        if (this.data2.datasets[0].data.length == 30) {
-          this.data2.datasets[0].data.shift();
+        if (this.data3.datasets[0].data.length == 30) {
+          this.data3.datasets[0].data.shift();
         }
-        this.data2.labels = [];
+        this.data3.labels = [];
 
-        let DATA_COUNT = this.datapoints.length;
-        console.log(this.datapoints2.length);
+        let DATA_COUNT = this.datapoints3.length;
+        // console.log(this.datapoints2.length);
 
         for (let i = 1; i < DATA_COUNT; ++i) {
-          this.data2.labels.push(i.toString());
+          this.data3.labels.push(i.toString());
         }
 
-        this.data2.datasets[0].data.push(valor);
+        this.data3.datasets[0].data.push(valor);
         this.renderizarComponente += 1;
       }
     },
@@ -547,7 +607,7 @@ export default {
     },
 
     modificarTanque() {
-      console.log("Valor modificado");
+      // console.log("Valor modificado");
       //   this.nivelTanque1 = 20;
       //   this.nivelTanque2 = 100;
 
@@ -576,7 +636,7 @@ export default {
         this.switch1 = false;
         this.renderizarComponenteSwitch++;
         alerta.mensaje(
-          "Debes iniciar el simulador antes de continuar.",
+          "Debes iniciar el entrenador antes de continuar.",
           "error"
         );
         return;
@@ -584,47 +644,52 @@ export default {
 
       if (this.cambiarIndicador == 0) {
         this.cambiarIndicador = 1;
-        this.enviarEvento(10);
+        this.enviarEvento("10");
       } else {
         this.cambiarIndicador = 0;
-        this.enviarEvento(11);
+        this.enviarEvento("11");
       }
     },
 
     async enviarEvento(valor = 0) {
       window.clearTimeout(this.timeOutEntrenador);
-      if (valor == 12 || valor == 22 || valor == 23) {
-        console.log(typeof 12, 12, typeof valor, valor, "Parando intervalor");
-        this.clearAllIntervals();
-      }
 
       this.timeOutEntrenador = setTimeout(async () => {
+        console.log("Comando: " + valor);
         let valores = {
           primerValor: valor,
-          segundoValor: -1,
+          segundoValor: "-1",
         };
 
         switch (valor) {
-          case 50:
+          case "50":
             valores.segundoValor = this.setPoint;
             break;
-          case 51:
+          case "51":
             valores.segundoValor = this.datoPID;
             break;
-          case 52:
+          case "52":
             valores.segundoValor = this.integralTime;
             break;
-          case 53:
+          case "53":
             valores.segundoValor = this.pidDerivativo;
             break;
           default:
-            valores.segundoValor = -1;
+            valores.segundoValor = "-1";
             break;
         }
 
-        if (!this.simuladorIniciado && valor != 12) {
+        if (!this.enableToStart && valor != "14") {
           alerta.mensaje(
-            "Debes iniciar el simulador antes de continuar.",
+            "Debes reiniciar el entrenador antes de iniciar.",
+            "error"
+          );
+          return;
+        }
+
+        if (this.enableToStart && !this.simuladorIniciado && valor != "12") {
+          alerta.mensaje(
+            "Debes iniciar el entrenador antes de continuar.",
             "error"
           );
           return;
@@ -633,98 +698,127 @@ export default {
         const res = await axios
           .post("/api/enviarEvento", valores)
           .catch((error) => {
-            console.log("No se pudo actualizar el valor.");
+            // console.log("No se pudo actualizar el valor.");
             alerta.mensaje("El Entrenador no pudo ser actualizado.", "error");
           });
 
         if (res.data.message == "success") {
           alerta.mensaje("Entrenador actualizado correctamente.", "success");
-          console.log("Valor actualizado correctamente.");
+          // console.log("Valor actualizado correctamente.");
         }
 
         const opt = valores.primerValor;
         switch (opt) {
-          case 10: // Inicar perturbación
+          case "10": // Inicar perturbación
             this.$refs.indicador.setAttribute(
               "style",
               "width: 5rem;background: green;border-radius: 10px;border: solid 2px;"
             );
             alerta.mensaje("Perturbación iniciada correctamente.", "success");
-            this.iniciarLecturas();
+            this.leerValores = true;
+            // this.iniciarLecturas();
             break;
-          case 11: // Detener perturbación
+          case "11": // Detener perturbación
             this.$refs.indicador.setAttribute(
               "style",
               "width: 5rem;background: red;border-radius: 10px;border: solid 2px;"
             );
             alerta.mensaje("Perturbación detenida correctamente.", "success");
-            this.iniciarLecturas();
-            break;
-          case 12: //Iniciar
-            alerta.mensaje("Entrenador iniciado correctamente.", "success");
-            this.iniciarLecturas();
-            break;
-          case 13: //Parar
-            alerta.mensaje("Entrenador detenido correctamente.", "success");
-            break;
-          case 14: //Reiniciar
-            alerta.mensaje("Entrenador reiniciado correctamente.", "success");
-            this.init();
-            this.iniciarLecturas();
-            break;
-          case 20:
+            this.leerValores = true;
             // this.iniciarLecturas();
             break;
-          case 21:
-            this.actualizarGraficaSalida(parseFloat(res.data.lectura));
-            // this.actualizarGraficaSalida(parseFloat(this.prueba + 1));
+          case "12": //Iniciar
+            alerta.mensaje("Entrenador iniciado correctamente.", "success");
+            this.leerValores = true;
             this.iniciarLecturas();
             break;
-          case 22:
+          case "13": //Parar
+            alerta.mensaje("Entrenador detenido correctamente.", "success");
+            this.leerValores = false;
+            break;
+          case "14": //Reiniciar
+            alerta.mensaje("Entrenador reiniciado correctamente.", "success");
+            this.init();
+            this.leerValores = true;
+            this.enableToStart = true;
+            // this.iniciarLecturas();
+            break;
+          case "20":
+            this.leerValores = true;
+            // this.iniciarLecturas();
+            break;
+          case "21":
+            // console.log("21: " + res.data.lectura);
+            this.actualizarGraficaSalida(parseFloat(res.data.lectura));
+            // this.actualizarGraficaSalida(parseFloat(this.prueba + 1));
+            // this.iniciarLecturas();
+            break;
+          case "22":
+            // console.log(
+            //   typeof res.data.lectura,
+            //   res.data.lectura.length,
+            //   res.data.lectura
+            // );
             this.temperatura = parseFloat(res.data.lectura);
             this.renderizarComponenteTemp += 1;
             // this.iniciarLecturas();
             break;
-          case 23:
+          case "23":
             this.actualizarGrafica(0, parseFloat(res.data.lectura));
             this.actualizarGrafica(1, parseFloat(this.setPoint).toFixed(2));
             // this.iniciarLecturas();
             break;
-          case 24:
+          case "24":
             //   valores.primerValor = 24;
             break;
-          case 25:
+          case "25":
             //   valores.primerValor = 25;
             break;
-          case 26:
+          case "26":
             //   valores.primerValor = 26;
+            break;
+          case "50":
+            // this.iniciarLecturas();
+            break;
+          case "51":
+            // this.iniciarLecturas();
+            break;
+          case "52":
+            // this.iniciarLecturas();
+            break;
+          case "53":
+            console.log("53: " + res.data.lectura);
+            // this.iniciarLecturas();
             break;
         }
       }, 500);
     },
 
-    async iniciarLecturas() {
-      //   Lectura de temperatura del agua c/seg
-      setInterval(async () => {
-        this.enviarEvento(22);
-        // console.clear();
-      }, 1000);
+    async iniciarLecturas(value = "21") {
+      if (value == "21") {
+        // await this.enviarEvento("21");
+        value = "22";
+      } else if (value == "22") {
+        // await this.enviarEvento("22");
+        value = "23";
+      } else {
+        // await this.enviarEvento("23");
+        value = "21";
+      }
 
-      setInterval(async () => {
-        this.enviarEvento(23);
-        // console.clear();
-      }, 1250);
+      if (this.leerValores) {
+        await setTimeout(() => {
+          this.iniciarLecturas(value);
+        }, 10000);
+      }
+    },
+
+    timeout(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
     },
 
     clearAllIntervals() {
-      // Get a reference to the last interval + 1
-      const interval_id = window.setInterval(function () {},
-      Number.MAX_SAFE_INTEGER);
-
-      // Clear any timeout/interval up to that id
-      for (let i = 1; i < interval_id; i++) {
-        window.clearInterval(i);
-      }
+      this.leerValores = false;
     },
   },
 };

@@ -9,7 +9,7 @@ class EventoController extends Controller
     public function enviarEvento(Request $request)
     {
         $fullRoute= "C:\Users\Leonel\Proyectos";
-        $env = "env"; //env o production
+        $env = "production"; //env o production
         $comando = $request->primerValor;
         $valor = $request->segundoValor;
 
@@ -40,11 +40,11 @@ class EventoController extends Controller
             "segundoValor"=>$request->segundoValor,
         ];
 
-        ($comando >= 20 && $comando <= 26)?
-            $resultados['lectura']=$array[0]
-        :
+        if ($comando >= 20 && $comando <= 26) {
+            $resultados['lectura']=$array[0];
+        } else {
             $resultados['escritura']=$array[0];
-
+        }
         // dd($resultados);
 
         return response()->json($resultados);
