@@ -859,7 +859,7 @@ export default {
       if (this.leerValores) {
         await setTimeout(() => {
           this.iniciarLecturas(value);
-        }, 1500);
+        }, 2000);
       }
     },
 
