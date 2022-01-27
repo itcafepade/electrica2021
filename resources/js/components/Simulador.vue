@@ -233,20 +233,19 @@
                           :minValue="0"
                           :maxValue="100"
                           textColor="${textColor}"
-                          :key="renderizarComponenteTemp"
                         />
                       </div>
                     </div>
                   </div>
                   <br />
-                  <div>
+                  <div v-if="datapoints.length > 0 || datapoints2.length > 0">
                     <h5>Graphics</h5>
                     <grafico
                       :data="data"
                       :options="options"
                       :key="renderizarComponente"
                     />
-                    <grafico
+                    <grafico-salida
                       :data="data3"
                       :options="options3"
                       :key="renderizarComponente + 1"
@@ -348,7 +347,6 @@ export default {
       timeOutEntrenador: 0,
       simuladorIniciado: false,
       intervalLecturas: "",
-      renderizarComponenteTemp: 0,
       renderizarComponenteSwitch: 0,
       leerValores: false,
       leerFinalizado: false,
@@ -535,12 +533,13 @@ export default {
         }
 
         this.data.datasets[index].data.push(valor);
-        this.renderizarComponente += 1;
+        // console.log(this.data.datasets[index].data);
+        // this.renderizarComponente += 1;
       }
     },
 
     actualizarGraficaSalida(valor) {
-      // console.log("Gola");
+      //   console.log("Salida: " + valor);
       if (valor) {
         if (this.data3.datasets[0].data.length == 30) {
           this.data3.datasets[0].data.shift();
@@ -655,29 +654,11 @@ export default {
       window.clearTimeout(this.timeOutEntrenador);
 
       this.timeOutEntrenador = setTimeout(async () => {
-        console.log("Comando: " + valor);
+        // console.log("Comando: " + valor);
         let valores = {
           primerValor: valor,
           segundoValor: "-1",
         };
-
-        switch (valor) {
-          case "50":
-            valores.segundoValor = this.setPoint;
-            break;
-          case "51":
-            valores.segundoValor = this.datoPID;
-            break;
-          case "52":
-            valores.segundoValor = this.integralTime;
-            break;
-          case "53":
-            valores.segundoValor = this.pidDerivativo;
-            break;
-          default:
-            valores.segundoValor = "-1";
-            break;
-        }
 
         if (!this.enableToStart && valor != "14") {
           alerta.mensaje(
@@ -692,6 +673,63 @@ export default {
             "Debes iniciar el entrenador antes de continuar.",
             "error"
           );
+          return;
+        }
+
+        let valido = true;
+        switch (valor) {
+          case "50":
+            valores.segundoValor = this.setPoint;
+
+            if (
+              !valores.segundoValor ||
+              valores.segundoValor < 0 ||
+              valores.segundoValor > 100
+            ) {
+              valido = false;
+            }
+            break;
+          case "51":
+            valores.segundoValor = this.datoPID;
+
+            if (
+              !valores.segundoValor ||
+              valores.segundoValor < 0 ||
+              valores.segundoValor > 100
+            ) {
+              valido = false;
+            }
+
+            break;
+          case "52":
+            valores.segundoValor = this.integralTime;
+
+            if (
+              !valores.segundoValor ||
+              valores.segundoValor < 0 ||
+              valores.segundoValor > 100
+            ) {
+              valido = false;
+            }
+            break;
+          case "53":
+            valores.segundoValor = this.pidDerivativo;
+
+            if (
+              !valores.segundoValor ||
+              valores.segundoValor < 0 ||
+              valores.segundoValor > 1000
+            ) {
+              valido = false;
+            }
+            break;
+          default:
+            valores.segundoValor = "-1";
+            break;
+        }
+
+        if (!valido && this.simuladorIniciado) {
+          alerta.mensaje("Debes ingresar un valor válido.", "error");
           return;
         }
 
@@ -754,18 +792,16 @@ export default {
             // this.iniciarLecturas();
             break;
           case "22":
-            // console.log(
-            //   typeof res.data.lectura,
-            //   res.data.lectura.length,
-            //   res.data.lectura
-            // );
+            // console.log("22: " + res.data.lectura);
+            // this.temperatura = parseFloat(17);
             this.temperatura = parseFloat(res.data.lectura);
-            this.renderizarComponenteTemp += 1;
             // this.iniciarLecturas();
             break;
           case "23":
+            console.log("23", res.data.lectura);
             this.actualizarGrafica(0, parseFloat(res.data.lectura));
             this.actualizarGrafica(1, parseFloat(this.setPoint).toFixed(2));
+            this.renderizarComponente += 1;
             // this.iniciarLecturas();
             break;
           case "24":
@@ -784,10 +820,10 @@ export default {
             // this.iniciarLecturas();
             break;
           case "52":
+            // console.log("52: " + res.data.lectura);
             // this.iniciarLecturas();
             break;
           case "53":
-            console.log("53: " + res.data.lectura);
             // this.iniciarLecturas();
             break;
         }
@@ -795,26 +831,24 @@ export default {
     },
 
     async iniciarLecturas(value = "21") {
+      //   await this.enviarEvento("23");
       if (value == "21") {
-        // await this.enviarEvento("21");
+        await this.enviarEvento("21");
         value = "22";
       } else if (value == "22") {
-        // await this.enviarEvento("22");
+        await this.enviarEvento("22");
         value = "23";
       } else {
-        // await this.enviarEvento("23");
+        await this.enviarEvento("23");
         value = "21";
       }
+      //   console.clear();
 
       if (this.leerValores) {
         await setTimeout(() => {
           this.iniciarLecturas(value);
-        }, 10000);
+        }, 1000);
       }
-    },
-
-    timeout(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
     },
 
     clearAllIntervals() {
