@@ -83,6 +83,8 @@ Route::group(['middleware'=>'auth'], function () {
 
     // Eventos
     Route::post('api/enviarEvento', [EventoController::class, 'enviarEvento']);
+    Route::get('api/realizarConsultas', [EventoController::class, 'realizarConsultas']);
+    Route::post('api/asignarEstadoInicial', [EventoController::class, 'asignarEstadoInicial']);
 });
 
 Auth::routes(['register' =>false]);

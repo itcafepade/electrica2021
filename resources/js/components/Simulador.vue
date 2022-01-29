@@ -96,7 +96,7 @@
                             max="100.00"
                             step=".01"
                             disabled
-                            v-model="variableProceso"
+                            v-model="temperatura"
                           />
                         </div>
                       </div>
@@ -377,7 +377,7 @@ export default {
   },
   methods: {
     init() {
-      let DATA_COUNT = 30;
+      let DATA_COUNT = 20;
       for (let i = 0; i < DATA_COUNT; ++i) {
         this.labels.push(i.toString());
       }
@@ -536,7 +536,7 @@ export default {
 
     actualizarGrafica(index, valor) {
       if (valor) {
-        if (this.data.datasets[index].data.length == 30) {
+        if (this.data.datasets[index].data.length == 15) {
           this.data.datasets[index].data.shift();
         }
         this.data.labels = [];
@@ -553,7 +553,7 @@ export default {
 
     actualizarGraficaSalida(valor) {
       if (valor) {
-        if (this.data3.datasets[0].data.length == 30) {
+        if (this.data3.datasets[0].data.length == 15) {
           this.data3.datasets[0].data.shift();
         }
         this.data3.labels = [];
@@ -632,15 +632,14 @@ export default {
     },
 
     actualizarIndicador() {
-      if (!this.simuladorIniciado) {
-        this.switch1 = false;
-        this.renderizarComponenteSwitch++;
-        alerta.mensaje(
-          "Debes iniciar el entrenador antes de continuar.",
-          "error"
-        );
-        return;
-      }
+      //   if (!this.simuladorIniciado) {
+      //     this.switch1 = false;
+      //     alerta.mensaje(
+      //       "Debes iniciar el entrenador antes de continuar.",
+      //       "error"
+      //     );
+      //     return;
+      //   }
 
       if (this.cambiarIndicador == 0) {
         this.cambiarIndicador = 1;
@@ -649,9 +648,10 @@ export default {
         this.cambiarIndicador = 0;
         this.enviarEvento("11");
       }
+      this.renderizarComponenteSwitch++;
     },
 
-    async enviarEvento(valor = 0) {
+    async enviarEvento(valor = 0, init = false) {
       window.clearTimeout(this.timeOutEntrenador);
 
       this.timeOutEntrenador = setTimeout(async () => {
@@ -666,8 +666,12 @@ export default {
             this.leerValores = false;
             valores.segundoValor = this.setPoint;
 
+            if (this.setPoint == "") {
+              this.setPoint = 0;
+              valido = false;
+            }
+
             if (this.setPoint < 0 || this.setPoint > 100) {
-              console.log(typeof this.setPoint, this.setPoint);
               this.setPoint = 0;
               valido = false;
             }
@@ -676,9 +680,12 @@ export default {
             this.leerValores = false;
             valores.segundoValor = this.datoPID;
 
-            if (this.datoPID < 0 || this.datoPID > 100) {
-              //   console.log("setpoint");
+            if (this.datoPID == "") {
               this.datoPID = 0;
+              valido = false;
+            }
+
+            if (this.datoPID < 0 || this.datoPID > 100) {
               valido = false;
             }
 
@@ -687,11 +694,12 @@ export default {
             this.leerValores = false;
             valores.segundoValor = this.integralTime;
 
-            if (
-              !valores.segundoValor ||
-              valores.segundoValor < 0 ||
-              valores.segundoValor > 100
-            ) {
+            if (this.integralTime == "") {
+              this.integralTime = 0;
+              valido = false;
+            }
+
+            if (this.integralTime < 0 || this.integralTime > 100) {
               valido = false;
             }
             break;
@@ -699,11 +707,12 @@ export default {
             this.leerValores = false;
             valores.segundoValor = this.pidDerivativo;
 
-            if (
-              !valores.segundoValor ||
-              valores.segundoValor < 0 ||
-              valores.segundoValor > 1000
-            ) {
+            if (this.pidDerivativo == "") {
+              this.pidDerivativo = 0;
+              valido = false;
+            }
+
+            if (this.pidDerivativo < 0 || this.pidDerivativo > 100) {
               valido = false;
             }
             break;
@@ -757,19 +766,25 @@ export default {
             break;
           case "20":
             this.leerValores = true;
+            this.iniciarLecturas();
             break;
           case "21":
             this.actualizarGraficaSalida(parseFloat(res.data.resultado));
+            this.leerValores = true;
+            this.iniciarLecturas();
             break;
           case "22":
             this.temperatura = parseFloat(res.data.resultado);
-
+            this.leerValores = true;
+            this.iniciarLecturas();
             break;
           case "23":
             console.log("23", res.data.resultado);
             this.actualizarGrafica(0, parseFloat(this.setPoint).toFixed(2));
             this.actualizarGrafica(1, parseFloat(res.data.resultado));
             this.renderizarComponente += 1;
+            this.leerValores = true;
+            this.iniciarLecturas();
             break;
           case "24":
             //   valores.primerValor = 24;
@@ -781,23 +796,31 @@ export default {
             //   valores.primerValor = 26;
             break;
           case "50":
-            this.leerValores = true;
-            // this.iniciarLecturas();
+            if (this.simuladorIniciado) {
+              this.leerValores = true;
+              this.iniciarLecturas();
+            }
             break;
           case "51":
-            this.leerValores = true;
-            // this.iniciarLecturas();
+            if (this.simuladorIniciado) {
+              this.leerValores = true;
+              this.iniciarLecturas();
+            }
             break;
           case "52":
-            this.leerValores = true;
-            // this.iniciarLecturas();
+            if (this.simuladorIniciado) {
+              this.leerValores = true;
+              this.iniciarLecturas();
+            }
             break;
           case "53":
-            this.leerValores = true;
-            // this.iniciarLecturas();
+            if (this.simuladorIniciado) {
+              this.leerValores = true;
+              this.iniciarLecturas();
+            }
             break;
         }
-      }, 500);
+      }, 1000);
     },
 
     async consultarEnLinea() {
@@ -812,7 +835,7 @@ export default {
         //El servidor no está en línea
         setTimeout(() => {
           this.consultarEnLinea();
-        }, 3000);
+        }, 1500);
         return;
       }
 
@@ -826,7 +849,7 @@ export default {
 
       setTimeout(() => {
         this.consultarEnLinea();
-      }, 3000);
+      }, 1500);
       return;
     },
 
@@ -842,7 +865,7 @@ export default {
         //El servidor no está en línea
         setTimeout(() => {
           this.consultarEstados();
-        }, 3000);
+        }, 1500);
         return;
       }
 
@@ -854,16 +877,19 @@ export default {
         // Asignando valores iniciales
         this.setPoint = 0;
         this.datoPID = 0;
+        this.switch1 = false;
 
-        const setpoint = await this.enviarEvento("50");
-        setTimeout(async () => {
-          const datoPID = await this.enviarEvento("51");
-        }, 1000);
+        const inicial = await this.asignarEstadosIniciales();
 
         this.resetDisabled = true;
         this.startDisabled = false;
         this.setPointDisabled = false;
         this.datoPIDDisabled = false;
+        this.$refs.indicador.setAttribute(
+          "style",
+          "width: 5rem;background: red;border-radius: 10px;border: solid 2px;"
+        );
+
         alerta.mensaje("Entrenador reiniciado correctamente.", "success");
 
         return;
@@ -876,8 +902,10 @@ export default {
         this.resetDisabled = true;
         this.startDisabled = true;
         this.stopDisabled = false;
+        this.leerValores = true;
 
         this.simuladorIniciado = true;
+        this.iniciarLecturas();
         alerta.mensaje("Entrenador iniciado correctamente.", "success");
 
         return;
@@ -894,6 +922,8 @@ export default {
         this.datoPIDDisabled = true;
 
         this.simuladorIniciado = false;
+
+        this.clearAllIntervals(); //Parar lecturas
         alerta.mensaje("Entrenador detenido correctamente.", "success");
 
         return;
@@ -915,7 +945,7 @@ export default {
         this.estado = res.data.resultado;
         setTimeout(() => {
           this.consultarEstados();
-        }, 3000);
+        }, 1500);
 
         return;
       }
@@ -933,7 +963,7 @@ export default {
         //El servidor no está en línea
         setTimeout(() => {
           this.iniciarEntrenador();
-        }, 3000);
+        }, 1500);
         return;
       }
 
@@ -955,11 +985,6 @@ export default {
     },
 
     async iniciarEntrenador() {
-      // Si el simulador está iniciado no debemos de comprobar el estado inicial
-      if (this.simuladorIniciado) {
-        return;
-      }
-
       const valores = {
         primerValor: "12",
         segundoValor: "-1",
@@ -971,7 +996,7 @@ export default {
         //El servidor no está en línea
         setTimeout(() => {
           this.iniciarEntrenador();
-        }, 3000);
+        }, 1500);
         return;
       }
 
@@ -992,22 +1017,25 @@ export default {
       }
     },
 
-    async iniciarLecturas(value = "21") {
-      if (value == "21") {
-        await this.enviarEvento("21");
-        value = "22";
-      } else if (value == "22") {
-        await this.enviarEvento("22");
-        value = "23";
-      } else {
-        await this.enviarEvento("23");
-        value = "21";
-      }
+    async iniciarLecturas() {
+      const res = await axios.get("/api/realizarConsultas").catch((error) => {
+        alerta.mensaje("El Entrenador no pudo ser consultado.", "error");
+      });
+
+      const setPoint = parseFloat(res.data.setPoint);
+      this.temperatura = parseFloat(res.data.temperatura);
+      const datoPID = res.data.datoPID;
+
+      this.actualizarGrafica(0, parseFloat(setPoint).toFixed(2));
+      this.actualizarGrafica(1, parseFloat(this.temperatura).toFixed(2));
+
+      this.actualizarGraficaSalida(parseFloat(datoPID).toFixed(2));
+      this.renderizarComponente += 1;
 
       if (this.leerValores) {
         await setTimeout(() => {
-          this.iniciarLecturas(value);
-        }, 2000);
+          this.iniciarLecturas();
+        }, 1000);
       }
     },
 
@@ -1020,6 +1048,24 @@ export default {
         .post("/api/enviarEvento", valores)
         .catch((error) => {
           alerta.mensaje("El Entrenador no pudo ser consultado.", "error");
+        });
+
+      return res;
+    },
+
+    async asignarEstadosIniciales() {
+      const res = await axios
+        .post("/api/asignarEstadoInicial", {
+          setPoint: this.setPoint,
+          proporcional: this.datoPID,
+        })
+        .catch((error) => {
+          //   throw new error();
+          console.log(error);
+          alerta.mensaje(
+            "No fue posible asignar el estado inicial del controlador.",
+            "error"
+          );
         });
 
       return res;
