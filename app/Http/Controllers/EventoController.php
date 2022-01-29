@@ -8,7 +8,7 @@ class EventoController extends Controller
 {
     public function enviarEvento(Request $request)
     {
-        $fullRoute= "C:\Users\Leonel\Proyectos";
+        $fullRoute= "C:\Users\Leonel\Desktop\socketPython";
         $env = "production"; //env o production
         $comando = $request->primerValor;
         $valor = $request->segundoValor;
@@ -26,26 +26,18 @@ class EventoController extends Controller
          *
          */
         exec("python $fullRoute/client.py $comando $valor $env", $resultado);
+        // dd($resultado);
+        try {
+            $resultados = [
+                "mensaje"=>"exito",
+                "primerValor"=>$request->primerValor,
+                "segundoValor"=>$request->segundoValor,
+            ];
 
-        // sleep(1);
-        $fileName = "$comando.txt";
-
-        $array = explode("\\n", file_get_contents("$fullRoute/$fileName"));
-        // dd($request->primerValor, $array, $resultado);
-        // dd($comando, $valor, $array);
-
-        $resultados = [
-            "mensaje"=>"exito",
-            "primerValor"=>$request->primerValor,
-            "segundoValor"=>$request->segundoValor,
-        ];
-
-        if ($comando >= 20 && $comando <= 26) {
-            $resultados['lectura']=$array[0];
-        } else {
-            $resultados['escritura']=$array[0];
+            $resultados['resultado']=$resultado[1];
+        } catch (\Throwable $th) {
+            $resultados['mensaje']="Servidor desconectado";
         }
-        // dd($resultados);
 
         return response()->json($resultados);
     }

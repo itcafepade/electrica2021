@@ -4,6 +4,14 @@
       <div class="row">
         <div class="col pd-5">
           <div class="row">
+            <div class="col-md-12">
+              <h6 class="mb-0">
+                Estado:
+                <b :class="{ 'bg-green': enLinea, 'bg-red': !enLinea }">
+                  {{ enLinea ? "En línea" : "Desconectado" }}
+                </b>
+              </h6>
+            </div>
             <!-- Generals -->
             <div
               class="col-sm-12 col-12 col-md-6 col-lg-3 col-xl-2"
@@ -28,11 +36,8 @@
                             fab
                             x-large
                             dark
-                            :disabled="!enableToStart"
-                            @click="
-                              simuladorIniciado = true;
-                              enviarEvento('12');
-                            "
+                            :disabled="startDisabled"
+                            @click="iniciarEntrenador()"
                           >
                             START
                           </v-btn>
@@ -44,8 +49,8 @@
                             fab
                             x-large
                             dark
-                            :disabled="!enableToStart"
-                            @click="enviarEvento('13')"
+                            :disabled="stopDisabled"
+                            @click="pararEntrenador()"
                           >
                             STOP
                           </v-btn>
@@ -57,7 +62,7 @@
                             fab
                             x-large
                             dark
-                            :disabled="enableToReset"
+                            :disabled="resetDisabled"
                             @click="enviarEvento('14')"
                           >
                             RESET
@@ -75,7 +80,7 @@
                             max="100.00"
                             step="0.01"
                             v-model="setPoint"
-                            :disabled="!simuladorIniciado"
+                            :disabled="setPointDisabled"
                             @keyup="enviarEvento('50')"
                           />
                           <br />
@@ -163,7 +168,7 @@
                             max="1000.00"
                             step=".01"
                             v-model="datoPID"
-                            :disabled="!simuladorIniciado"
+                            :disabled="datoPIDDisabled"
                             @keyup="enviarEvento('51')"
                           />
                           <br />
@@ -339,8 +344,8 @@ export default {
       nivelTanque2: 0.0,
       actualizarComponente: 0,
       variableProceso: 32,
-      setPoint: 32,
-      datoPID: 10,
+      setPoint: 0,
+      datoPID: 0,
       integralTime: 0.01,
       temperatura: 25,
       pidDerivativo: 100,
@@ -351,8 +356,13 @@ export default {
       renderizarComponenteSwitch: 0,
       leerValores: false,
       leerFinalizado: false,
-      enableToStart: false,
-      enableToReset: false,
+      startDisabled: true,
+      stopDisabled: true,
+      resetDisabled: true,
+      setPointDisabled: true,
+      datoPIDDisabled: true,
+      estado: 0,
+      enLinea: false,
     };
   },
   mounted() {
@@ -518,7 +528,10 @@ export default {
           },
         ],
       };
+
       this.modificarTanque();
+
+      this.consultarEnLinea(); // Verificamos si está en línea
     },
 
     actualizarGrafica(index, valor) {
@@ -535,13 +548,10 @@ export default {
         }
 
         this.data.datasets[index].data.push(valor);
-        // console.log(this.data.datasets[index].data);
-        // this.renderizarComponente += 1;
       }
     },
 
     actualizarGraficaSalida(valor) {
-      //   console.log("Salida: " + valor);
       if (valor) {
         if (this.data3.datasets[0].data.length == 30) {
           this.data3.datasets[0].data.shift();
@@ -549,7 +559,6 @@ export default {
         this.data3.labels = [];
 
         let DATA_COUNT = this.datapoints3.length;
-        // console.log(this.datapoints2.length);
 
         for (let i = 1; i < DATA_COUNT; ++i) {
           this.data3.labels.push(i.toString());
@@ -608,13 +617,6 @@ export default {
     },
 
     modificarTanque() {
-      // console.log("Valor modificado");
-      //   this.nivelTanque1 = 20;
-      //   this.nivelTanque2 = 100;
-
-      //   this.$refs.val1.innerHTML = "<strong>" + this.nivelTanque1 + "</strong>";
-      //   this.$refs.val2.innerHTML = "<strong>" + this.nivelTanque2 + "</strong>";
-
       let rootElement1 = document.documentElement;
       rootElement1.style.setProperty(
         "--top1",
@@ -625,9 +627,6 @@ export default {
         "--top2",
         "calc(100% - " + this.nivelTanque2 + "%)"
       );
-
-      //   this.nivelTanque1 = this.nivelTanque1 + " mL";
-      //   this.nivelTanque2 = this.nivelTanque2 + " mL";
 
       this.actualizarComponente++;
     },
@@ -661,33 +660,15 @@ export default {
           segundoValor: "-1",
         };
 
-        if (!this.enableToStart && valor != "14") {
-          alerta.mensaje(
-            "Debes reiniciar el entrenador antes de iniciar.",
-            "error"
-          );
-          return;
-        }
-
-        if (this.enableToStart && !this.simuladorIniciado && valor != "12") {
-          alerta.mensaje(
-            "Debes iniciar el entrenador antes de continuar.",
-            "error"
-          );
-          return;
-        }
-
         let valido = true;
         switch (valor) {
           case "50":
             this.leerValores = false;
             valores.segundoValor = this.setPoint;
 
-            if (
-              !valores.segundoValor ||
-              valores.segundoValor < 0 ||
-              valores.segundoValor > 100
-            ) {
+            if (this.setPoint < 0 || this.setPoint > 100) {
+              console.log(typeof this.setPoint, this.setPoint);
+              this.setPoint = 0;
               valido = false;
             }
             break;
@@ -695,11 +676,9 @@ export default {
             this.leerValores = false;
             valores.segundoValor = this.datoPID;
 
-            if (
-              !valores.segundoValor ||
-              valores.segundoValor < 0 ||
-              valores.segundoValor > 100
-            ) {
+            if (this.datoPID < 0 || this.datoPID > 100) {
+              //   console.log("setpoint");
+              this.datoPID = 0;
               valido = false;
             }
 
@@ -733,21 +712,15 @@ export default {
             break;
         }
 
-        if (!valido && this.simuladorIniciado) {
+        if (!valido) {
           alerta.mensaje("Debes ingresar un valor válido.", "error");
           return;
         }
 
-        const res = await axios
-          .post("/api/enviarEvento", valores)
-          .catch((error) => {
-            // console.log("No se pudo actualizar el valor.");
-            alerta.mensaje("El Entrenador no pudo ser actualizado.", "error");
-          });
+        const res = await this.consultarEstado(valores);
 
         if (res.data.message == "success") {
           alerta.mensaje("Entrenador actualizado correctamente.", "success");
-          // console.log("Valor actualizado correctamente.");
         }
 
         const opt = valores.primerValor;
@@ -759,7 +732,6 @@ export default {
             );
             alerta.mensaje("Perturbación iniciada correctamente.", "success");
             this.leerValores = true;
-            // this.iniciarLecturas();
             break;
           case "11": // Detener perturbación
             this.$refs.indicador.setAttribute(
@@ -768,51 +740,36 @@ export default {
             );
             alerta.mensaje("Perturbación detenida correctamente.", "success");
             this.leerValores = true;
-            // this.iniciarLecturas();
             break;
           case "12": //Iniciar
             alerta.mensaje("Entrenador iniciado correctamente.", "success");
             this.leerValores = true;
-            // this.enableToStart = false;
             this.iniciarLecturas();
             break;
           case "13": //Parar
             alerta.mensaje("Entrenador detenido correctamente.", "success");
             this.leerValores = false;
-            this.enableToReset = false;
-            this.enableToStart = false;
-            // this.enableToStart = true;
+            this.resetDisabled = false;
+            this.startDisabled = false;
             break;
           case "14": //Reiniciar
-            alerta.mensaje("Entrenador reiniciado correctamente.", "success");
-            this.init();
-            this.enableToReset = true;
-            this.enableToStart = true;
-            this.leerValores = true;
-            // this.iniciarLecturas();
+            this.consultarEstados();
             break;
           case "20":
             this.leerValores = true;
-            // this.iniciarLecturas();
             break;
           case "21":
-            // console.log("21: " + res.data.lectura);
-            this.actualizarGraficaSalida(parseFloat(res.data.lectura));
-            // this.actualizarGraficaSalida(parseFloat(this.prueba + 1));
-            // this.iniciarLecturas();
+            this.actualizarGraficaSalida(parseFloat(res.data.resultado));
             break;
           case "22":
-            // console.log("22: " + res.data.lectura);
-            // this.temperatura = parseFloat(17);
-            this.temperatura = parseFloat(res.data.lectura);
-            // this.iniciarLecturas();
+            this.temperatura = parseFloat(res.data.resultado);
+
             break;
           case "23":
-            console.log("23", res.data.lectura);
-            this.actualizarGrafica(0, parseFloat(res.data.lectura));
-            this.actualizarGrafica(1, parseFloat(this.setPoint).toFixed(2));
+            console.log("23", res.data.resultado);
+            this.actualizarGrafica(0, parseFloat(this.setPoint).toFixed(2));
+            this.actualizarGrafica(1, parseFloat(res.data.resultado));
             this.renderizarComponente += 1;
-            // this.iniciarLecturas();
             break;
           case "24":
             //   valores.primerValor = 24;
@@ -833,7 +790,6 @@ export default {
             break;
           case "52":
             this.leerValores = true;
-            // console.log("52: " + res.data.lectura);
             // this.iniciarLecturas();
             break;
           case "53":
@@ -842,6 +798,198 @@ export default {
             break;
         }
       }, 500);
+    },
+
+    async consultarEnLinea() {
+      const valores = {
+        primerValor: "100",
+        segundoValor: "-1",
+      };
+
+      const res = await this.consultarEstado(valores);
+
+      if (res.data.mensaje == "Servidor desconectado") {
+        //El servidor no está en línea
+        setTimeout(() => {
+          this.consultarEnLinea();
+        }, 3000);
+        return;
+      }
+
+      if (res.data.resultado == "206") {
+        //   En línea y disponible
+        this.enLinea = true;
+        this.resetDisabled = false;
+        this.estado = res.data.resultado;
+        return;
+      }
+
+      setTimeout(() => {
+        this.consultarEnLinea();
+      }, 3000);
+      return;
+    },
+
+    async consultarEstados() {
+      const valores = {
+        primerValor: "100",
+        segundoValor: "-1",
+      };
+
+      const res = await this.consultarEstado(valores);
+
+      if (res.data.mensaje == "Servidor desconectado") {
+        //El servidor no está en línea
+        setTimeout(() => {
+          this.consultarEstados();
+        }, 3000);
+        return;
+      }
+
+      if (res.data.resultado == "200") {
+        //   Reset aplicado
+        this.enLinea = true;
+        this.estado = res.data.resultado;
+
+        // Asignando valores iniciales
+        this.setPoint = 0;
+        this.datoPID = 0;
+
+        const setpoint = await this.enviarEvento("50");
+        setTimeout(async () => {
+          const datoPID = await this.enviarEvento("51");
+        }, 1000);
+
+        this.resetDisabled = true;
+        this.startDisabled = false;
+        this.setPointDisabled = false;
+        this.datoPIDDisabled = false;
+        alerta.mensaje("Entrenador reiniciado correctamente.", "success");
+
+        return;
+      }
+
+      if (res.data.resultado == "204") {
+        // 204: Start finalizado
+        this.enLinea = true;
+        this.estado = res.data.resultado;
+        this.resetDisabled = true;
+        this.startDisabled = true;
+        this.stopDisabled = false;
+
+        this.simuladorIniciado = true;
+        alerta.mensaje("Entrenador iniciado correctamente.", "success");
+
+        return;
+      }
+
+      if (res.data.resultado == "202") {
+        // 204: Start finalizado
+        this.enLinea = true;
+        this.estado = res.data.resultado;
+        this.resetDisabled = false;
+        this.startDisabled = true;
+        this.stopDisabled = true;
+        this.setPointDisabled = true;
+        this.datoPIDDisabled = true;
+
+        this.simuladorIniciado = false;
+        alerta.mensaje("Entrenador detenido correctamente.", "success");
+
+        return;
+      }
+
+      if (
+        res.data.resultado == "201" ||
+        res.data.resultado == "203" ||
+        res.data.resultado == "205" ||
+        res.data.resultado == "0"
+      ) {
+        /*
+          Procesos sin terminar de aplicar.
+          201: Reset en proceso
+          203: Stop en proceso
+          205: Start en proceso
+        */
+        this.enLinea = true;
+        this.estado = res.data.resultado;
+        setTimeout(() => {
+          this.consultarEstados();
+        }, 3000);
+
+        return;
+      }
+    },
+
+    async pararEntrenador() {
+      const valores = {
+        primerValor: "13",
+        segundoValor: "-1",
+      };
+
+      const res = await this.consultarEstado(valores);
+
+      if (res.data.mensaje == "Servidor desconectado") {
+        //El servidor no está en línea
+        setTimeout(() => {
+          this.iniciarEntrenador();
+        }, 3000);
+        return;
+      }
+
+      if (res.data.resultado == "205" || res.data.resultado == "OK") {
+        //   205: Start en proceso
+        this.enLinea = true;
+        this.estado = res.data.resultado;
+
+        setTimeout(() => {
+          const valores = {
+            primerValor: "100",
+            segundoValor: "-1",
+          };
+          this.consultarEstados(valores);
+        }, 2000);
+
+        return;
+      }
+    },
+
+    async iniciarEntrenador() {
+      // Si el simulador está iniciado no debemos de comprobar el estado inicial
+      if (this.simuladorIniciado) {
+        return;
+      }
+
+      const valores = {
+        primerValor: "12",
+        segundoValor: "-1",
+      };
+
+      const res = await this.consultarEstado(valores);
+
+      if (res.data.mensaje == "Servidor desconectado") {
+        //El servidor no está en línea
+        setTimeout(() => {
+          this.iniciarEntrenador();
+        }, 3000);
+        return;
+      }
+
+      if (res.data.resultado == "205" || res.data.resultado == "OK") {
+        //   205: Start en proceso
+        this.enLinea = true;
+        this.estado = res.data.resultado;
+
+        setTimeout(() => {
+          const valores = {
+            primerValor: "100",
+            segundoValor: "-1",
+          };
+          this.consultarEstados(valores);
+        }, 2000);
+
+        return;
+      }
     },
 
     async iniciarLecturas(value = "21") {
@@ -866,6 +1014,16 @@ export default {
     clearAllIntervals() {
       this.leerValores = false;
     },
+
+    async consultarEstado(valores) {
+      const res = await axios
+        .post("/api/enviarEvento", valores)
+        .catch((error) => {
+          alerta.mensaje("El Entrenador no pudo ser consultado.", "error");
+        });
+
+      return res;
+    },
   },
 };
 </script>
@@ -874,6 +1032,14 @@ export default {
 .speedometer {
   width: 300px;
   height: 200px !important;
+}
+
+.bg-green {
+  color: green;
+}
+
+.bg-red {
+  color: red;
 }
 </style>
 
