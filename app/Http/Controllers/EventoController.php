@@ -8,7 +8,7 @@ class EventoController extends Controller
 {
     public function enviarEvento(Request $request)
     {
-        $fullRoute= "C:\Users\Leonel\Desktop\socketPython";
+        $fullRoute= env("PYTHON_CLIENT_URL");
         $comando = $request->primerValor;
         $valor = $request->segundoValor;
 
@@ -19,7 +19,7 @@ class EventoController extends Controller
          *         en el caso de no existir, el valor por defecto será de -1
          */
 
-        exec("python $fullRoute/client.py $comando $valor", $resultado);
+        exec("$fullRoute/client.py $comando $valor", $resultado);
 
         try {
             $resultados = [
@@ -38,7 +38,7 @@ class EventoController extends Controller
 
     public function realizarConsultas(Request $request)
     {
-        $fullRoute= "C:\Users\Leonel\Desktop\socketPython";
+        $fullRoute= env("PYTHON_CLIENT_URL");
 
         /**
          * Se envían 2 parámetros:
@@ -47,13 +47,13 @@ class EventoController extends Controller
          *         en el caso de no existir, el valor por defecto será de -1
          */
 
-        exec("python $fullRoute/client.py 21 -1", $resultadoPID);
+        exec("$fullRoute/client.py 21 -1", $resultadoPID);
         // usleep(250000); //Sleeping for 0.25 s
 
-        exec("python $fullRoute/client.py 22 -1", $resultadoTemperatura);
+        exec("$fullRoute/client.py 22 -1", $resultadoTemperatura);
         // usleep(250000); //Sleeping for 0.25 s
 
-        exec("python $fullRoute/client.py 23 -1", $resultadoSetPoint);
+        exec("$fullRoute/client.py 23 -1", $resultadoSetPoint);
         // usleep(250000); //Sleeping for 0.25 s
 
         try {
@@ -72,7 +72,7 @@ class EventoController extends Controller
 
     public function asignarEstadoInicial(Request $request)
     {
-        $fullRoute= "C:\Users\Leonel\Desktop\socketPython";
+        $fullRoute= env("PYTHON_CLIENT_URL");
         $proporcional = $request->proporcional;
         $setPoint = $request->setPoint;
 
@@ -83,10 +83,9 @@ class EventoController extends Controller
          *         en el caso de no existir, el valor por defecto será de -1
          */
 
-        exec("python $fullRoute/client.py 50 $setPoint", $resultadoSetPoint);
+        exec("$fullRoute/client.py 50 $setPoint", $resultadoSetPoint);
 
-        exec("python $fullRoute/client.py 51 $proporcional", $resultadoProporcional);
-
+        exec("$fullRoute/client.py 51 $proporcional", $resultadoProporcional);
 
         try {
             $resultados = [

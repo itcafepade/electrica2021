@@ -632,15 +632,6 @@ export default {
     },
 
     actualizarIndicador() {
-      //   if (!this.simuladorIniciado) {
-      //     this.switch1 = false;
-      //     alerta.mensaje(
-      //       "Debes iniciar el entrenador antes de continuar.",
-      //       "error"
-      //     );
-      //     return;
-      //   }
-
       if (this.cambiarIndicador == 0) {
         this.cambiarIndicador = 1;
         this.enviarEvento("10");
@@ -839,7 +830,7 @@ export default {
         return;
       }
 
-      if (res.data.resultado == "206") {
+      if (res.data.resultado >= "200" && res.data.resultado <= "206") {
         //   En línea y disponible
         this.enLinea = true;
         this.resetDisabled = false;
