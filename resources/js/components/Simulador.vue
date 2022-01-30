@@ -830,7 +830,12 @@ export default {
         return;
       }
 
-      if (res.data.resultado >= "200" && res.data.resultado <= "206") {
+      if (
+        res.data.resultado == "200" ||
+        res.data.resultado == "202" ||
+        res.data.resultado == "204" ||
+        res.data.resultado == "206"
+      ) {
         //   En línea y disponible
         this.enLinea = true;
         this.resetDisabled = false;
