@@ -532,6 +532,8 @@ export default {
       this.modificarTanque();
 
       this.consultarEnLinea(); // Verificamos si está en línea
+
+      this.consultarStatus();
     },
 
     actualizarGrafica(index, valor) {
@@ -830,7 +832,12 @@ export default {
         return;
       }
 
-      if (res.data.resultado >= "200" && res.data.resultado <= "206") {
+      if (
+        res.data.resultado == "200" ||
+        res.data.resultado == "202" ||
+        res.data.resultado == "204" ||
+        res.data.resultado == "206"
+      ) {
         //   En línea y disponible
         this.enLinea = true;
         this.resetDisabled = false;
@@ -860,7 +867,7 @@ export default {
         return;
       }
 
-      if (res.data.resultado == "200") {
+      if (res.data.resultado == "200" || res.data.resultado == "OK") {
         //   Reset aplicado
         this.enLinea = true;
         this.estado = res.data.resultado;
@@ -886,8 +893,8 @@ export default {
         return;
       }
 
-      if (res.data.resultado == "205") {
-        // 204: Start finalizado
+      if (res.data.resultado == "205" || res.data.resultado == "OK") {
+        // 205: Start en proceso
         this.enLinea = true;
         this.estado = res.data.resultado;
         this.resetDisabled = true;
@@ -902,8 +909,8 @@ export default {
         return;
       }
 
-      if (res.data.resultado == "202") {
-        // 204: Start finalizado
+      if (this.simuladorIniciado == true && res.data.resultado == "206" || res.data.resultado == "OK") {
+        // 206: Stop finalizado
         this.enLinea = true;
         this.estado = res.data.resultado;
         this.resetDisabled = false;
@@ -956,7 +963,7 @@ export default {
         return;
       }
 
-      if (res.data.resultado == "205" || res.data.resultado == "OK") {
+      if (res.data.resultado == "206" || res.data.resultado == "OK") {
         //   205: Start en proceso
         this.enLinea = true;
         this.estado = res.data.resultado;
@@ -1058,6 +1065,27 @@ export default {
         });
 
       return res;
+    },
+
+    async consultarStatus() {
+      const res = await axios.get("/api/verificarStatus").catch((error) => {
+        alerta.mensaje(
+          "No fue posible obtener la disponibilidad de la práctica.",
+          "error"
+        );
+      });
+
+      if (res.data.status != "OK") {
+        window.location = "/horarioNoValido";
+      } else {
+        setTimeout(async () => {
+          this.consultarStatus();
+        }, 15000);
+      }
+
+      //   console.log(res);
+
+      //   return res;
     },
   },
 };
