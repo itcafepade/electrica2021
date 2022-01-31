@@ -893,8 +893,8 @@ export default {
         return;
       }
 
-      if (res.data.resultado == "204") {
-        // 204: Start finalizado
+      if (res.data.resultado == "205") {
+        // 205: Start en proceso
         this.enLinea = true;
         this.estado = res.data.resultado;
         this.resetDisabled = true;
@@ -930,7 +930,6 @@ export default {
       if (
         res.data.resultado == "201" ||
         res.data.resultado == "203" ||
-        res.data.resultado == "205" ||
         res.data.resultado == "0"
       ) {
         /*
