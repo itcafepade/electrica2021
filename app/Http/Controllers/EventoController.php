@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Historial;
 
 class EventoController extends Controller
 {
@@ -28,6 +29,18 @@ class EventoController extends Controller
                 "segundoValor"=>$request->segundoValor,
                 "resultado"=>$resultado[1],
             ];
+
+            if ($comando != 100) {
+                $actual = HorarioController::practicaActual();
+
+                Historial::insert([
+                    'id_horario' => $actual->id,
+                    'fecha' => now(),
+                    'accion' => "Comando: $comando, Valor: $valor, Resultado: $resultado[1]",
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         } catch (\Throwable $th) {
             $resultados['mensaje']="Servidor desconectado";
         }
@@ -93,6 +106,16 @@ class EventoController extends Controller
                 "datoPID"=>$resultadoProporcional[1],
                 "setPoint"=>$resultadoSetPoint[1],
             ];
+
+            $actual = HorarioController::practicaActual();
+
+            Historial::insert([
+                'id_horario' => $actual->id,
+                'fecha' => now(),
+                'accion' => "Comando: $comando, Valor: $valor, Resultado: $resultado[1]",
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         } catch (\Throwable $th) {
             $resultados['mensaje']="Servidor desconectado";
         }

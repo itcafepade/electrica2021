@@ -532,6 +532,8 @@ export default {
       this.modificarTanque();
 
       this.consultarEnLinea(); // Verificamos si está en línea
+
+      this.consultarStatus();
     },
 
     actualizarGrafica(index, valor) {
@@ -1065,6 +1067,27 @@ export default {
         });
 
       return res;
+    },
+
+    async consultarStatus() {
+      const res = await axios.get("/api/verificarStatus").catch((error) => {
+        alerta.mensaje(
+          "No fue posible obtener la disponibilidad de la práctica.",
+          "error"
+        );
+      });
+
+      if (res.data.status != "OK") {
+        window.location = "/horarioNoValido";
+      } else {
+        setTimeout(async () => {
+          this.consultarStatus();
+        }, 15000);
+      }
+
+      //   console.log(res);
+
+      //   return res;
     },
   },
 };

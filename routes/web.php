@@ -66,9 +66,14 @@ Route::group(['middleware'=>'auth'], function () {
     Route::get('/horarios', function () {
         return view('horarios');
     });
+
+    Route::get('/horarioNoValido', function () {
+        return view('horarioInvalido');
+    });
+
     Route::get('/simulador', function () {
         return view('simulador');
-    });
+    })->middleware('horarioValido');
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     //Usuario
@@ -87,4 +92,5 @@ Route::group(['middleware'=>'auth'], function () {
     Route::post('api/asignarEstadoInicial', [EventoController::class, 'asignarEstadoInicial']);
 });
 
+Route::get('api/verificarStatus', [HorarioController::class, 'verifyStatusApi']);
 Auth::routes(['register' =>false]);

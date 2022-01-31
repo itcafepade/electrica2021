@@ -140,6 +140,7 @@ class HorarioController extends Controller
         ->select('horarios.*', 'users.carnet as carnet')
         ->join('users', 'users.id', '=', 'horarios.id_usuario')
         ->where(['users.id'=> $request->id, 'horarios.estado'=>'Autorizada'])
+        ->orderBy('horarios.id', 'DESC')
         ->get();
         return response()->json(['mensaje'=>'exito', 'practicas'=>$practicas]);
     }
@@ -180,5 +181,91 @@ class HorarioController extends Controller
         $modificado = Horario::where('id', $id)->update(['estado'=>$estado, 'color'=>$color]);
 
         return response()->json(['mensaje'=>'exito']);
+    }
+
+    /**
+     * Verifica que la practica actual esté disponible
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return Boolean
+     */
+    public static function verifyStatus()
+    {
+        $start = date('Y-m-d 00:00:00');
+        $end = date('Y-m-d 23:59:59');
+
+        $horarios = Horario::join('users', 'horarios.id_usuario', '=', 'users.id')
+        ->whereRaw(
+            "(horarios.fecha_inicio >= ? AND horarios.fecha_final <= ?)",
+            [$start, $end]
+        )
+        ->where('users.id', auth()->user()->id)
+        ->get();
+
+        $valid = false;
+        foreach ($horarios as $horario) {
+            $dateStart = date('Y-m-d H:i:s', strtotime($horario->fecha_inicio));
+            $dateEnd = date('Y-m-d H:i:s', strtotime($horario->fecha_final));
+            $dateNow = date('Y-m-d H:i:s');
+
+            if ($dateNow >= $dateStart && $dateNow <= $dateEnd) {
+                $valid = true;
+                break;
+            } else {
+                $valid = false;
+            }
+        }
+
+        return $valid;
+    }
+
+    /**
+     * Verifica que la practica actual esté disponible
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return Boolean
+     */
+    public static function verifyStatusApi()
+    {
+        $valid = HorarioController::verifyStatus();
+
+        $status = ($valid === true) ? 'OK' : '';
+
+        return response()->json(['mensaje'=>'exito', 'status'=>$status]);
+    }
+
+    /**
+     * Verifica que la practica actual esté disponible
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return Boolean
+     */
+    public static function practicaActual()
+    {
+        $actual = [];
+        $start = date('Y-m-d 00:00:00');
+        $end = date('Y-m-d 23:59:59');
+
+        $horarios = Horario::select('*', 'horarios.id as id')
+        ->join('users', 'horarios.id_usuario', '=', 'users.id')
+        ->whereRaw(
+            "(horarios.fecha_inicio >= ? AND horarios.fecha_final <= ?)",
+            [$start, $end]
+        )
+        ->where('users.id', auth()->user()->id)
+        ->get();
+
+        foreach ($horarios as $horario) {
+            $dateStart = date('Y-m-d H:i:s', strtotime($horario->fecha_inicio));
+            $dateEnd = date('Y-m-d H:i:s', strtotime($horario->fecha_final));
+            $dateNow = date('Y-m-d H:i:s');
+
+            if ($dateNow >= $dateStart && $dateNow <= $dateEnd) {
+                $actual = $horario;
+                break;
+            }
+        }
+
+        return $actual;
     }
 }
