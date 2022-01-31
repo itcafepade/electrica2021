@@ -1,4 +1,4 @@
 export default class Variable {
-    urlSocket = 'http://localhost:3000/'
+   urlSocket = 'http://192.168.1.2:3000/'
 
 }

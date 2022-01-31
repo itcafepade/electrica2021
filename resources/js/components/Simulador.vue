@@ -886,7 +886,7 @@ export default {
         return;
       }
 
-      if (res.data.resultado == "204") {
+      if (res.data.resultado == "205") {
         // 204: Start finalizado
         this.enLinea = true;
         this.estado = res.data.resultado;
@@ -923,14 +923,12 @@ export default {
       if (
         res.data.resultado == "201" ||
         res.data.resultado == "203" ||
-        res.data.resultado == "205" ||
         res.data.resultado == "0"
       ) {
         /*
           Procesos sin terminar de aplicar.
           201: Reset en proceso
           203: Stop en proceso
-          205: Start en proceso
         */
         this.enLinea = true;
         this.estado = res.data.resultado;
