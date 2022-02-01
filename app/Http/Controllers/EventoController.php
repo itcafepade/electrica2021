@@ -76,6 +76,16 @@ class EventoController extends Controller
                 "temperatura"=>$resultadoTemperatura[1],
                 "datoPID"=>$resultadoPID[1],
             ];
+
+            $actual = HorarioController::practicaActual();
+
+            Historial::insert([
+                'id_horario' => $actual->id,
+                'fecha' => now(),
+                'accion' => "Temperatura: $resultadoTemperatura[1]",
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         } catch (\Throwable $th) {
             $resultados['mensaje']="Servidor desconectado";
         }
