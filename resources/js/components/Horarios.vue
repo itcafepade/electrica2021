@@ -412,13 +412,20 @@ export default {
       this.editando = true;
       this.selectedEvent = event;
       //   console.log(event);
-      const inicio = new Date(event.start);
-      const final = new Date(event.end);
+      if (this.selectedEvent.carnet == this.usuarioActual.carnet) {
+        const inicio = new Date(event.start);
+        const final = new Date(event.end);
 
-      this.fecha = moment(inicio.toISOString()).format("YYYY-MM-DD");
+        this.fecha = moment(inicio.toISOString()).format("YYYY-MM-DD");
 
-      this.horaInicio = moment(inicio.toISOString()).format("HH:00");
-      this.horaFinal = moment(final.toISOString()).format("HH:00");
+        this.horaInicio = moment(inicio.toISOString()).format("HH:00");
+        this.horaFinal = moment(final.toISOString()).format("HH:00");
+      } else {
+        alerta.mensaje(
+          "Solo es posible modificar los horarios correspondientes a tu usuario.",
+          "error"
+        );
+      }
     },
     async eliminarReservacion() {
       if (this.editando && this.selectedEvent != {}) {
