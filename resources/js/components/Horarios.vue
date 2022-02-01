@@ -412,7 +412,10 @@ export default {
       this.editando = true;
       this.selectedEvent = event;
       //   console.log(event);
-      if (this.selectedEvent.carnet == this.usuarioActual.carnet) {
+      if (
+        this.selectedEvent.carnet == this.usuarioActual.carnet ||
+        this.usuarioActual.access == "admin"
+      ) {
         const inicio = new Date(event.start);
         const final = new Date(event.end);
 
