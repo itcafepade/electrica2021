@@ -1,10 +1,9 @@
 import moment from "moment";
-import Alerta from "../libs/alerta"
+import Alerta from "../libs/alerta";
 
 const alerta = new Alerta();
 
 export default class Evento {
-
     /**
      * Valida el nuevo evento que se está registrando, verificando la disponibilidad
      * en fechas y horas.
@@ -14,12 +13,18 @@ export default class Evento {
      * @param {String} final
      */
     validarEvento(eventos, inicio, final) {
-
         const fechaInicio = new Date(inicio);
         const fechaFinal = new Date(final);
 
-        const eventosFiltrados = this.filtrarEventosPorFecha(eventos, fechaInicio);
-        const horaValidado = this.validarPorHora(eventosFiltrados, fechaInicio, fechaFinal);
+        const eventosFiltrados = this.filtrarEventosPorFecha(
+            eventos,
+            fechaInicio
+        );
+        const horaValidado = this.validarPorHora(
+            eventosFiltrados,
+            fechaInicio,
+            fechaFinal
+        );
         const diaValidado = this.validarPorFechaActual(fechaInicio);
 
         let resultadoHora = {};
@@ -27,25 +32,24 @@ export default class Evento {
         if (!diaValidado) {
             resultadoDia = {
                 estado: false,
-                mensaje: 'No es posible registrar prácticas a días anteriores.'
-            }
+                mensaje: "No es posible registrar prácticas a días anteriores."
+            };
         } else {
             resultadoDia.estado = true;
         }
 
-
         if (!horaValidado) {
             resultadoHora = {
                 estado: false,
-                mensaje: 'Ya se encuentra una práctica en este horario.'
-            }
+                mensaje: "Ya se encuentra una práctica en este horario."
+            };
         } else {
             resultadoHora.estado = true;
         }
 
         return {
             resultadoHora: resultadoHora,
-            resultadoDia: resultadoDia,
+            resultadoDia: resultadoDia
         };
     }
 
@@ -57,11 +61,25 @@ export default class Evento {
      * @returns {Boolean}
      */
     validarPorFechaActual(fechaInicio) {
-        const diaActual = parseInt(moment(new Date()).format('DD'));
-        const diaEvento = parseInt(moment(fechaInicio.toISOString()).format("DD"));
+        const diaActual = parseInt(moment(new Date()).format("DD"));
+        const diaEvento = parseInt(
+            moment(fechaInicio.toISOString()).format("DD")
+        );
+        const mesActual = parseInt(moment(new Date()).format("MM"));
+        const mesEvento = parseInt(
+            moment(fechaInicio.toISOString()).format("MM")
+        );
 
-        if (diaEvento < diaActual) {
-            return false;
+        console.log(mesActual, mesEvento);
+
+        if (mesEvento > mesActual) {
+            //Cuando es un mes mayor
+            return true;
+        } else if (mesEvento == mesActual) {
+            //Cuando es el mismo mes
+            if (diaEvento < diaActual) {
+                return false;
+            }
         }
 
         return true;
@@ -82,7 +100,7 @@ export default class Evento {
         let eventosFiltrados = [];
 
         eventos.forEach(el => {
-            const fecha = new Date(el.start)
+            const fecha = new Date(el.start);
             const fechaAFiltrar = moment(fecha.toISOString()).format(
                 "YYYY-MM-DD"
             );
@@ -107,20 +125,21 @@ export default class Evento {
      */
 
     validarPorHora(eventos, fechaInicio, fechaFinal) {
-        const fechaInicioHora = parseInt(moment(fechaInicio).format("HH"))
-        const fechaFinalHora = parseInt(moment(fechaFinal).format("HH"))
+        const fechaInicioHora = parseInt(moment(fechaInicio).format("HH"));
+        const fechaFinalHora = parseInt(moment(fechaFinal).format("HH"));
 
         let i = fechaInicioHora;
         let disponible = true;
 
         eventos.forEach(el => {
-            const horaEvento = parseInt(moment(new Date(el.start)).format("HH"));
+            const horaEvento = parseInt(
+                moment(new Date(el.start)).format("HH")
+            );
             for (i = fechaInicioHora; i < fechaFinalHora; i++) {
-                if (horaEvento == i && el.estado != 'Rechazada') {
+                if (horaEvento == i && el.estado != "Rechazada") {
                     disponible = false;
                     return disponible;
                 }
-
             }
         });
 
@@ -136,10 +155,13 @@ export default class Evento {
      * @param Date fechaFinal
      */
     obtenerIndiceEvento(eventos, fechaInicio, fechaFinal) {
-
         for (let index = 0; index < eventos.length; index++) {
-            const inicioEvento = moment(new Date(eventos[index].start).toISOString()).format("YYYY-MM-DDTHH:00");
-            const finalEvento = moment(new Date(eventos[index].end).toISOString()).format("YYYY-MM-DDTHH:00");
+            const inicioEvento = moment(
+                new Date(eventos[index].start).toISOString()
+            ).format("YYYY-MM-DDTHH:00");
+            const finalEvento = moment(
+                new Date(eventos[index].end).toISOString()
+            ).format("YYYY-MM-DDTHH:00");
 
             if (inicioEvento == fechaInicio && finalEvento == fechaFinal) {
                 return index;
@@ -159,13 +181,16 @@ export default class Evento {
      * @param {Date} final
      * @param {Boolean} agregando
      */
-    async agregarNuevoEvento(eventos, usuarioActual, inicio, final, agregando, idSeleccionado = 0) {
-        const horaInicio = parseInt(moment(inicio).format(
-            "HH"
-        ));
-        const horaFinal = parseInt(moment(final).format(
-            "HH"
-        ));
+    async agregarNuevoEvento(
+        eventos,
+        usuarioActual,
+        inicio,
+        final,
+        agregando,
+        idSeleccionado = 0
+    ) {
+        const horaInicio = parseInt(moment(inicio).format("HH"));
+        const horaFinal = parseInt(moment(final).format("HH"));
 
         if (horaInicio > horaFinal) {
             alerta.mensaje(
@@ -175,25 +200,15 @@ export default class Evento {
             return;
         }
 
-        const eventoValidado = this.validarEvento(
-            eventos,
-            inicio,
-            final
-        );
+        const eventoValidado = this.validarEvento(eventos, inicio, final);
 
         if (!eventoValidado.resultadoDia.estado) {
-            alerta.mensaje(
-                eventoValidado.resultadoDia.mensaje,
-                "info"
-            );
+            alerta.mensaje(eventoValidado.resultadoDia.mensaje, "info");
             return;
         }
 
         if (!eventoValidado.resultadoHora.estado) {
-            alerta.mensaje(
-                eventoValidado.resultadoHora.mensaje,
-                "info"
-            );
+            alerta.mensaje(eventoValidado.resultadoHora.mensaje, "info");
             return;
         }
 
@@ -202,27 +217,35 @@ export default class Evento {
             nombre: `Practica evaluada - ${usuarioActual.carnet}`,
             id_usuario: usuarioActual.id,
             fecha_inicio: inicio,
-            fecha_final: final,
+            fecha_final: final
         };
 
         if (!agregando) {
-            const res = await axios.put("api/horario/" +
-                idSeleccionado, evento);
+            const res = await axios.put(
+                "api/horario/" + idSeleccionado,
+                evento
+            );
 
-            if (res.data.mensaje == 'exito') {
-                alerta.mensaje('Modificación de práctica exitosa.', 'success');
+            if (res.data.mensaje == "exito") {
+                alerta.mensaje("Modificación de práctica exitosa.", "success");
             } else {
-                alerta.mensaje('Error: No se pudo modificar la práctica.', 'error');
+                alerta.mensaje(
+                    "Error: No se pudo modificar la práctica.",
+                    "error"
+                );
             }
             return;
         }
 
         let res = await axios.post("/api/horario/verificarPracticasPorDia", {
             carnet: usuarioActual.carnet,
-            fecha: moment(new Date(inicio)).format("YYYY-MM-DD"),
+            fecha: moment(new Date(inicio)).format("YYYY-MM-DD")
         });
 
-        if (parseInt(res.data.numeroPracticas) >= 1 && usuarioActual.access != "admin") {
+        if (
+            parseInt(res.data.numeroPracticas) >= 1 &&
+            usuarioActual.access != "admin"
+        ) {
             await setTimeout(() => {
                 alerta.mensaje(
                     `Solo es posible reservar una práctica diaria.\n
@@ -231,17 +254,15 @@ export default class Evento {
                     2000
                 );
             }, 2500);
-
         }
 
         res = await axios.post("api/horario", evento);
 
-        if (res.data.mensaje == 'exito') {
-            alerta.mensaje('Registro de práctica exitosa.', 'success');
+        if (res.data.mensaje == "exito") {
+            alerta.mensaje("Registro de práctica exitosa.", "success");
         } else {
-            alerta.mensaje('Error: No se pudo registrar la práctica.', 'error');
+            alerta.mensaje("Error: No se pudo registrar la práctica.", "error");
         }
-
     }
 
     /**
@@ -250,21 +271,25 @@ export default class Evento {
      * @param {Array} eventos
      * @returns
      */
-    cargarEventos(eventos, eventosAutorizados = true, eventosPendientes = true, eventosRechazados = false) {
+    cargarEventos(
+        eventos,
+        eventosAutorizados = true,
+        eventosPendientes = true,
+        eventosRechazados = false
+    ) {
         let arrayEventos = [];
-        eventos.forEach((el) => {
-            if (el.estado == 'Autorizada' && eventosAutorizados) {
+        eventos.forEach(el => {
+            if (el.estado == "Autorizada" && eventosAutorizados) {
                 arrayEventos = this.agregarEvento(el, arrayEventos);
             }
 
-            if (el.estado == 'Pendiente' && eventosPendientes) {
+            if (el.estado == "Pendiente" && eventosPendientes) {
                 arrayEventos = this.agregarEvento(el, arrayEventos);
             }
 
-            if (el.estado == 'Rechazada' && eventosRechazados) {
+            if (el.estado == "Rechazada" && eventosRechazados) {
                 arrayEventos = this.agregarEvento(el, arrayEventos);
             }
-
         });
         return arrayEventos;
     }
@@ -281,11 +306,15 @@ export default class Evento {
             id: evento.id,
             name: evento.nombre,
             carnet: evento.carnet,
-            start: moment(new Date(evento.fecha_inicio)).format("YYYY-MM-DD HH:mm"),
-            end: moment(new Date(evento.fecha_final)).format("YYYY-MM-DD HH:mm"),
+            start: moment(new Date(evento.fecha_inicio)).format(
+                "YYYY-MM-DD HH:mm"
+            ),
+            end: moment(new Date(evento.fecha_final)).format(
+                "YYYY-MM-DD HH:mm"
+            ),
             color: evento.color,
             estado: evento.estado,
-            timed: true,
+            timed: true
         });
 
         return array;
@@ -296,7 +325,7 @@ export default class Evento {
      * @returns {Array} eventos
      */
     async obtenerEventos() {
-        let res = await axios.get('api/horario');
+        let res = await axios.get("api/horario");
 
         const eventos = res.data;
 
@@ -309,16 +338,18 @@ export default class Evento {
      */
     async eliminarEvento(id) {
         try {
-            let res = await axios.delete('api/horario/' + id);
+            let res = await axios.delete("api/horario/" + id);
 
-            if (res.data.mensaje == 'exito') {
-                alerta.mensaje('Eliminación de práctica exitosa.', 'success');
+            if (res.data.mensaje == "exito") {
+                alerta.mensaje("Eliminación de práctica exitosa.", "success");
             } else {
-                alerta.mensaje('Error: No se pudo eliminar la práctica.', 'error');
+                alerta.mensaje(
+                    "Error: No se pudo eliminar la práctica.",
+                    "error"
+                );
             }
         } catch (error) {
-
-            alerta.mensaje('No es posible eliminar la práctica.', 'error');
+            alerta.mensaje("No es posible eliminar la práctica.", "error");
         }
     }
 }
