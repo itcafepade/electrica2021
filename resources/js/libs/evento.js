@@ -25,6 +25,11 @@ export default class Evento {
             fechaInicio,
             fechaFinal
         );
+        const horasIguales = this.validarHorasIguales(
+            eventosFiltrados,
+            fechaInicio,
+            fechaFinal
+        );
         const diaValidado = this.validarPorFechaActual(fechaInicio);
 
         let resultadoHora = {};
@@ -33,6 +38,15 @@ export default class Evento {
             resultadoDia = {
                 estado: false,
                 mensaje: "No es posible registrar prácticas a días anteriores."
+            };
+        } else {
+            resultadoDia.estado = true;
+        }
+
+        if (!horasIguales) {
+            resultadoDia = {
+                estado: false,
+                mensaje: "Las horas de los horarios no pueden ser iguales."
             };
         } else {
             resultadoDia.estado = true;
@@ -70,7 +84,7 @@ export default class Evento {
             moment(fechaInicio.toISOString()).format("MM")
         );
 
-        console.log(mesActual, mesEvento);
+        // console.log(mesActual, mesEvento);
 
         if (mesEvento > mesActual) {
             //Cuando es un mes mayor
@@ -131,11 +145,15 @@ export default class Evento {
         let i = fechaInicioHora;
         let disponible = true;
 
+        if (fechaInicioHora == fechaFinalHora) {
+            return false;
+        }
+
         eventos.forEach(el => {
             const horaEvento = parseInt(
                 moment(new Date(el.start)).format("HH")
             );
-            for (i = fechaInicioHora; i < fechaFinalHora; i++) {
+            for (i = fechaInicioHora; i <= fechaFinalHora; i++) {
                 if (horaEvento == i && el.estado != "Rechazada") {
                     disponible = false;
                     return disponible;
@@ -144,6 +162,26 @@ export default class Evento {
         });
 
         return disponible;
+    }
+
+    /**
+     *
+     * Verifica que los horarios no sean iguales
+     *
+     * @param {Array} eventos
+     * @param Date fechaInicio
+     * @param Date fechaFinal
+     *
+     */
+    validarHorasIguales(eventos, fechaInicio, fechaFinal) {
+        const fechaInicioHora = parseInt(moment(fechaInicio).format("HH"));
+        const fechaFinalHora = parseInt(moment(fechaFinal).format("HH"));
+
+        if (fechaInicioHora == fechaFinalHora) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

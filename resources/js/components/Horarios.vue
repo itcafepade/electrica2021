@@ -362,51 +362,48 @@ export default {
       this.$refs.calendar.next();
     },
     async agregarNuevoEvento() {
-      let inicio = new Date(`${this.fecha}T${this.horaInicio}`);
-      let final = new Date(`${this.fecha}T${this.horaFinal}`);
+      try {
+        let inicio = new Date(`${this.fecha}T${this.horaInicio}`);
+        let final = new Date(`${this.fecha}T${this.horaFinal}`);
 
-      const inicioEnPunto = moment(inicio.toISOString()).format(
-        "YYYY-MM-DDTHH:00"
-      );
-      const finalEnPunto = moment(final.toISOString()).format(
-        "YYYY-MM-DDTHH:00"
-      );
+        const inicioEnPunto = moment(inicio.toISOString()).format(
+          "YYYY-MM-DDTHH:00"
+        );
+        const finalEnPunto = moment(final.toISOString()).format(
+          "YYYY-MM-DDTHH:00"
+        );
 
-      console.log(inicioEnPunto);
+        if (this.editando) {
+          // Modificando evento existente
+          const indice = this.events.findIndex(
+            (el) => el == this.selectedEvent
+          );
 
-      if (this.editando) {
-        // Modificando evento existente
-        const indice = this.events.findIndex((el) => el == this.selectedEvent);
+          this.events.splice(indice, 1); //Eliminando el evento del array
+        } else {
+          //Nuevo Evento
+          this.agregando = true;
+        }
 
-        this.events.splice(indice, 1); //Eliminando el evento del array
-      } else {
-        //Nuevo Evento
-        this.agregando = true;
+        evento.agregarNuevoEvento(
+          this.events,
+          this.usuarioActual,
+          inicioEnPunto,
+          finalEnPunto,
+          this.agregando,
+          this.selectedEvent.id
+        );
+
+        this.horaInicio = "";
+        this.horaFinal = "";
+        this.fecha = "";
+        this.editando = false;
+        this.agregando = false;
+        this.selectedEvent = {};
+        this.init();
+      } catch (error) {
+        alerta.mensaje("Todos los campos son obligatorios.", "error");
       }
-
-      evento.agregarNuevoEvento(
-        this.events,
-        this.usuarioActual,
-        inicioEnPunto,
-        finalEnPunto,
-        this.agregando,
-        this.selectedEvent.id
-      );
-
-      this.horaInicio = "";
-      this.horaFinal = "";
-      this.fecha = "";
-      this.editando = false;
-      this.agregando = false;
-      this.selectedEvent = {};
-      this.init();
-      //   const eventos = await evento.obtenerEventos();
-      //   this.events = evento.cargarEventos(
-      //     eventos.eventos,
-      //     this.checkBoxAutorizadas,
-      //     this.checkBoxPendientes,
-      //     this.checkBoxRechazadas
-      //   );
     },
     editarEvento({ nativeEvent, event }) {
       this.editando = true;
