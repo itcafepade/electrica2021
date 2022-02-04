@@ -41,7 +41,7 @@
                     <tr v-for="evento in practica.eventos" :key="evento.id">
                       <!-- <td>{{ historial.id }}</td> -->
                       <td>
-                        {{ fechaAccionConFormato(evento.fecha) }}
+                        {{ fechaAccionConFormato(evento.created_at) }}
                       </td>
                       <td>
                         {{ evento.accion }}
