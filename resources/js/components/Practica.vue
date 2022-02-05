@@ -30,12 +30,23 @@
             <div class="col-12 col-sm-12 col-md-8">
               <h5 class="pt-2">Actividad</h5>
               <hr />
+              <a
+                href="#"
+                class="btn btn-primary mb-3"
+                target="_blank"
+                @click="generarCSV(practica.id)"
+                >Generar CSV</a
+              >
               <div class="table-responsive-lg">
                 <table class="table table-striped table-hover">
                   <thead>
                     <!-- <th>#</th> -->
                     <th>Hora</th>
-                    <th>Acción</th>
+                    <th>SetPoint</th>
+                    <th>Proportional</th>
+                    <th>Integral</th>
+                    <th>Derivative</th>
+                    <th>Temperature</th>
                   </thead>
                   <tbody v-if="practica.eventos">
                     <tr v-for="evento in practica.eventos" :key="evento.id">
@@ -44,7 +55,19 @@
                         {{ fechaAccionConFormato(evento.created_at) }}
                       </td>
                       <td>
-                        {{ evento.accion }}
+                        {{ evento.setpoint }}
+                      </td>
+                      <td>
+                        {{ evento.proportional }}
+                      </td>
+                      <td>
+                        {{ evento.integral }}
+                      </td>
+                      <td>
+                        {{ evento.derivative }}
+                      </td>
+                      <td>
+                        {{ evento.temperature }}
                       </td>
                     </tr>
                     <td
@@ -89,6 +112,9 @@ export default {
     },
     fechaAccionConFormato(fecha) {
       return moment(new Date(fecha)).format("hh:mm:ss A");
+    },
+    generarCSV(id) {
+      window.open("/generarCsv/" + id);
     },
   },
 };

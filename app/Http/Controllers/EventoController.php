@@ -30,16 +30,10 @@ class EventoController extends Controller
                 "resultado"=>$resultado[1],
             ];
 
-            if ($comando != 100) {
+            if ($comando == 50 || $comando == 51 || $comando == 52 || $comando == 53) {
                 $actual = HorarioController::practicaActual();
 
-                Historial::insert([
-                    'id_horario' => $actual->id,
-                    'fecha' => now(),
-                    'accion' => "Comando: $comando, Valor: $valor, Resultado: $resultado[1]",
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                $this->registrarHistorial($comando, $valor, $actual);
             }
         } catch (\Throwable $th) {
             $resultados['mensaje']="Servidor desconectado";
@@ -78,6 +72,8 @@ class EventoController extends Controller
             ];
 
             $actual = HorarioController::practicaActual();
+
+            $this->registrarHistorial(22, $resultadoTemperatura[1], $actual);
 
             Historial::insert([
                 'id_horario' => $actual->id,
@@ -119,17 +115,48 @@ class EventoController extends Controller
 
             $actual = HorarioController::practicaActual();
 
-            Historial::insert([
-                'id_horario' => $actual->id,
-                'fecha' => now(),
-                'accion' => "Comando: $comando, Valor: $valor, Resultado: $resultado[1]",
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $actual = HorarioController::practicaActual();
+
+            $this->registrarHistorial(50, $resultadoSetPoint[1], $actual);
+            $this->registrarHistorial(51, $resultadoProporcional[1], $actual);
+            $this->registrarHistorial(52, 0.01, $actual);
+            $this->registrarHistorial(53, 0.00, $actual);
         } catch (\Throwable $th) {
             $resultados['mensaje']="Servidor desconectado";
         }
 
         return response()->json($resultados);
+    }
+
+    public function registrarHistorial($comando, $valor, $actual)
+    {
+        $historial = [
+            'id_horario' => $actual->id,
+            'fecha' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        switch ($comando) {
+            case 22:
+                $historial['temperature'] = $valor;
+                break;
+            case 50:
+                $historial['setpoint'] = $valor;
+                break;
+            case 51:
+                $historial['proportional'] = $valor;
+                break;
+            case 52:
+                $historial['integral'] = $valor;
+                break;
+            case 53:
+                $historial['derivative'] = $valor;
+                break;
+            default:
+            break;
+        }
+
+        Historial::insert($historial);
     }
 }

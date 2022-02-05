@@ -17,7 +17,11 @@ class CreateHistorialsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('id_horario');
             $table->date('fecha');
-            $table->string('accion');
+            $table->string('setpoint')->nullable();
+            $table->string('proportional')->nullable();
+            $table->string('integral')->nullable();
+            $table->string('derivative')->nullable();
+            $table->string('temperature')->nullable();
             $table->foreign('id_horario')->references('id')->on('horarios');
             $table->timestamps();
         });

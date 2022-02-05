@@ -37,10 +37,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Horario::create([
-            'nombre'=>'Práctica evaluada - 010101',
+            'nombre'=>'030303 - Práctica evaluada',
             'fecha_inicio'=>date('Y-m-d 10:00'),
             'fecha_final'=>date('Y-m-d 11:00'),
-            'id_usuario'=>1,
+            'id_usuario'=>2,
             'estado'=> 'Autorizada',
             'color'=> 'green',
             'created_at'=>date('Y-m-d H:i:s'),
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Horario::create([
-            'nombre'=>'Práctica evaluada - 010101',
+            'nombre'=>'010101 - Práctica evaluada',
             'fecha_inicio'=>date('Y-m-d 08:00'),
             'fecha_final'=>date('Y-m-d 09:00'),
             'id_usuario'=>1,
@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Horario::create([
-            'nombre'=>'Práctica evaluada - 010101',
+            'nombre'=>'010101 - Práctica evaluada',
             'fecha_inicio'=>date('Y-m-d 15:00'),
             'fecha_final'=>date('Y-m-d 16:00'),
             'id_usuario'=>1,
@@ -70,7 +70,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Horario::create([
-            'nombre'=>'Práctica evaluada - 010101',
+            'nombre'=>'010101 - Práctica evaluada',
             'fecha_inicio'=>date('Y-m-d 13:00'),
             'fecha_final'=>date('Y-m-d 14:00'),
             'id_usuario'=>1,
@@ -80,20 +80,20 @@ class DatabaseSeeder extends Seeder
             'updated_at'=>date('Y-m-d H:i:s'),
         ]);
 
-        Historial::create([
-            'id_horario'=>1,
-            'fecha'=>date('Y-m-d 13:01'),
-            'accion'=>'Inicio de práctica evaluada',
-            'created_at'=>date('Y-m-d H:i:s'),
-            'updated_at'=>date('Y-m-d H:i:s'),
-        ]);
+        // Historial::create([
+        //     'id_horario'=>1,
+        //     'fecha'=>date('Y-m-d 22:01'),
+        //     'accion'=>'Inicio de práctica evaluada',
+        //     'created_at'=>date('Y-m-d H:i:s'),
+        //     'updated_at'=>date('Y-m-d H:i:s'),
+        // ]);
 
-        Historial::create([
-            'id_horario'=>1,
-            'fecha'=>date('Y-m-d 13:02'),
-            'accion'=>'Cambio de variables',
-            'created_at'=>date('Y-m-d H:i:s'),
-            'updated_at'=>date('Y-m-d H:i:s'),
-        ]);
+        // Historial::create([
+        //     'id_horario'=>1,
+        //     'fecha'=>date('Y-m-d 23:59'),
+        //     'accion'=>'Cambio de variables',
+        //     'created_at'=>date('Y-m-d H:i:s'),
+        //     'updated_at'=>date('Y-m-d H:i:s'),
+        // ]);
     }
 }

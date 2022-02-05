@@ -348,7 +348,7 @@ export default {
       datoPID: 0,
       integralTime: 0.01,
       temperatura: 25,
-      pidDerivativo: 100,
+      pidDerivativo: 0.0,
       cicloCalentador: 20,
       timeOutEntrenador: 0,
       simuladorIniciado: false,
@@ -909,7 +909,10 @@ export default {
         return;
       }
 
-      if (this.simuladorIniciado == true && res.data.resultado == "206" || res.data.resultado == "OK") {
+      if (
+        (this.simuladorIniciado == true && res.data.resultado == "206") ||
+        res.data.resultado == "OK"
+      ) {
         // 206: Stop finalizado
         this.enLinea = true;
         this.estado = res.data.resultado;

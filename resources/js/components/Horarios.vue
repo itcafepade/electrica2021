@@ -187,7 +187,12 @@
         <a href="#" class="btn btn-secondary mt-3" @click="limpiarEvento()">
           <i class="bi bi-arrow-bar-down"></i> Limpiar
         </a>
-        <a href="#" class="btn btn-danger mt-3" @click="eliminarReservacion()">
+        <a
+          href="#"
+          class="btn btn-danger mt-3"
+          @click="eliminarReservacion()"
+          v-if="editando"
+        >
           <i class="bi bi-trash"></i> Eliminar
         </a>
         <!-- Reservar práctica -->
@@ -325,9 +330,11 @@ export default {
     eventosNoAutorizados: [],
     checkBoxAutorizadas: true,
     checkBoxPendientes: true,
-    checkBoxRechazadas: false,
+    checkBoxRechazadas: true,
     modalInicio: false,
     modalFinal: false,
+    agregando: true,
+    editando: false,
   }),
   mounted() {
     this.$refs.calendar.checkChange();
@@ -335,6 +342,10 @@ export default {
   },
   methods: {
     async init() {
+      this.agregando = true;
+      this.editando = false;
+      this.selectedEvent = {};
+
       let res = await axios.get("/usuarioActual");
       this.usuarioActual = res.data;
 
@@ -367,10 +378,10 @@ export default {
         let final = new Date(`${this.fecha}T${this.horaFinal}`);
 
         const inicioEnPunto = moment(inicio.toISOString()).format(
-          "YYYY-MM-DDTHH:00"
+          "YYYY-MM-DDTHH:mm"
         );
         const finalEnPunto = moment(final.toISOString()).format(
-          "YYYY-MM-DDTHH:00"
+          "YYYY-MM-DDTHH:mm"
         );
 
         if (this.editando) {
@@ -380,6 +391,7 @@ export default {
           );
 
           this.events.splice(indice, 1); //Eliminando el evento del array
+          this.agregando = false;
         } else {
           //Nuevo Evento
           this.agregando = true;
@@ -391,7 +403,7 @@ export default {
           inicioEnPunto,
           finalEnPunto,
           this.agregando,
-          this.selectedEvent.id
+          this.selectedEvent
         );
 
         this.horaInicio = "";
@@ -402,11 +414,14 @@ export default {
         this.selectedEvent = {};
         this.init();
       } catch (error) {
+        console.log(error);
         alerta.mensaje("Todos los campos son obligatorios.", "error");
       }
     },
+
     editarEvento({ nativeEvent, event }) {
       this.editando = true;
+      this.agregando = false;
       this.selectedEvent = event;
       //   console.log(event);
       if (
@@ -418,8 +433,8 @@ export default {
 
         this.fecha = moment(inicio.toISOString()).format("YYYY-MM-DD");
 
-        this.horaInicio = moment(inicio.toISOString()).format("HH:00");
-        this.horaFinal = moment(final.toISOString()).format("HH:00");
+        this.horaInicio = moment(inicio.toISOString()).format("HH:mm");
+        this.horaFinal = moment(final.toISOString()).format("HH:mm");
       } else {
         alerta.mensaje(
           "Solo es posible modificar los horarios correspondientes a tu usuario.",
@@ -427,6 +442,7 @@ export default {
         );
       }
     },
+
     async eliminarReservacion() {
       if (this.editando && this.selectedEvent != {}) {
         if (
@@ -474,6 +490,7 @@ export default {
       this.fecha = "";
       this.horaInicio = "";
       this.horaFinal = "";
+      this.init();
     },
     formatoFecha(fecha) {
       return moment(new Date(fecha)).format("D MMMM YYYY, h:mm a");

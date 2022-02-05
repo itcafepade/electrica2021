@@ -54,9 +54,10 @@ Route::group(['middleware'=>['auth','admin']], function () {
 
     //Historial
     Route::resource('api/historial', HistorialController::class);
-    Route::post('api/historialPorIdUsuario', [HistorialController::class, 'obtenerAccionesPorIdUsuario']);
 });
 
+Route::get('generarCsv/{id}', [HistorialController::class, 'generateCSV']);
+Route::post('api/historialPorIdUsuario', [HistorialController::class, 'obtenerAccionesPorIdUsuario']);
 Route::group(['middleware'=>'auth'], function () {
     //Vistas
     Route::get('/', function () {

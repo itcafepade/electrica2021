@@ -12,7 +12,7 @@ export default class Evento {
      * @param {String} inicio
      * @param {String} final
      */
-    validarEvento(eventos, inicio, final) {
+    validarEvento(eventos, inicio, final, idSeleccionado = 0) {
         const fechaInicio = new Date(inicio);
         const fechaFinal = new Date(final);
 
@@ -20,87 +20,19 @@ export default class Evento {
             eventos,
             fechaInicio
         );
-        const horaValidado = this.validarPorHora(
+
+        const validado = this.validarEventoFechaHoraMinuto(
             eventosFiltrados,
             fechaInicio,
-            fechaFinal
+            fechaFinal,
+            idSeleccionado
         );
-        const horasIguales = this.validarHorasIguales(
-            eventosFiltrados,
-            fechaInicio,
-            fechaFinal
-        );
-        const diaValidado = this.validarPorFechaActual(fechaInicio);
 
-        let resultadoHora = {};
-        let resultadoDia = {};
-        if (!diaValidado) {
-            resultadoDia = {
-                estado: false,
-                mensaje: "No es posible registrar prácticas a días anteriores."
-            };
-        } else {
-            resultadoDia.estado = true;
-        }
-
-        if (!horasIguales) {
-            resultadoDia = {
-                estado: false,
-                mensaje: "Las horas de los horarios no pueden ser iguales."
-            };
-        } else {
-            resultadoDia.estado = true;
-        }
-
-        if (!horaValidado) {
-            resultadoHora = {
-                estado: false,
-                mensaje: "Ya se encuentra una práctica en este horario."
-            };
-        } else {
-            resultadoHora.estado = true;
-        }
-
-        return {
-            resultadoHora: resultadoHora,
-            resultadoDia: resultadoDia
-        };
+        return validado;
     }
 
     /**
-     * Verifica que la fecha sea igual o mayor que la actual.
-     * Devuelve false si es menor y true si es igual o mayor.
-     *
-     * @param {Date} fechaInicio
-     * @returns {Boolean}
-     */
-    validarPorFechaActual(fechaInicio) {
-        const diaActual = parseInt(moment(new Date()).format("DD"));
-        const diaEvento = parseInt(
-            moment(fechaInicio.toISOString()).format("DD")
-        );
-        const mesActual = parseInt(moment(new Date()).format("MM"));
-        const mesEvento = parseInt(
-            moment(fechaInicio.toISOString()).format("MM")
-        );
-
-        // console.log(mesActual, mesEvento);
-
-        if (mesEvento > mesActual) {
-            //Cuando es un mes mayor
-            return true;
-        } else if (mesEvento == mesActual) {
-            //Cuando es el mismo mes
-            if (diaEvento < diaActual) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Filtra los eventos disponibles por la fecha del nuevo evento.
+     * Filtra los eventos disponibles filtrando la fecha del nuevo evento.
      *
      * @param {Array} eventos
      * @param Date fechaInicio
@@ -119,49 +51,15 @@ export default class Evento {
                 "YYYY-MM-DD"
             );
 
-            if (fechaAFiltrar == fechaInicioConFormato) {
+            if (
+                fechaAFiltrar == fechaInicioConFormato &&
+                el.estado != "Rechazada"
+            ) {
                 eventosFiltrados.push(el);
             }
         });
 
         return eventosFiltrados;
-    }
-
-    /**
-     *
-     * Filtra cada uno de los eventos por las horas que han sido asignadas
-     * para verificar la disponibilidad del nuevo evento.
-     *
-     * @param {Array} eventos
-     * @param Date fechaInicio
-     * @param Date fechaFinal
-     *
-     */
-
-    validarPorHora(eventos, fechaInicio, fechaFinal) {
-        const fechaInicioHora = parseInt(moment(fechaInicio).format("HH"));
-        const fechaFinalHora = parseInt(moment(fechaFinal).format("HH"));
-
-        let i = fechaInicioHora;
-        let disponible = true;
-
-        if (fechaInicioHora == fechaFinalHora) {
-            return false;
-        }
-
-        eventos.forEach(el => {
-            const horaEvento = parseInt(
-                moment(new Date(el.start)).format("HH")
-            );
-            for (i = fechaInicioHora; i <= fechaFinalHora; i++) {
-                if (horaEvento == i && el.estado != "Rechazada") {
-                    disponible = false;
-                    return disponible;
-                }
-            }
-        });
-
-        return disponible;
     }
 
     /**
@@ -173,40 +71,137 @@ export default class Evento {
      * @param Date fechaFinal
      *
      */
-    validarHorasIguales(eventos, fechaInicio, fechaFinal) {
-        const fechaInicioHora = parseInt(moment(fechaInicio).format("HH"));
-        const fechaFinalHora = parseInt(moment(fechaFinal).format("HH"));
+    validarEventoFechaHoraMinuto(
+        eventos,
+        fechaInicio,
+        fechaFinal,
+        idSeleccionado = 0
+    ) {
+        // Formato: 202202041001 -> 2022-02-04T10:01
+        let fechaInicioFormato = parseInt(
+            moment(fechaInicio).format("YYYYMMDDHHmm")
+        );
+        let fechaFinalFormato = parseInt(
+            moment(fechaFinal).format("YYYYMMDDHHmm")
+        );
+        const fechaInicioH = parseInt(moment(fechaInicio).format("HH"));
+        const fechaInicioM = parseInt(moment(fechaInicio).format("mm"));
+        const fechaFinalH = parseInt(moment(fechaFinal).format("HH"));
+        const fechaFinalM = parseInt(moment(fechaFinal).format("mm"));
 
-        if (fechaInicioHora == fechaFinalHora) {
-            return false;
+        let validado = true;
+
+        // La fecha final es menor que la de inicio
+        if (fechaFinalFormato < fechaInicioFormato) {
+            alerta.mensaje(
+                "La hora y fecha del inicio de tu práctica no pueden ser mayores que la final.",
+                "info"
+            );
+            validado = false;
+            return validado;
         }
 
-        return true;
-    }
+        // Sin eventos por validar
+        if (eventos.length == 0) {
+            // console.log("Sin eventos por evaluar");
+            return validado;
+        }
 
-    /**
-     * Obtiene el índice de un evento dependiendo de la fecha de inicio y fecha final,
-     * caso contrario devuelve -1.
-     *
-     * @param {Array} eventos
-     * @param Date fechaInicio
-     * @param Date fechaFinal
-     */
-    obtenerIndiceEvento(eventos, fechaInicio, fechaFinal) {
-        for (let index = 0; index < eventos.length; index++) {
-            const inicioEvento = moment(
-                new Date(eventos[index].start).toISOString()
-            ).format("YYYY-MM-DDTHH:00");
-            const finalEvento = moment(
-                new Date(eventos[index].end).toISOString()
-            ).format("YYYY-MM-DDTHH:00");
+        eventos.forEach(evento => {
+            const eventoFechaInicio = parseInt(
+                moment(evento.start).format("YYYYMMDDHHmm")
+            );
+            const eventoFechaFinal = parseInt(
+                moment(evento.end).format("YYYYMMDDHHmm")
+            );
+            const eventoInicioH = parseInt(moment(evento.start).format("HH"));
+            const eventoInicioM = parseInt(moment(evento.start).format("mm"));
+            const eventoFinalH = parseInt(moment(evento.end).format("HH"));
+            const eventoFinalM = parseInt(moment(evento.end).format("mm"));
 
-            if (inicioEvento == fechaInicio && finalEvento == fechaFinal) {
-                return index;
+            /**
+             * La fecha de inicio se encuentra en el rango de la fecha de inicio
+             * y fecha final de un evento
+             **/
+
+            if (
+                fechaInicioFormato >= eventoFechaInicio &&
+                fechaInicioFormato <= eventoFechaFinal &&
+                evento.id != idSeleccionado
+            ) {
+                alerta.mensaje("Verifica la disponibilidad de horario", "info");
+                validado = false;
+                return validado;
             }
-        }
 
-        return -1;
+            /**
+             * La fecha final se encuentra en el rango de la fecha de inicio
+             * y fecha final de un evento
+             **/
+            if (
+                fechaFinalFormato >= eventoFechaInicio &&
+                fechaFinalFormato <= eventoFechaFinal &&
+                evento.id != idSeleccionado
+            ) {
+                alerta.mensaje(
+                    "Verifica la disponibilidad de horario.",
+                    "info"
+                );
+                validado = false;
+                return validado;
+            }
+
+            /**
+             *
+             **/
+            if (
+                fechaFinalFormato >= eventoFechaInicio &&
+                fechaFinalFormato <= eventoFechaFinal &&
+                evento.id != idSeleccionado
+            ) {
+                alerta.mensaje(
+                    "Verifica la disponibilidad de horario.",
+                    "info"
+                );
+                validado = false;
+                return validado;
+            }
+
+            // Si las horas son iguales
+            if (eventoInicioH == fechaInicioH && evento.id != idSeleccionado) {
+                // console.log("Horas iguales", fechaInicioM, fechaFinalM);
+                // Verificando que los minutos de la hora de inicio
+                // no estén reservados por otro evento
+                if (
+                    fechaInicioM >= eventoInicioM ||
+                    fechaInicioM <= eventoFinalM
+                ) {
+                    alerta.mensaje(
+                        "Verifica la disponibilidad de horario.",
+                        "info"
+                    );
+                    // console.log("Minutos inicio");
+                    validado = false;
+                    return validado;
+                }
+
+                // Verificando que los minutos de la hora final
+                // no estén reservados por otro evento
+                if (
+                    fechaFinalM <= eventoInicioM ||
+                    fechaFinalM >= eventoFinalM
+                ) {
+                    alerta.mensaje(
+                        "Verifica la disponibilidad de horario.",
+                        "info"
+                    );
+                    validado = false;
+                    return validado;
+                }
+            }
+        });
+
+        return validado;
     }
 
     /**
@@ -225,40 +220,31 @@ export default class Evento {
         inicio,
         final,
         agregando,
-        idSeleccionado = 0
+        selectedEvent
     ) {
-        const horaInicio = parseInt(moment(inicio).format("HH"));
-        const horaFinal = parseInt(moment(final).format("HH"));
+        const idSeleccionado = selectedEvent.id;
 
-        if (horaInicio > horaFinal) {
-            alerta.mensaje(
-                "La hora de inicio no puede ser mayor que la final.",
-                "error"
-            );
-            return;
-        }
+        const eventoValidado = this.validarEvento(
+            eventos,
+            inicio,
+            final,
+            idSeleccionado
+        );
 
-        const eventoValidado = this.validarEvento(eventos, inicio, final);
-
-        if (!eventoValidado.resultadoDia.estado) {
-            alerta.mensaje(eventoValidado.resultadoDia.mensaje, "info");
-            return;
-        }
-
-        if (!eventoValidado.resultadoHora.estado) {
-            alerta.mensaje(eventoValidado.resultadoHora.mensaje, "info");
+        if (!eventoValidado) {
             return;
         }
 
         let evento = {
             id: idSeleccionado,
-            nombre: `Practica evaluada - ${usuarioActual.carnet}`,
-            id_usuario: usuarioActual.id,
+            nombre: `${usuarioActual.carnet} - Práctica evaluada`,
             fecha_inicio: inicio,
             fecha_final: final
         };
 
         if (!agregando) {
+            evento.nombre = `${selectedEvent.carnet} - Práctica evaluada`;
+
             const res = await axios.put(
                 "api/horario/" + idSeleccionado,
                 evento
@@ -272,6 +258,7 @@ export default class Evento {
                     "error"
                 );
             }
+
             return;
         }
 
@@ -293,6 +280,8 @@ export default class Evento {
                 );
             }, 2500);
         }
+
+        // console.log("Nuevo", evento);
 
         res = await axios.post("api/horario", evento);
 
@@ -389,5 +378,98 @@ export default class Evento {
         } catch (error) {
             alerta.mensaje("No es posible eliminar la práctica.", "error");
         }
+    }
+
+    // -----------------------------------------------------------------------
+    /**
+     * Verifica que la fecha sea igual o mayor que la actual.
+     * Devuelve false si es menor y true si es igual o mayor.
+     *
+     * @param {Date} fechaInicio
+     * @returns {Boolean}
+     */
+    validarPorFechaActual(fechaInicio) {
+        const diaActual = parseInt(moment(new Date()).format("DD"));
+        const diaEvento = parseInt(
+            moment(fechaInicio.toISOString()).format("DD")
+        );
+        const mesActual = parseInt(moment(new Date()).format("MM"));
+        const mesEvento = parseInt(
+            moment(fechaInicio.toISOString()).format("MM")
+        );
+
+        if (mesEvento > mesActual) {
+            //Cuando es un mes mayor
+            return true;
+        } else if (mesEvento == mesActual) {
+            //Cuando es el mismo mes
+            if (diaEvento < diaActual) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     *
+     * Filtra cada uno de los eventos por las horas que han sido asignadas
+     * para verificar la disponibilidad del nuevo evento.
+     *
+     * @param {Array} eventos
+     * @param Date fechaInicio
+     * @param Date fechaFinal
+     *
+     */
+
+    validarPorHora(eventos, fechaInicio, fechaFinal) {
+        const fechaInicioHora = parseInt(moment(fechaInicio).format("HH"));
+        const fechaFinalHora = parseInt(moment(fechaFinal).format("HH"));
+
+        let i = fechaInicioHora;
+        let disponible = true;
+
+        if (fechaInicioHora == fechaFinalHora) {
+            return false;
+        }
+
+        eventos.forEach(el => {
+            const horaEvento = parseInt(
+                moment(new Date(el.start)).format("HH")
+            );
+            for (i = fechaInicioHora; i <= fechaFinalHora; i++) {
+                if (horaEvento == i && el.estado != "Rechazada") {
+                    disponible = false;
+                    return disponible;
+                }
+            }
+        });
+
+        return disponible;
+    }
+
+    /**
+     * Obtiene el índice de un evento dependiendo de la fecha de inicio y fecha final,
+     * caso contrario devuelve -1.
+     *
+     * @param {Array} eventos
+     * @param Date fechaInicio
+     * @param Date fechaFinal
+     */
+    obtenerIndiceEvento(eventos, fechaInicio, fechaFinal) {
+        for (let index = 0; index < eventos.length; index++) {
+            const inicioEvento = moment(
+                new Date(eventos[index].start).toISOString()
+            ).format("YYYY-MM-DDTHH:mm");
+            const finalEvento = moment(
+                new Date(eventos[index].end).toISOString()
+            ).format("YYYY-MM-DDTHH:mm");
+
+            if (inicioEvento == fechaInicio && finalEvento == fechaFinal) {
+                return index;
+            }
+        }
+
+        return -1;
     }
 }

@@ -20,7 +20,11 @@ class Historial extends Model
         'id',
         'id_horario',
         'fecha',
-        'accion',
+        'setpoint',
+        'proportional',
+        'integral',
+        'derivative',
+        'temperature',
         'created_at',
         'updated_at',
     ];

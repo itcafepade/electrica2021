@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Horario;
+use App\Models\User;
 use Illuminate\Http\Request;
 use DB;
 
@@ -93,19 +94,15 @@ class HorarioController extends Controller
      */
     public function update(Request $request)
     {
-        $evento = new Horario();
-        $evento->id = $request->id;
-        $evento->nombre = $request->nombre;
-        $evento->id_usuario = $request->id_usuario;
-        $evento->fecha_inicio = $request->fecha_inicio;
-        $evento->fecha_final = $request->fecha_final;
-        $evento->updated_at = date("Y-m-dTH:m");
+        $carnet = explode(' - ', $request->nombre)[0];
+
+        $user = User::where(['carnet' => $carnet])->first();
 
         DB::table('horarios')->where('id', $request->id)
         ->update([
             'id' => $request->id,
             'nombre' => $request->nombre,
-            'id_usuario' => $request->id_usuario,
+            'id_usuario' => $user->id,
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_final' => $request->fecha_final,
             'updated_at' => date("Y-m-d H:m")
