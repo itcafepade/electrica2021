@@ -43,7 +43,7 @@ class HorarioController extends Controller
     {
         $evento = new Horario();
         $evento->nombre = $request->nombre;
-        $evento->id_usuario = $request->id_usuario;
+        $evento->id_usuario = auth()->user()->id;
         $evento->fecha_inicio = $request->fecha_inicio;
         $evento->fecha_final = $request->fecha_final;
         $evento->created_at = date("Y-m-dTH:m");
