@@ -84,12 +84,23 @@ export default class Evento {
         let fechaFinalFormato = parseInt(
             moment(fechaFinal).format("YYYYMMDDHHmm")
         );
+        let now = parseInt(moment(new Date()).format("YYYYMMDDHHmm"));
         const fechaInicioH = parseInt(moment(fechaInicio).format("HH"));
         const fechaInicioM = parseInt(moment(fechaInicio).format("mm"));
         const fechaFinalH = parseInt(moment(fechaFinal).format("HH"));
         const fechaFinalM = parseInt(moment(fechaFinal).format("mm"));
 
         let validado = true;
+
+        // Horario pasado
+        if (fechaInicioFormato < now) {
+            alerta.mensaje(
+                "No puedes registrar prácticas en un horario pasado.",
+                "info"
+            );
+            validado = false;
+            return validado;
+        }
 
         // La fecha final es menor que la de inicio
         if (fechaFinalFormato < fechaInicioFormato) {

@@ -538,6 +538,8 @@ export default {
       this.fecha = "";
       this.horaInicio = "";
       this.horaFinal = "";
+      this.editando = false;
+      this.agregando = true;
     },
   },
 };
