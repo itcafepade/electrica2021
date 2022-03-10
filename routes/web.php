@@ -39,11 +39,15 @@ Route::group(['middleware'=>['auth','admin']], function () {
     Route::get('/ajustes', function () {
         return view('ajustes');
     });
+    Route::get('/adminUsuarios', function () {
+        return view('adminUsuarios');
+    });
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     //Usuario
     Route::post('/registrarUsuarios', [UserController::class, 'store']);
     Route::get('/usuarioActual', [UserController::class, 'usuarioActual']);
+    Route::get('/api/user', [UserController::class, 'index']);
     Route::post('api/obtenerPorCarnet', [UserController::class, 'obtenerUsuarioPorCarnet']);
 
     //Horarios
@@ -58,6 +62,7 @@ Route::group(['middleware'=>['auth','admin']], function () {
 
 Route::get('generarCsv/{id}', [HistorialController::class, 'generateCSV']);
 Route::post('api/historialPorIdUsuario', [HistorialController::class, 'obtenerAccionesPorIdUsuario']);
+
 Route::group(['middleware'=>'auth'], function () {
     //Vistas
     Route::get('/', function () {
@@ -75,12 +80,16 @@ Route::group(['middleware'=>'auth'], function () {
     Route::get('/simulador', function () {
         return view('simulador');
     })->middleware('horarioValido');
+    Route::get('/perfil', function () {
+        return view('perfil');
+    });
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     //Usuario
     Route::post('/registrarUsuarios', [UserController::class, 'store']);
     Route::get('/usuarioActual', [UserController::class, 'usuarioActual']);
     Route::post('api/obtenerPorCarnet', [UserController::class, 'obtenerUsuarioPorCarnet']);
+    Route::put('/api/user/{user}', [UserController::class, 'update']);
 
     //Horarios
     Route::resource('api/horario', HorarioController::class);

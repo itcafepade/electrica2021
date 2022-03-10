@@ -832,8 +832,31 @@ export default {
         return;
       }
 
+      if (res.data.resultado == "200" || res.data.resultado == "OK") {
+        //   Reset aplicado
+        this.enLinea = true;
+        this.estado = res.data.resultado;
+
+        // Asignando valores iniciales
+        this.setPoint = 0;
+        this.datoPID = 0;
+        this.switch1 = false;
+
+        const inicial = await this.asignarEstadosIniciales();
+
+        this.resetDisabled = true;
+        this.startDisabled = false;
+        this.setPointDisabled = false;
+        this.datoPIDDisabled = false;
+        this.$refs.indicador.setAttribute(
+          "style",
+          "width: 5rem;background: red;border-radius: 10px;border: solid 2px;"
+        );
+
+        return;
+      }
+
       if (
-        res.data.resultado == "200" ||
         res.data.resultado == "202" ||
         res.data.resultado == "204" ||
         res.data.resultado == "206"
@@ -842,6 +865,24 @@ export default {
         this.enLinea = true;
         this.resetDisabled = false;
         this.estado = res.data.resultado;
+        return;
+      }
+
+      if (res.data.resultado == "205") {
+        // 205: Start en proceso
+        this.enLinea = true;
+        this.estado = res.data.resultado;
+        this.resetDisabled = true;
+        this.datoPIDDisabled = false;
+        this.setPointDisabled = false;
+        this.startDisabled = true;
+        this.stopDisabled = false;
+        this.leerValores = true;
+
+        this.simuladorIniciado = true;
+        this.iniciarLecturas();
+        alerta.mensaje("Entrenador iniciado correctamente.", "success");
+
         return;
       }
 
@@ -1085,10 +1126,6 @@ export default {
           this.consultarStatus();
         }, 15000);
       }
-
-      //   console.log(res);
-
-      //   return res;
     },
   },
 };

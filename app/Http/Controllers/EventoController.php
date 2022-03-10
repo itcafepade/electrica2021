@@ -19,9 +19,9 @@ class EventoController extends Controller
          * Valor - es el número que se utilizará para actualizar el valor del controlador,
          *         en el caso de no existir, el valor por defecto será de -1
          */
-
+        // dd($fullRoute);
         exec("$fullRoute/client.py $comando $valor", $resultado);
-
+        // dd($resultado);
         try {
             $resultados = [
                 "mensaje"=>"exito",

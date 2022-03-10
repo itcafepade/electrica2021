@@ -48,6 +48,15 @@
                                     </p>
                                 </a>
                             </div>
+                            <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3 ">
+                                <a href=" {{ url('/adminUsuarios') }}"
+                                    class="botones-inicio btn btn-block btn-white btn-sm p-3 shadow btn-hover">
+                                    <h4 class="text-left fs-4 title-home"><i class="bi bi-people"></i> Usuarios</h4>
+                                    <p class="text-left fw-lighter description-home">
+                                        Usuarios registrados en el sistema
+                                    </p>
+                                </a>
+                            </div>
                         </div>
 
                     </div>
@@ -73,6 +82,15 @@
                     <h3 class="text-left fs-4 title-home"><i class="bi bi-cpu-fill"></i> Entrenador FPC</h3>
                     <p class="text-left fw-lighter description-home">
                         Realiza tus praticas utilizando el Entrenador FPC
+                    </p>
+                </a>
+            </div>
+            <div class="col-md-6 col-2 col-lg-4 col-sm-12 col-12 pt-3">
+                <a href=" {{ url('/perfil') }}"
+                    class="botones-inicio btn btn-block btn-white btn-sm p-3 shadow btn-hover">
+                    <h3 class="text-left fs-4 title-home"><i class="bi bi-gear"></i> Ajustes de perfil</h3>
+                    <p class="text-left fw-lighter description-home">
+                        Ajustes generales de la cuenta
                     </p>
                 </a>
             </div>

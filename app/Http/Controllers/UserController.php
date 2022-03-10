@@ -8,6 +8,13 @@ use Hash;
 
 class UserController extends Controller
 {
+    public function index()
+    {
+        $users = User::all();
+
+        return response()->json(['mensaje'=>'exito', 'users'=>$users]);
+    }
+
     /**
      * Almacena los datos de los usuarios.
      *
@@ -22,7 +29,7 @@ class UserController extends Controller
             foreach ($usuarios as $usuario) {
                 $user = User::firstOrNew([
                     'email' => $usuario['correo'],
-                    'password' => Hash::make('adminItca'),
+                    'password' => Hash::make('Itca123!'),
                     'name' => $usuario['nombres'].' '.$usuario['apellidos'],
                     'access' => 'estudiante',
                     'carrera' => $usuario['carrera'],
@@ -38,6 +45,16 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
         }
+    }
+
+
+    public function update(Request $request, User $user)
+    {
+        $user->name = $request->name;
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json(['mensaje'=>'exito']);
     }
 
     /**
