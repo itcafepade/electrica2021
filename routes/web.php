@@ -88,6 +88,8 @@ Route::group(['middleware'=>'auth'], function () {
     //Usuario
     Route::post('/registrarUsuarios', [UserController::class, 'store']);
     Route::get('/usuarioActual', [UserController::class, 'usuarioActual']);
+    Route::post('/api/user/search', [UserController::class, 'search']);
+    Route::post('/api/user/getByRole', [UserController::class, 'getByRole']);
     Route::post('api/obtenerPorCarnet', [UserController::class, 'obtenerUsuarioPorCarnet']);
     Route::put('/api/user/{user}', [UserController::class, 'update']);
 

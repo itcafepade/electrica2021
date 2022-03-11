@@ -732,16 +732,20 @@ export default {
               "style",
               "width: 5rem;background: green;border-radius: 10px;border: solid 2px;"
             );
+            this.switch1 = true;
             alerta.mensaje("Perturbación iniciada correctamente.", "success");
             this.leerValores = true;
+            this.setLocalStorage("switch1", true);
             break;
           case "11": // Detener perturbación
             this.$refs.indicador.setAttribute(
               "style",
               "width: 5rem;background: red;border-radius: 10px;border: solid 2px;"
             );
+            this.switch1 = false;
             alerta.mensaje("Perturbación detenida correctamente.", "success");
             this.leerValores = true;
+            this.setLocalStorage("switch1", false);
             break;
           case "12": //Iniciar
             alerta.mensaje("Entrenador iniciado correctamente.", "success");
@@ -772,7 +776,6 @@ export default {
             this.iniciarLecturas();
             break;
           case "23":
-            console.log("23", res.data.resultado);
             this.actualizarGrafica(0, parseFloat(this.setPoint).toFixed(2));
             this.actualizarGrafica(1, parseFloat(res.data.resultado));
             this.renderizarComponente += 1;
@@ -798,18 +801,21 @@ export default {
             if (this.simuladorIniciado) {
               this.leerValores = true;
               this.iniciarLecturas();
+              this.setLocalStorage("datoPID", res.data.resultado);
             }
             break;
           case "52":
             if (this.simuladorIniciado) {
               this.leerValores = true;
               this.iniciarLecturas();
+              this.setLocalStorage("integralTime", res.data.resultado);
             }
             break;
           case "53":
             if (this.simuladorIniciado) {
               this.leerValores = true;
               this.iniciarLecturas();
+              this.setLocalStorage("pidDerivativo", res.data.resultado);
             }
             break;
         }
@@ -880,6 +886,7 @@ export default {
         this.leerValores = true;
 
         this.simuladorIniciado = true;
+        this.verifyLocalStorage();
         this.iniciarLecturas();
         alerta.mensaje("Entrenador iniciado correctamente.", "success");
 
@@ -1063,8 +1070,11 @@ export default {
       });
 
       const setPoint = parseFloat(res.data.setPoint);
+      this.setLocalStorage("setPoint", setPoint);
       this.temperatura = parseFloat(res.data.temperatura);
+      this.setLocalStorage("temperatura", this.temperatura);
       const datoPID = res.data.datoPID;
+      this.setLocalStorage("datoPID", datoPID);
 
       this.actualizarGrafica(0, parseFloat(setPoint).toFixed(2));
       this.actualizarGrafica(1, parseFloat(this.temperatura).toFixed(2));
@@ -1126,6 +1136,38 @@ export default {
           this.consultarStatus();
         }, 15000);
       }
+    },
+
+    verifyLocalStorage() {
+      const setPoint = window.localStorage.getItem("setPoint");
+      const datoPID = window.localStorage.getItem("datoPID");
+      const integralTime = window.localStorage.getItem("integralTime");
+      const temperatura = window.localStorage.getItem("temperatura");
+      const pidDerivativo = window.localStorage.getItem("pidDerivativo");
+      const switch1 = window.localStorage.getItem("switch1");
+
+      console.log(setPoint, datoPID, integralTime, temperatura);
+
+      this.setPoint =
+        setPoint == null ? parseFloat("0.00") : parseFloat(setPoint);
+      this.datoPID = datoPID == null ? "0.00" : datoPID;
+      this.integralTime = integralTime == null ? "0.00" : integralTime;
+      this.temperatura =
+        temperatura == null ? parseFloat("0.00") : parseFloat(temperatura);
+      this.pidDerivativo = pidDerivativo == null ? "0.00" : pidDerivativo;
+
+      if (switch1 == "true") {
+        this.switch1 = true;
+        this.renderizarComponenteSwitch += 1;
+      } else {
+        this.switch1 = false;
+        this.renderizarComponenteSwitch += 1;
+      }
+      this.actualizarIndicador();
+    },
+
+    setLocalStorage(variable = "setPoint", value = 0) {
+      window.localStorage.setItem(variable, value);
     },
   },
 };

@@ -79,4 +79,32 @@ class UserController extends Controller
 
         return response()->json(['mensaje'=>'exito', 'usuario'=>$usuario]);
     }
+
+    /**
+     * Obtiene la información de los usuarios por role.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getByRole(Request $request)
+    {
+        $role = ($request->role == "Administrador") ? "admin": "estudiante";
+        // dd($role, $request->role);
+        $users = User::where(['access'=> $role])->get();
+
+        return response()->json(['mensaje'=>'exito', 'users'=>$users]);
+    }
+
+    /**
+     * Obtiene la información de los usuarios por role.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $users = User::where('access', 'like', "%".$request->search."%")->get();
+
+        return response()->json(['mensaje'=>'exito', 'users'=>$users]);
+    }
 }

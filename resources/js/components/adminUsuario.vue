@@ -20,30 +20,68 @@
           <input type="password" v-model="user.password" class="form-control" />
         </div>
       </div>
-      <a href="#" class="btn btn-primary" @click="updateUser()">Modificar</a>
+
+      <div class="container mt-3 mb-3 pb-3">
+        <div class="row">
+          <a href="#" class="btn btn-primary" @click="updateUser()"
+            >Modificar</a
+          >
+        </div>
+      </div>
+
+      <hr />
+      <div class="row">
+        <!-- Roles -->
+        <div class="col-md-4">
+          <label for="">Roles disponibles</label>
+          <select
+            v-model="roleSeleccionado"
+            class="form-control"
+            @change="changeRole"
+          >
+            <option :value="role.text" v-for="role in roles" :key="role.text">
+              {{ role.text }}
+            </option>
+          </select>
+        </div>
+        <!-- Roles -->
+        <!-- Buscar -->
+        <div class="col-md-4">
+          <label for="">Buscar</label>
+          <input
+            type="text"
+            v-model="search"
+            class="form-control mb-3"
+            @keyup="searchUser()"
+          />
+        </div>
+        <!-- Buscar -->
+      </div>
     </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Correo</th>
-          <th scope="col">Nombre</th>
-          <th scope="col">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <th scope="row">{{ user.id }}</th>
-          <td>{{ user.email }}</td>
-          <td>{{ user.name }}</td>
-          <td>
-            <a href="#" class="btn btn-warning" @click="editUser(user)">
-              <i class="bi bi-pencil"></i>
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="containerTable w-100">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Correo</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id">
+            <th scope="row">{{ user.id }}</th>
+            <td>{{ user.email }}</td>
+            <td>{{ user.name }}</td>
+            <td>
+              <a href="#" class="btn btn-warning" @click="editUser(user)">
+                <i class="bi bi-pencil"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -59,6 +97,14 @@ export default {
       user: {
         password: "",
       },
+      roleSeleccionado: "Todos",
+      roles: [
+        { text: "Todos" },
+        { text: "Administrador" },
+        { text: "Estudiante" },
+      ],
+      searchTimeOut: "",
+      search: "",
     };
   },
 
@@ -118,9 +164,45 @@ export default {
         email: "",
       };
     },
+
+    async changeRole() {
+      const res = await axios
+        .post(`/api/user/getByRole`, {
+          role: this.roleSeleccionado,
+        })
+        .catch((error) => {
+          alerta.mensaje("No fue posible recuperar los datos.", "error");
+        });
+
+      if (res && res.data.mensaje == "exito") {
+        this.users = res.data.users;
+      }
+    },
+
+    async searchUser() {
+      window.clearTimeout(this.searchTimeOut);
+
+      this.searchTimeOut = setTimeout(async () => {
+        const res = await axios
+          .post(`/api/user/search`, {
+            search: this.search,
+          })
+          .catch((error) => {
+            alerta.mensaje("No fue posible recuperar los datos.", "error");
+          });
+
+        if (res && res.data.mensaje == "exito") {
+          this.users = res.data.users;
+        }
+      }, 750);
+    },
   },
 };
 </script>
 
 <style>
+.containerTable {
+  height: 400px;
+  overflow-y: scroll;
+}
 </style>
