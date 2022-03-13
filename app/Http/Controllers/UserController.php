@@ -89,7 +89,6 @@ class UserController extends Controller
     public function getByRole(Request $request)
     {
         $role = ($request->role == "Administrador") ? "admin": "estudiante";
-        // dd($role, $request->role);
         $users = User::where(['access'=> $role])->get();
 
         return response()->json(['mensaje'=>'exito', 'users'=>$users]);
