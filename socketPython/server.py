@@ -45,7 +45,6 @@ def main():
             win32api.SetConsoleCtrlHandler(handler, True)
 
         client, addr = server.accept()
-        # print("Accepted connection from: {}".format(addr))
 
         counter += 1
         command = str(client.recv(1024).decode().replace('\n', ''))
@@ -64,13 +63,13 @@ def main():
             client.send("OK".encode())
             client.close()
             state = 205 
-            threading.Thread(target=timeout, args=[timeSleep, 204]).start()
+            threading.Thread(target=timeout, args=[timeSleep, 205]).start()
 
         elif command == "13":
             client.send("OK".encode())
             client.close()
             state = 203 
-            threading.Thread(target=timeout, args=[timeSleep, 202]).start()
+            threading.Thread(target=timeout, args=[timeSleep, 206]).start()
 
         elif command == "14":
             client.send("OK".encode())
@@ -83,7 +82,9 @@ def main():
             client.close()
 
         elif command == "21":
-            client.send(str(numeroRandom(0,1000)).encode())
+            value = str(numeroRandom(0,1000))
+            print("Ciclo de trabajo: "+value)
+            client.send(value.encode())
             client.close()
 
         elif command == "22":
@@ -91,7 +92,7 @@ def main():
             client.close()
 
         elif command == "23":
-            client.send(str(numeroRandom(0,1000)).encode())
+            client.send(str(23).encode())
             client.close()
 
         elif command == "24":
@@ -108,20 +109,26 @@ def main():
 
         elif command == "50":
             client.send('35.5'.encode())
+            client.close()
 
         elif command == "51":
             client.send('2.0'.encode())
+            client.close()
 
         elif command == "52":
             client.send('0.015'.encode())
+            client.close()
 
         elif command == "53":
             client.send('0.001'.encode())
+            client.close()
 
         elif command == "100":
             client.send(str(state).encode())
+            client.close()
 
         else:
             print('Función no implementada')
+            client.close()
 
 main()
